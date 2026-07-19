@@ -1,8 +1,14 @@
-# Student Newspaper Platform
+# The Woodley Leaves
 
-A framework-free (vanilla HTML/CSS/JS) website for a student newspaper — section
-pages, articles, sports, videos, puzzles/centerspread, search, and an in-app
-**editor dashboard**. No build step, no dependencies.
+The online home of **The Woodley Leaves** — Maret School's student newspaper.
+Section pages, articles, sports, videos, puzzles/centerspread, search, and an
+in-app **editor dashboard**. Framework-free (vanilla HTML/CSS/JS), no build step,
+no dependencies.
+
+This repo is Maret's deployment of a reusable newspaper platform: the code is
+identical to the `newspaper-template`, and this repo adds the paper's brand config
+(`config.js` — masthead, Woodley green, the leaf named for Woodley Park) and its
+content.
 
 ## Highlights
 
@@ -13,8 +19,8 @@ pages, articles, sports, videos, puzzles/centerspread, search, and an in-app
   page, and search all update automatically.
 - **Brand config** — one file (`config.js`) sets the masthead, school, colors,
   logo, and footer across every page.
-- **Host-ready auth** — designed to sit behind a platform such as Finalsite, which
-  provides login and decides who is an editor.
+- **Host-ready auth** — designed to sit behind Finalsite, which provides login and
+  decides who is an editor.
 
 ## Run it locally
 
@@ -42,7 +48,7 @@ persist only in your browser's `localStorage`.
 | Path | Purpose |
 |------|---------|
 | `*.html` | Pages — public surfaces plus the `editor*.html` dashboard |
-| `config.js` | Brand config (`WL_CONFIG`); the only per-school file |
+| `config.js` | Brand config (`WL_CONFIG`) — this is what makes the code *The Woodley Leaves* |
 | `articles.js`, `writers.js`, `teams.js`, … | Content sources (`window.WL_*`) |
 | `*-store.js` | CRUD / data layer — the seam for server-backed persistence |
 | `auth.js` | Identity adapter (`window.WLAuth`; reads `WL_CONTEXT`) |
