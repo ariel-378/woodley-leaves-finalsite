@@ -14,97 +14,35 @@
 //    so the dashboard can be shown without the host. No codes, nothing secure.
 
 (function () {
-  const LS_CURRENT = "wl_current_user";
-  const LS_USERS = "wl_users";
   const LS_PREVIEW = "wl_preview_role"; // demo only: "editor" forces editor preview
 
   // Identity injected by the host platform (Finalsite). Present only in production.
   const CTX = window.WL_CONTEXT || null;
   const HOSTED = !!(CTX && CTX.signedIn);
 
-  function getUsers() {
-    try { return JSON.parse(localStorage.getItem(LS_USERS) || "{}"); }
-    catch { return {}; }
-  }
-  function saveUsers(u) { localStorage.setItem(LS_USERS, JSON.stringify(u)); }
-  function getCurrentUser() { return localStorage.getItem(LS_CURRENT); }
-  function setCurrentUser(u) {
-    if (u) localStorage.setItem(LS_CURRENT, u);
-    else localStorage.removeItem(LS_CURRENT);
-  }
-
-  // Resolve the active identity. In hosted mode the host is the source of truth;
-  // in standalone/demo mode we use the localStorage account plus an optional
-  // "editor preview" override. Returns { hosted, user, role } (user may be null).
+  // Resolve the active identity. In hosted mode the host is the source of truth.
+  // In standalone/demo mode the only identity is the one-click "editor preview" —
+  // there is no in-app reader or editor sign-in (Finalsite handles all login).
+  // Returns { hosted, user, role }; user/role are null when nobody is signed in.
   function resolved() {
     if (HOSTED) {
       const name = (CTX.user && (CTX.user.name || CTX.user.id)) || "Member";
       return { hosted: true, user: name, role: CTX.role === "editor" ? "editor" : "reader" };
     }
     if (localStorage.getItem(LS_PREVIEW) === "editor") {
-      return { hosted: false, user: getCurrentUser() || "Editor Preview", role: "editor" };
+      return { hosted: false, user: "Editor Preview", role: "editor" };
     }
-    const u = getCurrentUser();
-    const ud = u ? (getUsers()[u] || null) : null;
-    return { hosted: false, user: u, role: ud ? (ud.role || "reader") : null };
-  }
-
-  function defaultUserData() {
-    return {
-      password: "",
-      role: "reader",          // "reader" or "editor"
-      created: Date.now(),
-    };
+    return { hosted: false, user: null, role: null };
   }
 
   // ===== Public API =====
   const WLAuth = {
     hosted: HOSTED,
     currentUser() { return resolved().user; },
-
-    signUp(username, password, opts) {
-      opts = opts || {};
-      username = (username || "").trim();
-      if (!username) throw new Error("Username is required");
-      if (!password) throw new Error("Password is required");
-      if (username.length < 2) throw new Error("Username must be at least 2 characters");
-      if (password.length < 4) throw new Error("Password must be at least 4 characters");
-      const users = getUsers();
-      if (users[username]) throw new Error("That username is taken");
-      users[username] = defaultUserData();
-      users[username].password = password;
-      users[username].role = opts.role === "editor" ? "editor" : "reader";
-      saveUsers(users);
-      setCurrentUser(username);
-      renderTopbar();
-    },
-
-    signIn(username, password, opts) {
-      opts = opts || {};
-      username = (username || "").trim();
-      const users = getUsers();
-      const user = users[username];
-      if (!user) throw new Error("No account found with that username");
-      if (user.password !== password) throw new Error("Incorrect password");
-      if (opts.requireEditor && user.role !== "editor") {
-        throw new Error("This account isn't an editor account. Use the regular sign-in.");
-      }
-      setCurrentUser(username);
-      renderTopbar();
-    },
-
-    currentRole() { return resolved().role; },
-
     isEditor() { return resolved().role === "editor"; },
 
-    signOut() {
-      if (HOSTED) return; // host owns the session
-      setCurrentUser(null);
-      localStorage.removeItem(LS_PREVIEW);
-      renderTopbar();
-    },
-
     // Demo-only: flip in/out of the editor experience without the host platform.
+    // In production, editor rights come from the school-assigned role (WL_CONTEXT).
     enableEditorPreview() {
       if (HOSTED) return;
       localStorage.setItem(LS_PREVIEW, "editor");
@@ -114,14 +52,6 @@
       localStorage.removeItem(LS_PREVIEW);
       renderTopbar();
     },
-
-    // Reader login is handled by the host platform (Finalsite); there is no
-    // in-app reader sign-in. Kept as no-ops so any legacy caller won't throw.
-    showSignIn() {},
-    showSignUp() {}
-    // Editor rights come from the school-assigned role in production (WL_CONTEXT),
-    // or from the demo-only editor preview (enableEditorPreview) when standalone.
-    // There is no separate editor sign-in.
   };
   window.WLAuth = WLAuth;
 
