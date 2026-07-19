@@ -15,7 +15,7 @@ window.WL_CENTERSPREAD = {
       type: "poem",
       kicker: "Poem",
       title: "Spring at Maret",
-      byline: "By Maya Swanson",
+      byline: "By Ivy Callahan",
       body:
         "At long last the snow banks from past winter storms\n" +
         "Are melting beneath all the sun rays so warm\n" +
@@ -47,7 +47,7 @@ window.WL_CENTERSPREAD = {
       type: "poem",
       kicker: "Guess Who",
       title: "On a rainy April morning…",
-      byline: "By Ema Kimmage",
+      byline: "By Freya Donnelly",
       body:
         "On a rainy April morning\n" +
         "My cereal was frozen cold,\n" +
@@ -69,21 +69,21 @@ window.WL_CENTERSPREAD = {
       type: "prose",
       kicker: "Guess the Teacher",
       title: "A Day in the Life of a Grade Dean",
-      byline: "By Travis Riemer",
+      byline: "By Cole Fenton",
       body:
         "Have you ever wondered how a Maret grade dean goes through a typical Monday? This grade dean starts her morning off bright and early at 6 a.m. She wakes up her children, gets them ready for their day, and walks and feeds her dog, Saint. Then, she makes a crucial stop at Starbucks before dropping her younger daughter off with her carpool and dropping her elder daughter off at school. While this grade dean has many stops on her way to Maret, she makes the miles fly by immersing herself in an audiobook. After beginning her journey at 6:50, she finally arrives at school at 8:10.\n" +
         "\n" +
-        "Monday is hectic for this grade dean, as she teaches two classes: Literature of Our Multicentric World and Black Women Writers. She also passes out snacks to hungry students after Convocation — a very important job. But feeding herself is not as easy because she often finds herself splitting her lunch time between many meetings. After lunch, this grade dean meets with Mr. Tejada to discuss upper school business. Her meeting day is not yet done, however, as she also has an important meeting with our student council representatives. Finally, she ends the school day with an Office of Equity, Inclusion, and Belonging meeting.\n" +
+        "Monday is hectic for this grade dean, as she teaches two classes: Literature of Our Multicentric World and Black Women Writers. She also passes out snacks to hungry students after Convocation — a very important job. But feeding herself is not as easy because she often finds herself splitting her lunch time between many meetings. After lunch, this grade dean meets with Mr. Alvarez to discuss upper school business. Her meeting day is not yet done, however, as she also has an important meeting with our student council representatives. Finally, she ends the school day with an Office of Equity, Inclusion, and Belonging meeting.\n" +
         "\n" +
         "After school, this grade dean picks up her younger daughter from school, goes home, and comes full circle with a walk with her dog. On Monday evenings, she usually goes, reluctantly, to the grocery store, ideally Target, makes dinner, and helps her daughter with homework. By 11 p.m., she ends her day, getting sleep to prepare for her return to Maret on Tuesday! Are you ready to make your guess?",
-      reveal: { summary: "Reveal the teacher", answer: "If you guessed the one and only Ms. Candia, you are correct!" },
+      reveal: { summary: "Reveal the teacher", answer: "If you guessed the one and only Ms. Delgado, you are correct!" },
     },
     {
       id: "clue-to-the-code",
       type: "image",
       kicker: "Riddle Game",
       title: "Clue to the Code",
-      byline: "By Jamie Berroya",
+      byline: "By Devon Marsh",
       image: "media/riddle-2.png",
       alt: "Clue to the Code riddle, from the April print edition",
     },

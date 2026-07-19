@@ -5,7 +5,7 @@
 // writer pages automatically; add fixed display-name overrides here if needed.
 window.WL_WRITERS = {};
 
-// Turn a byline like "Kate Gerney" into a lookup slug "kate-gerney"
+// Turn a byline like "Alex Rivera" into a lookup slug "alex-rivera"
 window.WL_writerSlug = function (byline) {
   return String(byline || "")
     .toLowerCase()
