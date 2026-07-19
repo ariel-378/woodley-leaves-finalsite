@@ -35,6 +35,19 @@ With no host platform present, the site runs in **demo mode** — use the
 **"Editor preview"** link in the account bar to open the dashboard. Editor changes
 persist only in your browser's `localStorage`.
 
+### Dashboard controls
+
+Inside the editor dashboard, the toolbar has three buttons:
+
+- **+ New Article** — create a new article.
+- **Reset all changes** — discard your article edits and restore the original articles.
+- **Reset demo data** — clear **all** saved changes in this browser (articles,
+  sections, brand, layout, videos, sports, etc.) and restore the shipped content.
+
+Because editor changes are saved to `localStorage` and override the shipped files,
+if the demo ever shows stale content, click **Reset demo data** (or open the site
+in a private window) to get back to the shipped version.
+
 ## Documentation
 
 - **[FINALSITE.md](FINALSITE.md)** — how the site integrates with Finalsite: the
