@@ -340,6 +340,7 @@
     <div class="editor-toolbar">
       <button class="btn-primary" id="btn-new">+ New Article</button>
       <button class="btn-ghost" id="btn-reset" title="Discard all custom edits and restore the original articles">Reset all changes</button>
+      <button class="btn-ghost" id="btn-reset-demo" title="Clear ALL saved demo data in this browser (articles, sections, brand, layout, etc.) and restore the shipped content">Reset demo data</button>
     </div>
 
     <div class="sections-manager" id="sections-manager">
@@ -951,6 +952,17 @@
     if (!confirm("Discard ALL editor changes (new articles, edits, deletions) and restore the original article set? This cannot be undone.")) return;
     WLArticles.reset();
     renderTable();
+  });
+
+  // Full demo reset: wipe every saved change across the site (articles, sections,
+  // brand, layout, videos, teams, etc.) so the demo shows the shipped content.
+  // Keeps the editor-preview session so the reviewer stays in the dashboard.
+  document.getElementById("btn-reset-demo").addEventListener("click", () => {
+    if (!confirm("Reset ALL demo data in this browser? This clears every saved change across the whole site (articles, sections, brand design, layout, videos, sports, etc.) and restores the site's shipped content. This cannot be undone.")) return;
+    Object.keys(localStorage)
+      .filter(k => k.startsWith("wl_") && k !== "wl_preview_role")
+      .forEach(k => localStorage.removeItem(k));
+    location.reload();
   });
 
   document.getElementById("prompt-editor-preview").addEventListener("click", (e) => { e.preventDefault(); WLAuth.enableEditorPreview(); });
