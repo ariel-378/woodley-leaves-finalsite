@@ -11,11 +11,6 @@
     return parts.join("-");
   }
 
-  function daysBetween(a, b) {
-    const ms = b - a;
-    return Math.floor(ms / (1000 * 60 * 60 * 24));
-  }
-
   // ===== Teams grid =====
   function renderTeams() {
     const grid = document.getElementById("teams-grid");

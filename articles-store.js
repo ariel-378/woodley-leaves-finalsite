@@ -76,24 +76,9 @@ window.WLArticles = (function () {
   // article in the dashboard marks it as that section's featured pick. Only
   // one featured pick per section — featuring a new article replaces the old.
   const LS_FEATURED_MAP = "wl_featured_by_section";
-  const LEGACY_FEATURED = "wl_featured_article";
-
   function readFeaturedMap() {
-    // Migrate legacy single-featured key into the new per-section map on first
-    // read. The legacy pick becomes the featured article for its own section.
-    const legacyId = localStorage.getItem(LEGACY_FEATURED);
-    let map = {};
-    try { map = JSON.parse(localStorage.getItem(LS_FEATURED_MAP) || "{}"); }
-    catch { map = {}; }
-    if (legacyId) {
-      const a = getById(legacyId);
-      if (a && a.section && !map[a.section]) {
-        map[a.section] = legacyId;
-        localStorage.setItem(LS_FEATURED_MAP, JSON.stringify(map));
-      }
-      localStorage.removeItem(LEGACY_FEATURED);
-    }
-    return map;
+    try { return JSON.parse(localStorage.getItem(LS_FEATURED_MAP) || "{}"); }
+    catch { return {}; }
   }
   function writeFeaturedMap(map) {
     localStorage.setItem(LS_FEATURED_MAP, JSON.stringify(map));
