@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Tag — The Student Times</title>
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Old+Standard+TT:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css" />
+<script src="config.js"></script>
+<script src="brand-store.js"></script>
+<script src="brand.js"></script>
+<script src="sections-store.js"></script>
+<script src="nav.js"></script>
+</head>
+<body>
+
+<div class="topbar"><div class="topbar-inner"><div><a href="#" class="topbar-cta">Subscribe</a></div><div></div></div></div>
+
+<div class="masthead">
+  <div class="masthead-ornament left" aria-hidden="true"><img src="media/leaf.svg" alt="" width="60" height="30"></div>
+  <div class="masthead-ornament right" aria-hidden="true"><img src="media/leaf.svg" alt="" width="60" height="30"></div>
+  <h1><a href="index.html">The Student Times</a></h1>
+  <div class="dateline" data-wl-text="tag-dateline">YOUR SCHOOL</div>
+</div>
+
+<nav class="sectionnav">
+  <div class="sectionnav-inner"></div>
+</nav>
+
+<main class="container">
+  <header class="section-hero">
+    <div class="kicker" id="tag-kicker">Topic</div>
+    <h2 id="tag-heading">Tag</h2>
+    <div class="section-hero-flourish" aria-hidden="true">
+      <svg viewBox="0 0 160 24" xmlns="http://www.w3.org/2000/svg">
+        <path d="M 4 12 Q 25 2 45 12 Q 60 20 75 12 Q 95 2 115 12 Q 130 20 145 12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        <circle cx="80" cy="12" r="3" fill="currentColor"/>
+        <circle cx="156" cy="12" r="2" fill="currentColor"/>
+      </svg>
+    </div>
+    <p class="section-hero-deck" id="tag-summary">Every story filed under this topic.</p>
+  </header>
+
+  <div id="tag-results"></div>
+
+  <section style="margin-top: 40px;">
+    <h3 style="font-family: Georgia, serif; font-size: 18px; border-bottom: 2px solid var(--ink); padding-bottom: 4px;" data-wl-text="tag-browse-heading">Browse all tags</h3>
+    <div class="tag-cloud" id="tag-cloud"></div>
+  </section>
+
+  <div class="page-flourish" aria-hidden="true">
+    <svg viewBox="0 0 140 70" xmlns="http://www.w3.org/2000/svg">
+      <path d="M 20 48 C 40 22, 68 22, 80 44 C 88 58, 72 68, 64 60 C 58 53, 70 46, 76 52" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"/>
+      <circle cx="100" cy="38" r="2.5" fill="currentColor"/>
+      <circle cx="115" cy="35" r="2" fill="currentColor"/>
+      <circle cx="128" cy="32" r="1.5" fill="currentColor"/>
+    </svg>
+  </div>
+</main>
+
+<footer>© 2026 The Student Times · Your School Student Publication · <a href="staff.html">Staff</a> · <a href="tip.html">Pitch a story</a><br>Online Editor-in-Chief: <a href="mailto:editor@example.org">editor@example.org</a> · Online Managing Editor: <a href="mailto:managing@example.org">managing@example.org</a></footer>
+
+<script src="articles.js"></script>
+<script src="articles-store.js"></script>
+<script src="submissions.js"></script>
+<script src="auth.js"></script>
+<script src="script.js"></script>
+<script src="text-editor.js"></script>
+<script>
+(function () {
+  function escapeHtml(s) {
+    return String(s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+  }
+  const params = new URLSearchParams(location.search);
+  const tag = (params.get("tag") || "").toLowerCase().trim();
+
+  const all = WLArticles.getAll();
+  const entries = Object.entries(all).map(([id, a]) => ({ id, ...a }));
+
+  // Collect all tags for the cloud
+  const tagCounts = {};
+  entries.forEach(a => (a.tags || []).forEach(t => {
+    const key = t.toLowerCase();
+    tagCounts[key] = (tagCounts[key] || 0) + 1;
+  }));
+
+  const cloud = document.getElementById("tag-cloud");
+  const tags = Object.keys(tagCounts).sort();
+  cloud.innerHTML = tags.length
+    ? tags.map(t => `<a class="tag-chip" href="tag.html?tag=${encodeURIComponent(t)}">${escapeHtml(t)} <span class="tag-count">${tagCounts[t]}</span></a>`).join("")
+    : `<p style="font-size:14px; color: var(--muted); font-style: italic;">No tags have been added yet. Editors can add tags to any article from the dashboard.</p>`;
+
+  if (!tag) {
+    document.getElementById("tag-heading").textContent = "All tags";
+    document.getElementById("tag-summary").textContent = "";
+    document.getElementById("tag-results").innerHTML = `<p class="search-empty">Pick a tag below to see its articles.</p>`;
+    return;
+  }
+
+  // Filter articles by tag
+  const matches = entries
+    .filter(a => (a.tags || []).some(t => t.toLowerCase() === tag))
+    .sort((x, y) => (Date.parse(y.date) || 0) - (Date.parse(x.date) || 0));
+
+  document.getElementById("tag-heading").textContent = `#${tag}`;
+  document.getElementById("tag-summary").textContent = `${matches.length} article${matches.length === 1 ? "" : "s"}`;
+  document.title = `#${tag} — The Student Times`;
+
+  const results = document.getElementById("tag-results");
+  if (matches.length === 0) {
+    results.innerHTML = `<p class="search-empty">No articles tagged with "${escapeHtml(tag)}" yet.</p>`;
+    return;
+  }
+  results.innerHTML = matches.map(a => `
+    <article class="search-result">
+      <div class="kicker">${escapeHtml(a.section)}</div>
+      <h3><a href="article.html?id=${encodeURIComponent(a.id)}">${escapeHtml(a.title)}</a></h3>
+      <p>${escapeHtml(a.deck)}</p>
+      <div class="byline">By ${escapeHtml(a.byline)} · ${escapeHtml(a.date)}</div>
+    </article>
+  `).join("");
+})();
+</script>
+</body>
+</html>

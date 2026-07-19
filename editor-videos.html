@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Video Editor — The Student Times</title>
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Old+Standard+TT:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css" />
+<script src="config.js"></script>
+<script src="brand-store.js"></script>
+<script src="brand.js"></script>
+<script src="sections-store.js"></script>
+<script src="nav.js"></script>
+<style>
+  .ed-tabs { display: flex; gap: 4px; margin-bottom: 18px; border-bottom: 1px solid var(--rule); flex-wrap: wrap; }
+  .ed-tabs a { font-family: "Helvetica Neue", Arial, sans-serif; font-size: 13px; font-weight: 600; padding: 10px 16px; color: var(--muted); text-decoration: none; border-bottom: 3px solid transparent; }
+  .ed-tabs a.active { color: var(--ink); border-bottom-color: var(--accent); }
+  .btn-primary { background: var(--accent); color: #fff; border: none; padding: 10px 16px; font-family: "Helvetica Neue", Arial, sans-serif; font-weight: 600; font-size: 14px; cursor: pointer; }
+  .btn-primary:hover { filter: brightness(0.92); }
+  .btn-ghost { background: #fff; color: var(--ink); border: 1px solid var(--ink); padding: 6px 10px; font-family: "Helvetica Neue", Arial, sans-serif; font-weight: 600; font-size: 12px; cursor: pointer; }
+  .btn-ghost:hover { background: var(--cream); }
+  .btn-danger { background: none; color: #b8002a; border: 1px solid #b8002a; padding: 6px 10px; font-family: "Helvetica Neue", Arial, sans-serif; font-weight: 600; font-size: 12px; cursor: pointer; }
+  .pool-list { list-style: none; padding: 0; margin: 0; border: 1px solid var(--rule); }
+  .pool-list li { display: flex; align-items: center; justify-content: space-between; padding: 10px 14px; border-bottom: 1px solid var(--rule); font-family: "Helvetica Neue", Arial, sans-serif; font-size: 14px; gap: 10px; }
+  .pool-list li:last-child { border-bottom: none; }
+  .badge-custom { display: inline-block; background: var(--accent); color: #fff; font-size: 10px; padding: 2px 6px; margin-left: 6px; letter-spacing: 0.5px; text-transform: uppercase; font-weight: 700; vertical-align: middle; }
+
+  .ed-modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); display: none; align-items: flex-start; justify-content: center; z-index: 200; padding: 30px 20px; overflow-y: auto; }
+  .ed-modal-overlay.visible { display: flex; }
+  .ed-modal { background: #fff; width: 100%; max-width: 640px; padding: 28px; border-top: 4px solid var(--accent); position: relative; font-family: "Helvetica Neue", Arial, sans-serif; }
+  .ed-modal h2 { font-family: Georgia, serif; font-size: 24px; margin: 0 0 14px; }
+  .ed-modal-close { position: absolute; top: 8px; right: 14px; background: none; border: none; font-size: 24px; color: var(--muted); cursor: pointer; }
+  .ed-form label { display: block; font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: var(--muted); margin-bottom: 12px; }
+  .ed-form input, .ed-form textarea, .ed-form select { display: block; width: 100%; padding: 8px 10px; margin-top: 4px; border: 1px solid var(--rule); font-family: inherit; font-size: 14px; background: #fafafa; box-sizing: border-box; }
+  .ed-form textarea { resize: vertical; min-height: 80px; }
+  .ed-form .row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .ed-form .ed-error { color: #b8002a; font-size: 13px; min-height: 18px; margin: 6px 0 10px; }
+  .ed-form-actions { display: flex; justify-content: space-between; margin-top: 12px; }
+</style>
+</head>
+<body>
+
+<div class="topbar"><div class="topbar-inner"><div><a href="#" class="topbar-cta">Subscribe</a></div><div></div></div></div>
+
+<div class="masthead">
+  <div class="masthead-ornament left" aria-hidden="true"><img src="media/leaf.svg" alt="" width="60" height="30"></div>
+  <div class="masthead-ornament right" aria-hidden="true"><img src="media/leaf.svg" alt="" width="60" height="30"></div>
+  <h1><a href="index.html">The Student Times</a></h1>
+  <div class="dateline">YOUR SCHOOL</div>
+</div>
+
+<nav class="sectionnav">
+  <div class="sectionnav-inner"></div>
+</nav>
+
+<main class="container">
+  <div class="section-header">
+    <h2>Video Editor</h2>
+    <span class="see-all" id="welcome"></span>
+  </div>
+
+  <div id="no-access" class="account-prompt" style="display:none;">
+    You need <strong>editor</strong> access to manage videos.
+    <a href="#" id="prompt-preview">Enter editor preview.</a>
+  </div>
+
+  <div id="editor-view" style="display:none;">
+    <div class="ed-tabs">
+      <a href="editor.html">Articles</a>
+      <a href="editor-centerspread.html">Centerspread</a>
+      <a href="editor-sports.html">Sports stats</a>
+      <a href="editor-videos.html" class="active">Video</a>
+      <a href="editor-writers.html">Writers</a>
+      <a href="editor-ads.html">Ads</a>
+      <a href="editor-brand.html" class="ed-tab-brand">Brand design</a>
+    </div>
+
+    <p class="ed-tip" style="font-size:12px;color:var(--muted);margin-bottom:14px;">Paste a YouTube or Vimeo URL. Videos are embedded in a 16:9 player on the site.</p>
+
+    <div style="display:flex;justify-content:flex-end;margin-bottom:14px;">
+      <button class="btn-primary" id="add-video">+ Add video</button>
+    </div>
+
+    <ul class="pool-list" id="videos-list"></ul>
+  </div>
+
+  <div class="ed-modal-overlay" id="video-modal" role="dialog" aria-modal="true" aria-labelledby="video-modal-title">
+    <div class="ed-modal" role="document">
+      <button class="ed-modal-close" aria-label="Close">×</button>
+      <h2 id="video-modal-title">Video</h2>
+      <div class="ed-form">
+        <label>ID (URL slug; lowercase, dashes only) <input type="text" id="v-id" placeholder="e.g., interview-spring-musical"></label>
+        <label>Title <input type="text" id="v-title"></label>
+        <label>Duration (e.g., "4:32") <input type="text" id="v-duration"></label>
+        <label>Video URL (YouTube or Vimeo) <input type="text" id="v-url" placeholder="https://youtube.com/watch?v=…"></label>
+        <div class="row-2">
+          <label>Byline <input type="text" id="v-byline"></label>
+          <label>Date <input type="text" id="v-date" placeholder="April 18, 2026"></label>
+        </div>
+        <label>Description <textarea id="v-desc" rows="4"></textarea></label>
+        <div class="ed-error" id="v-error"></div>
+        <div class="ed-form-actions">
+          <button class="btn-ghost" data-cancel>Cancel</button>
+          <button class="btn-primary" id="v-save">Save video</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<footer>© 2026 The Student Times · Your School Student Publication · <a href="staff.html">Staff</a> · <a href="tip.html">Pitch a story</a><br>Online Editor-in-Chief: <a href="mailto:editor@example.org">editor@example.org</a> · Online Managing Editor: <a href="mailto:managing@example.org">managing@example.org</a></footer>
+
+<script src="videos.js"></script>
+<script src="videos-store.js"></script>
+<script src="submissions.js"></script>
+<script src="auth.js"></script>
+<script src="script.js"></script>
+<script>
+(function () {
+  function escapeHtml(s) {
+    return String(s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+  }
+  function slugify(s) {
+    return String(s).toLowerCase().trim().replace(/[^\w\s-]/g, "").replace(/\s+/g, "-").replace(/-+/g, "-").slice(0, 60);
+  }
+  function todayString() {
+    return new Date().toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" });
+  }
+
+  const view = document.getElementById("editor-view");
+  const noAccess = document.getElementById("no-access");
+  const welcome = document.getElementById("welcome");
+
+  function gate() {
+    const user = WLAuth.currentUser();
+    if (!user || !WLAuth.isEditor()) {
+      view.style.display = "none"; noAccess.style.display = "block"; welcome.textContent = "";
+      return false;
+    }
+    noAccess.style.display = "none"; view.style.display = "block";
+    welcome.textContent = `Signed in as ${user}`;
+    return true;
+  }
+
+  function renderList() {
+    const list = document.getElementById("videos-list");
+    const items = Object.entries(WLVideos.getAll())
+      .map(([id, v]) => ({ id, ...v }))
+      .sort((a, b) => (Date.parse(b.date) || 0) - (Date.parse(a.date) || 0));
+    list.innerHTML = "";
+    if (items.length === 0) {
+      list.innerHTML = `<li><em style="color:var(--muted);">No videos yet.</em></li>`;
+      return;
+    }
+    items.forEach(v => {
+      const li = document.createElement("li");
+      const customBadge = WLVideos.isCustom(v.id) ? `<span class="badge-custom">Edited</span>` : "";
+      li.innerHTML = `
+        <span>
+          <b>${escapeHtml(v.title)}</b>
+          <span style="color:var(--muted);font-size:12px;margin-left:8px;">${escapeHtml(v.byline)} · ${escapeHtml(v.date)}${v.duration ? " · " + escapeHtml(v.duration) : ""}</span>
+          ${customBadge}
+        </span>
+        <span style="display:flex;gap:6px;">
+          <a class="btn-ghost" href="video.html?id=${encodeURIComponent(v.id)}" target="_blank" style="text-decoration:none;">Preview</a>
+          <button class="btn-ghost" data-act="edit" data-id="${escapeHtml(v.id)}">Edit</button>
+          <button class="btn-danger" data-act="delete" data-id="${escapeHtml(v.id)}">Delete</button>
+        </span>
+      `;
+      list.appendChild(li);
+    });
+    list.querySelectorAll('[data-act="edit"]').forEach(b => b.addEventListener("click", () => openModal(b.dataset.id)));
+    list.querySelectorAll('[data-act="delete"]').forEach(b => b.addEventListener("click", () => {
+      if (!confirm("Delete this video?")) return;
+      WLVideos.remove(b.dataset.id);
+      renderAll();
+    }));
+  }
+
+  // Modal
+  const modal = document.getElementById("video-modal");
+  const idEl = document.getElementById("v-id");
+  const titleEl = document.getElementById("v-title");
+  const durEl = document.getElementById("v-duration");
+  const urlEl = document.getElementById("v-url");
+  const bylineEl = document.getElementById("v-byline");
+  const dateEl = document.getElementById("v-date");
+  const descEl = document.getElementById("v-desc");
+  const errEl = document.getElementById("v-error");
+  let editingId = null;
+
+  function openModal(id) {
+    editingId = id || null;
+    const v = id ? WLVideos.getById(id) : null;
+    document.getElementById("video-modal-title").textContent = id ? "Edit video" : "New video";
+    if (v) {
+      idEl.value = id; idEl.disabled = true;
+      titleEl.value = v.title;
+      durEl.value = v.duration || ""; urlEl.value = v.url;
+      bylineEl.value = v.byline || ""; dateEl.value = v.date || "";
+      descEl.value = v.description || "";
+    } else {
+      idEl.value = ""; idEl.disabled = false;
+      titleEl.value = "";
+      durEl.value = ""; urlEl.value = "";
+      bylineEl.value = WLAuth.currentUser() || "";
+      dateEl.value = todayString();
+      descEl.value = "";
+    }
+    errEl.textContent = "";
+    modal.classList.add("visible");
+    setTimeout(() => (id ? titleEl : idEl).focus(), 50);
+  }
+  function closeModal() { modal.classList.remove("visible"); editingId = null; }
+
+  titleEl.addEventListener("input", () => {
+    if (!editingId && !idEl.dataset.touched) idEl.value = slugify(titleEl.value);
+  });
+  idEl.addEventListener("input", () => { idEl.dataset.touched = "1"; });
+
+  document.getElementById("v-save").addEventListener("click", () => {
+    errEl.textContent = "";
+    const id = idEl.value.trim();
+    const title = titleEl.value.trim();
+    const url = urlEl.value.trim();
+    const byline = bylineEl.value.trim();
+    const date = dateEl.value.trim();
+    const desc = descEl.value.trim();
+    const dur = durEl.value.trim();
+
+    if (!id || !/^[a-z0-9-]+$/.test(id)) { errEl.textContent = "ID must be lowercase letters, numbers, and dashes."; return; }
+    if (!title) { errEl.textContent = "Title is required."; return; }
+    if (!url) { errEl.textContent = "Video URL is required."; return; }
+    if (!WLVideos.parseVideo(url)) { errEl.textContent = "URL must be a YouTube or Vimeo link."; return; }
+    if (!byline) { errEl.textContent = "Byline is required."; return; }
+    if (!date) { errEl.textContent = "Date is required."; return; }
+
+    if (id !== editingId && WLVideos.getById(id)) { errEl.textContent = "That ID is already used. Pick a different slug."; return; }
+
+    const data = { title, url, byline, date };
+    if (desc) data.description = desc;
+    if (dur) data.duration = dur;
+
+    WLVideos.save(id, data);
+    closeModal();
+    renderAll();
+  });
+
+  document.querySelectorAll(".ed-modal-close, [data-cancel]").forEach(b => b.addEventListener("click", closeModal));
+  modal.addEventListener("click", (e) => { if (e.target === modal) closeModal(); });
+  modal.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") { closeModal(); return; }
+    if (e.key !== "Tab") return;
+    const f = modal.querySelectorAll('a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])');
+    if (f.length === 0) return;
+    const first = f[0], last = f[f.length - 1];
+    if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+    else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+  });
+
+  document.getElementById("add-video").addEventListener("click", () => openModal(null));
+  document.getElementById("prompt-preview").addEventListener("click", (e) => { e.preventDefault(); WLAuth.enableEditorPreview(); });
+
+  function renderAll() {
+    if (!gate()) return;
+    renderList();
+  }
+
+  document.addEventListener("wl-auth-change", renderAll);
+  document.addEventListener("wl-videos-change", renderAll);
+  renderAll();
+})();
+</script>
+</body>
+</html>

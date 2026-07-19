@@ -3,33 +3,38 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>The Woodley Leaves</title>
-<meta name="description" content="The student newspaper of Maret School. News, features, opinion, sports, and puzzles.">
-<meta property="og:title" content="The Woodley Leaves">
-<meta property="og:description" content="The student newspaper of Maret School.">
+<title>The Student Times</title>
+<meta name="description" content="The student newspaper of Your School. News, features, opinion, sports, and puzzles.">
+<meta property="og:title" content="The Student Times">
+<meta property="og:description" content="The student newspaper of Your School.">
 <meta property="og:type" content="website">
-<meta property="og:site_name" content="The Woodley Leaves">
+<meta property="og:site_name" content="The Student Times">
 <link rel="icon" type="image/svg+xml" href="favicon.svg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Old+Standard+TT:wght@400;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="styles.css" />
+<script src="config.js"></script>
+<script src="brand-store.js"></script>
+<script src="brand.js"></script>
+<script src="sections-store.js"></script>
+<script src="nav.js"></script>
 </head>
 <body>
 
 <!-- Breaking news banner -->
-<div class="breaking-banner" id="breaking-banner">
-  <span class="tag">Breaking</span>
+<div class="breaking-banner" id="breaking-banner" role="button" tabindex="0" aria-label="Open breaking news — Woodley wins regional debate championship for the third year running">
+  <span class="tag" aria-hidden="true" data-wl-text="home-breaking-tag">Breaking</span>
   <span>Woodley wins regional debate championship for the third year running — click for details</span>
 </div>
 
 <!-- Breaking news popup -->
-<div class="popup-overlay" id="breaking-popup">
+<div class="popup-overlay" id="breaking-popup" role="alertdialog" aria-modal="true" aria-labelledby="breaking-heading" aria-describedby="breaking-desc">
   <div class="popup">
-    <button class="popup-close" id="popup-close" aria-label="Close">×</button>
-    <div class="label">Breaking News</div>
-    <h2>Woodley debate team takes regional title</h2>
-    <p>In a close final round against Lincoln Prep, the Woodley debate team secured its third consecutive regional championship Saturday evening.</p>
+    <button class="popup-close" id="popup-close" aria-label="Close breaking news">×</button>
+    <div class="label" data-wl-text="home-breaking-label">Breaking News</div>
+    <h2 id="breaking-heading">Woodley debate team takes regional title</h2>
+    <p id="breaking-desc">In a close final round against Lincoln Prep, the Woodley debate team secured its third consecutive regional championship Saturday evening.</p>
     <a href="article.html?id=debate-regional-2026-04-17" class="popup-cta">Read the story</a>
   </div>
 </div>
@@ -38,7 +43,7 @@
 <div class="topbar">
   <div class="topbar-inner">
     <div>
-      <a href="#">Subscribe</a>
+      <a href="#" class="topbar-cta">Subscribe</a>
     </div>
     <div></div>
   </div>
@@ -46,86 +51,57 @@
 
 <!-- Masthead -->
 <div class="masthead">
-  <h1>The Woodley Leaves</h1>
-  <div class="dateline">FRIDAY, APRIL 17, 2026 &nbsp;·&nbsp; MARET SCHOOL &nbsp;·&nbsp; STUDENT PRESS SINCE 2002</div>
+  <div class="masthead-ornament left" aria-hidden="true"><img src="media/leaf.svg" alt="" width="60" height="30"></div>
+  <div class="masthead-ornament right" aria-hidden="true"><img src="media/leaf.svg" alt="" width="60" height="30"></div>
+  <h1>The Student Times</h1>
+  <div class="dateline" data-wl-text="home-dateline">YOUR SCHOOL &nbsp;·&nbsp; STUDENT NEWSPAPER</div>
 </div>
 
 <!-- Section nav -->
 <nav class="sectionnav">
-  <div class="sectionnav-inner">
-    <a href="index.html" class="active">Home</a>
-    <a href="news.html">News</a>
-    <a href="features.html">Features</a>
-    <a href="opinion.html">Op-Ed</a>
-    <a href="style.html">Style</a>
-    <a href="centerspread.html">Centerspread</a>
-    <a href="sports.html">Sports</a>
-  </div>
+  <div class="sectionnav-inner"></div>
 </nav>
 
 <!-- Main content -->
 <main class="container">
-  <div class="home-grid">
+ <div class="home-layout">
+  <div class="home-main">
 
-    <!-- Lede story (editor-featured article) -->
-    <section class="lede" id="home-lede"></section>
+    <div class="home-grid">
+      <!-- Lede story (editor-featured article) -->
+      <section class="lede" id="home-lede"></section>
 
-    <!-- Middle column (auto-filled with latest) -->
-    <section id="home-middle"></section>
+      <!-- Middle column (auto-filled with latest) -->
+      <section id="home-middle"></section>
 
-    <!-- Right column: ads + auto-filled shorts -->
-    <aside>
-      <div class="ad">
-        <div class="ad-label">Club Advertisement</div>
-        <h4>Model UN Bake Sale</h4>
-        <p>Friday, April 24 · Main Hall · All proceeds fund the DC conference trip.</p>
-      </div>
+      <!-- Right column zone — editor-configurable via layout dashboard -->
+      <aside data-zone="right-sidebar"></aside>
+    </div>
 
-      <div id="home-right-1"></div>
-      <div id="home-right-2"></div>
+    <!-- Full-width zone below the main grid (editor-configurable) -->
+    <div data-zone="below-main"></div>
 
-      <div class="ad">
-        <div class="ad-label">Upcoming Event</div>
-        <h4>Spring Musical: Into the Woods</h4>
-        <p>May 2–4 · Auditorium · Tickets $5 at the door.</p>
-      </div>
-    </aside>
-
-  </div>
-
-  <!-- More from each section -->
-  <div class="section-header" style="margin-top: 50px;">
-    <h2>More from the newsroom</h2>
-    <span class="see-all">Updated hourly</span>
-  </div>
-
-  <div class="home-grid">
-    <section id="home-more-1"></section>
-    <section id="home-more-2"></section>
-    <aside>
-      <div class="ad">
-        <div class="ad-label">Club Advertisement</div>
-        <h4>Robotics Open House</h4>
-        <p>Thursday, April 30 · Room 214 · See the competition robot up close.</p>
-      </div>
-      <div class="ad">
-        <div class="ad-label">Upcoming Event</div>
-        <h4>Senior Art Show</h4>
-        <p>May 10 · Gallery Wing · Refreshments served.</p>
-      </div>
-    </aside>
-  </div>
+  </div> <!-- /.home-main -->
+ </div> <!-- /.home-layout -->
 </main>
 
 <footer>
-  © 2026 The Woodley Leaves · Maret School Student Publication<br>
-  Online Editor-in-Chief: <a href="mailto:arielp2027@maret.org">arielp2027@maret.org</a> · Online Managing Editor: <a href="mailto:farrynb2027@maret.org">farrynb2027@maret.org</a>
+  © 2026 The Student Times · Your School Student Publication · <a href="staff.html">Staff</a> · <a href="tip.html">Pitch a story</a><br>
+  Online Editor-in-Chief: <a href="mailto:editor@example.org">editor@example.org</a> · Online Managing Editor: <a href="mailto:managing@example.org">managing@example.org</a>
 </footer>
 
 <script src="articles.js"></script>
 <script src="articles-store.js"></script>
+<script src="videos.js"></script>
+<script src="videos-store.js"></script>
+<script src="views-store.js"></script>
+<script src="ads.js"></script>
+<script src="ads-store.js"></script>
+<script src="layout-store.js"></script>
 <script src="home.js"></script>
+<script src="submissions.js"></script>
 <script src="auth.js"></script>
 <script src="script.js"></script>
+<script src="text-editor.js"></script>
 </body>
 </html>

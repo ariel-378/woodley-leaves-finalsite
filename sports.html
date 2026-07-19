@@ -3,102 +3,106 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Sports — The Woodley Leaves</title>
-<meta name="description" content="Maret School sports — game recaps, schedules, and athlete profiles.">
-<meta property="og:title" content="Sports — The Woodley Leaves">
+<title>Sports — The Student Times</title>
+<meta name="description" content="Your School sports — game recaps, schedules, and athlete profiles.">
+<meta property="og:title" content="Sports — The Student Times">
 <meta property="og:type" content="website">
-<meta property="og:site_name" content="The Woodley Leaves">
+<meta property="og:site_name" content="The Student Times">
 <link rel="icon" type="image/svg+xml" href="favicon.svg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Old+Standard+TT:wght@400;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="styles.css" />
+<script src="config.js"></script>
+<script src="brand-store.js"></script>
+<script src="brand.js"></script>
+<script src="sections-store.js"></script>
+<script src="nav.js"></script>
 </head>
 <body>
 
-<div class="topbar"><div class="topbar-inner"><div><a href="#">Subscribe</a></div><div></div></div></div>
+<div class="topbar"><div class="topbar-inner"><div><a href="#" class="topbar-cta">Subscribe</a></div><div></div></div></div>
 
 <div class="masthead">
-  <h1><a href="index.html">The Woodley Leaves</a></h1>
-  <div class="dateline">FRIDAY, APRIL 17, 2026 &nbsp;·&nbsp; MARET SCHOOL</div>
+  <div class="masthead-ornament left" aria-hidden="true"><img src="media/leaf.svg" alt="" width="60" height="30"></div>
+  <div class="masthead-ornament right" aria-hidden="true"><img src="media/leaf.svg" alt="" width="60" height="30"></div>
+  <h1><a href="index.html">The Student Times</a></h1>
+  <div class="dateline" data-wl-text="sports-dateline">YOUR SCHOOL</div>
 </div>
 
 <nav class="sectionnav">
-  <div class="sectionnav-inner">
-    <a href="index.html">Home</a>
-    <a href="news.html">News</a>
-    <a href="features.html">Features</a>
-    <a href="opinion.html">Op-Ed</a>
-    <a href="style.html">Style</a>
-    <a href="centerspread.html">Centerspread</a>
-    <a href="sports.html" class="active">Sports</a>
-  </div>
+  <div class="sectionnav-inner"></div>
 </nav>
 
 <main class="container">
-  <div class="section-header">
+  <header class="section-hero">
+    <div class="kicker" data-wl-text="sports-kicker">Game Time</div>
     <h2>Sports</h2>
-    <span class="see-all">Scores, recaps, and analysis</span>
-  </div>
-
-  <section class="scoreboard">
-    <h3 class="scoreboard-heading">This week's results &amp; upcoming</h3>
-    <div class="scoreboard-grid">
-      <div class="score-card win">
-        <div class="score-meta">Boys' Soccer · Apr 16</div>
-        <div class="score-line"><span>Maret</span><span class="pts">2</span></div>
-        <div class="score-line muted"><span>Westlake</span><span class="pts">1</span></div>
-        <div class="score-tag">W · OT</div>
-      </div>
-      <div class="score-card win">
-        <div class="score-meta">Track · Apr 13</div>
-        <div class="score-line"><span>Northside Invitational</span><span class="pts">1st</span></div>
-        <div class="score-line muted"><span>4 of 4 relays in top 3</span></div>
-        <div class="score-tag">W</div>
-      </div>
-      <div class="score-card loss">
-        <div class="score-meta">Baseball · Apr 11</div>
-        <div class="score-line"><span>Maret</span><span class="pts">3</span></div>
-        <div class="score-line muted"><span>Jefferson</span><span class="pts">4</span></div>
-        <div class="score-tag">L</div>
-      </div>
-      <div class="score-card upcoming">
-        <div class="score-meta">Boys' Soccer · Apr 26</div>
-        <div class="score-line"><span>Maret vs. Riverside</span></div>
-        <div class="score-line muted"><span>Semifinal · Home · 2 p.m.</span></div>
-        <div class="score-tag">Upcoming</div>
-      </div>
-      <div class="score-card upcoming">
-        <div class="score-meta">Baseball · May 1</div>
-        <div class="score-line"><span>Senior Night vs. Hillcrest</span></div>
-        <div class="score-line muted"><span>Home · 6 p.m.</span></div>
-        <div class="score-tag">Upcoming</div>
-      </div>
+    <div class="section-hero-flourish" aria-hidden="true">
+      <svg viewBox="0 0 160 24" xmlns="http://www.w3.org/2000/svg">
+        <g>
+          <path d="M 30 12 Q 50 12 68 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" fill="none"/>
+          <ellipse cx="40" cy="7" rx="5" ry="2" fill="currentColor" transform="rotate(-25 40 7)"/>
+          <ellipse cx="52" cy="5" rx="5" ry="2" fill="currentColor" transform="rotate(-20 52 5)"/>
+          <ellipse cx="62" cy="7" rx="5" ry="2" fill="currentColor" transform="rotate(-15 62 7)"/>
+          <ellipse cx="40" cy="17" rx="5" ry="2" fill="currentColor" transform="rotate(25 40 17)"/>
+          <ellipse cx="52" cy="19" rx="5" ry="2" fill="currentColor" transform="rotate(20 52 19)"/>
+          <ellipse cx="62" cy="17" rx="5" ry="2" fill="currentColor" transform="rotate(15 62 17)"/>
+        </g>
+        <circle cx="80" cy="12" r="3" fill="currentColor"/>
+        <g transform="translate(160, 0) scale(-1, 1)">
+          <path d="M 30 12 Q 50 12 68 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" fill="none"/>
+          <ellipse cx="40" cy="7" rx="5" ry="2" fill="currentColor" transform="rotate(-25 40 7)"/>
+          <ellipse cx="52" cy="5" rx="5" ry="2" fill="currentColor" transform="rotate(-20 52 5)"/>
+          <ellipse cx="62" cy="7" rx="5" ry="2" fill="currentColor" transform="rotate(-15 62 7)"/>
+          <ellipse cx="40" cy="17" rx="5" ry="2" fill="currentColor" transform="rotate(25 40 17)"/>
+          <ellipse cx="52" cy="19" rx="5" ry="2" fill="currentColor" transform="rotate(20 52 19)"/>
+          <ellipse cx="62" cy="17" rx="5" ry="2" fill="currentColor" transform="rotate(15 62 17)"/>
+        </g>
+      </svg>
     </div>
-  </section>
+  </header>
 
-  <div class="section-grid">
-    <div class="article-list" id="article-list" data-section="Sports"></div>
+  <div data-move-group="sports-sections">
+    <!-- Game of the Week -->
+    <div class="wl-row">
+      <section class="game-of-week" id="game-of-week" data-move-key="game-of-week" data-move-label="Game of the Week" hidden></section>
+    </div>
 
-    <aside>
-      <div class="ad">
-        <div class="ad-label">Upcoming Event</div>
-        <h4>Senior Night — Baseball</h4>
-        <p>Friday, May 1 · Home field, 6 p.m.</p>
-      </div>
-      <div class="ad">
-        <div class="ad-label">Club Advertisement</div>
-        <h4>Ultimate Frisbee Club</h4>
-        <p>Sundays · Back field · All skill levels.</p>
-      </div>
-    </aside>
+    <!-- Teams & records -->
+    <div class="wl-row">
+      <section class="sports-subsection" data-move-key="teams" data-move-label="Teams">
+        <div class="sports-sub-head">
+          <h3>Teams</h3>
+          <a href="brackets.html" class="sports-more-link">View playoff brackets →</a>
+        </div>
+        <div class="teams-grid" id="teams-grid"></div>
+      </section>
+    </div>
+
+    <div class="wl-row">
+      <div class="article-list" id="article-list" data-section="Sports" data-move-key="articles" data-move-label="Articles"></div>
+      <div class="sidebar-ads ad-block" data-move-key="ad-1" data-move-label="Ad 1" data-ads-offset="0" data-ads-limit="1"></div>
+    </div>
+    <div class="wl-row">
+      <div class="sidebar-ads ad-block" data-move-key="ad-2" data-move-label="Ad 2" data-ads-offset="1" data-ads-limit="1"></div>
+      <div class="sidebar-ads ad-block" data-move-key="ad-3" data-move-label="Ad 3" data-ads-offset="2" data-ads-limit="1"></div>
+    </div>
   </div>
 </main>
 
-<footer>© 2026 The Woodley Leaves · Maret School Student Publication<br>Online Editor-in-Chief: <a href="mailto:arielp2027@maret.org">arielp2027@maret.org</a> · Online Managing Editor: <a href="mailto:farrynb2027@maret.org">farrynb2027@maret.org</a></footer>
+<footer>© 2026 The Student Times · Your School Student Publication · <a href="staff.html">Staff</a> · <a href="tip.html">Pitch a story</a><br>Online Editor-in-Chief: <a href="mailto:editor@example.org">editor@example.org</a> · Online Managing Editor: <a href="mailto:managing@example.org">managing@example.org</a></footer>
 <script src="articles.js"></script>
 <script src="articles-store.js"></script>
 <script src="section.js"></script>
+<script src="teams.js"></script>
+<script src="teams-store.js"></script>
+<script src="sports.js"></script>
+<script src="ads.js"></script>
+<script src="ads-store.js"></script>
+<script src="submissions.js"></script>
 <script src="auth.js"></script>
 <script src="script.js"></script>
+<script src="text-editor.js"></script>
+<script src="layout-editor.js"></script>
 </body>
 </html>

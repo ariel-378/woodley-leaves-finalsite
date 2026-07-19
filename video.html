@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Video — The Student Times</title>
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Old+Standard+TT:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css" />
+<script src="config.js"></script>
+<script src="brand-store.js"></script>
+<script src="brand.js"></script>
+<script src="sections-store.js"></script>
+<script src="nav.js"></script>
+</head>
+<body>
+
+<div class="topbar"><div class="topbar-inner"><div><a href="#" class="topbar-cta">Subscribe</a></div><div></div></div></div>
+
+<div class="masthead">
+  <div class="masthead-ornament left" aria-hidden="true"><img src="media/leaf.svg" alt="" width="60" height="30"></div>
+  <div class="masthead-ornament right" aria-hidden="true"><img src="media/leaf.svg" alt="" width="60" height="30"></div>
+  <h1><a href="index.html">The Student Times</a></h1>
+  <div class="dateline" data-wl-text="video-dateline">YOUR SCHOOL</div>
+</div>
+
+<nav class="sectionnav">
+  <div class="sectionnav-inner"></div>
+</nav>
+
+<main class="container">
+  <a href="videos.html" class="back-link">← Back to Video</a>
+
+  <div id="video-not-found" style="display:none;">
+    <h2>Video not found</h2>
+    <p>We couldn't find that video. <a href="videos.html">Return to the video index</a>.</p>
+  </div>
+
+  <article id="video-body" style="display:none;">
+    <div class="kicker">Interview</div>
+    <h1 class="article-title" id="v-title"></h1>
+    <div class="byline" id="v-byline"></div>
+
+    <div id="v-embed"></div>
+    <p class="video-description" id="v-desc"></p>
+
+    <section class="related-articles" id="more-videos" hidden>
+      <h3 class="related-heading">More video</h3>
+      <div class="related-grid" id="more-grid"></div>
+    </section>
+  </article>
+</main>
+
+<footer>© 2026 The Student Times · Your School Student Publication · <a href="staff.html">Staff</a> · <a href="tip.html">Pitch a story</a><br>Online Editor-in-Chief: <a href="mailto:editor@example.org">editor@example.org</a> · Online Managing Editor: <a href="mailto:managing@example.org">managing@example.org</a></footer>
+
+<script src="videos.js"></script>
+<script src="videos-store.js"></script>
+<script src="submissions.js"></script>
+<script src="auth.js"></script>
+<script src="script.js"></script>
+<script src="text-editor.js"></script>
+<script>
+(function () {
+  function escapeHtml(s) {
+    return String(s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+  }
+
+  const params = new URLSearchParams(location.search);
+  const id = params.get("id");
+  const v = id ? WLVideos.getById(id) : null;
+
+  if (!v) {
+    document.getElementById("video-not-found").style.display = "block";
+    document.title = "Video not found — The Student Times";
+    return;
+  }
+
+  document.getElementById("video-body").style.display = "block";
+  document.title = `${v.title} — The Student Times`;
+
+  document.getElementById("v-title").textContent = v.title;
+  document.getElementById("v-byline").textContent = `By ${v.byline} · ${v.date}${v.duration ? " · " + v.duration : ""}`;
+  document.getElementById("v-desc").textContent = v.description || "";
+
+  const info = WLVideos.parseVideo(v.url);
+  const embedEl = document.getElementById("v-embed");
+  if (info && info.type === "youtube") {
+    embedEl.innerHTML = `<div class="video-embed-wide"><iframe src="https://www.youtube.com/embed/${info.id}" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div>`;
+  } else if (info && info.type === "vimeo") {
+    embedEl.innerHTML = `<div class="video-embed-wide"><iframe src="https://player.vimeo.com/video/${info.id}" allow="autoplay; fullscreen" allowfullscreen></iframe></div>`;
+  } else {
+    embedEl.innerHTML = `<p style="color:#b8002a;">Couldn't recognize the video URL — must be YouTube or Vimeo.</p>`;
+  }
+
+  // More video (other items)
+  const others = Object.entries(WLVideos.getAll())
+    .filter(([oid]) => oid !== id)
+    .map(([oid, o]) => ({ id: oid, ...o }))
+    .sort((a, b) => (Date.parse(b.date) || 0) - (Date.parse(a.date) || 0))
+    .slice(0, 3);
+  if (others.length > 0) {
+    const wrap = document.getElementById("more-videos");
+    wrap.hidden = false;
+    document.getElementById("more-grid").innerHTML = others.map(o => {
+      const inf = WLVideos.parseVideo(o.url);
+      const thumb = (inf && inf.type === "youtube")
+        ? `<img src="https://img.youtube.com/vi/${inf.id}/hqdefault.jpg" alt="${escapeHtml(o.title)}" loading="lazy" style="width:100%; aspect-ratio:16/9; object-fit:cover; display:block;">`
+        : `<div class="video-placeholder" style="aspect-ratio:16/9;"></div>`;
+      return `
+        <a class="related-card" href="video.html?id=${encodeURIComponent(o.id)}">
+          ${thumb}
+          <h4 style="margin-top:8px;">${escapeHtml(o.title)}</h4>
+          <div class="byline">By ${escapeHtml(o.byline)} · ${escapeHtml(o.date)}</div>
+        </a>
+      `;
+    }).join("");
+  }
+})();
+</script>
+</body>
+</html>

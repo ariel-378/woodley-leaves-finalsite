@@ -3,12 +3,17 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Editor Dashboard — The Woodley Leaves</title>
-<meta name="description" content="Editor dashboard for The Woodley Leaves. Create, edit, and publish articles.">
+<title>Editor Dashboard — The Student Times</title>
+<meta name="description" content="Editor dashboard for The Student Times. Create, edit, and publish articles.">
 <link rel="icon" type="image/svg+xml" href="favicon.svg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Old+Standard+TT:wght@400;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="styles.css" />
+<script src="config.js"></script>
+<script src="brand-store.js"></script>
+<script src="brand.js"></script>
+<script src="sections-store.js"></script>
+<script src="nav.js"></script>
 <style>
   .editor-toolbar {
     display: flex;
@@ -73,6 +78,99 @@
     background: #fff;
   }
 
+  .ed-section {
+    margin-bottom: 32px;
+  }
+  /* Sections manager */
+  .sections-manager {
+    border: 1px solid var(--rule);
+    background: #fafafa;
+    padding: 16px 18px;
+    margin-bottom: 28px;
+  }
+  .sections-manager > h3 {
+    font-family: Georgia, serif;
+    font-size: 18px;
+    margin: 0 0 4px;
+  }
+  .sm-list {
+    list-style: none;
+    margin: 12px 0;
+    padding: 0;
+    border: 1px solid var(--rule);
+    background: #fff;
+  }
+  .sm-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 12px;
+    border-bottom: 1px solid var(--rule);
+    font-family: "Helvetica Neue", Arial, sans-serif;
+    font-size: 14px;
+  }
+  .sm-row:last-child { border-bottom: none; }
+  .sm-name { flex: 1; min-width: 0; font-weight: 600; }
+  .sm-name .sm-tag {
+    font-weight: 400; font-size: 11px; color: var(--muted);
+    letter-spacing: 1px; text-transform: uppercase; margin-left: 8px;
+  }
+  .sm-count {
+    font-size: 12px; color: var(--muted); white-space: nowrap;
+  }
+  .sm-actions { display: flex; gap: 6px; flex-shrink: 0; }
+  .sm-actions .btn-ghost, .sm-actions .btn-danger { padding: 4px 8px; font-size: 12px; }
+  .sm-actions .btn-ghost:disabled { opacity: 0.35; cursor: default; }
+  .sm-add { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+  .sm-add input {
+    flex: 1; min-width: 180px; padding: 8px 10px;
+    border: 1px solid var(--rule); font-family: inherit; font-size: 14px; background: #fff;
+  }
+  .sm-error { color: #b8002a; font-size: 13px; min-height: 18px; margin: 6px 0 0; }
+  /* Home page layout picker */
+  .hl-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 12px;
+    margin-top: 14px;
+  }
+  .hl-row { display: flex; flex-direction: column; gap: 4px; margin: 0; }
+  .hl-label {
+    font-family: "Helvetica Neue", Arial, sans-serif;
+    font-size: 11px; text-transform: uppercase; letter-spacing: 1px;
+    color: var(--muted); font-weight: 600;
+  }
+  .hl-select {
+    padding: 8px 10px; border: 1px solid var(--rule); background: #fff;
+    font-family: inherit; font-size: 14px;
+  }
+  .ed-section-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    border-bottom: 2px solid var(--ink);
+    padding-bottom: 4px;
+    margin-bottom: 6px;
+  }
+  .ed-section-head h3 {
+    font-family: Georgia, serif;
+    font-size: 20px;
+    margin: 0;
+  }
+  .ed-section-count {
+    font-family: "Helvetica Neue", Arial, sans-serif;
+    font-size: 11px;
+    color: var(--muted);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+  .ed-section-empty {
+    font-family: "Helvetica Neue", Arial, sans-serif;
+    font-size: 13px;
+    color: var(--muted);
+    font-style: italic;
+    padding: 14px 4px;
+  }
   .editor-table {
     width: 100%;
     border-collapse: collapse;
@@ -205,23 +303,17 @@
 </head>
 <body>
 
-<div class="topbar"><div class="topbar-inner"><div><a href="#">Subscribe</a></div><div></div></div></div>
+<div class="topbar"><div class="topbar-inner"><div><a href="#" class="topbar-cta">Subscribe</a></div><div></div></div></div>
 
 <div class="masthead">
-  <h1><a href="index.html">The Woodley Leaves</a></h1>
-  <div class="dateline">MARET SCHOOL</div>
+  <div class="masthead-ornament left" aria-hidden="true"><img src="media/leaf.svg" alt="" width="60" height="30"></div>
+  <div class="masthead-ornament right" aria-hidden="true"><img src="media/leaf.svg" alt="" width="60" height="30"></div>
+  <h1><a href="index.html">The Student Times</a></h1>
+  <div class="dateline">YOUR SCHOOL</div>
 </div>
 
 <nav class="sectionnav">
-  <div class="sectionnav-inner">
-    <a href="index.html">Home</a>
-    <a href="news.html">News</a>
-    <a href="features.html">Features</a>
-    <a href="opinion.html">Op-Ed</a>
-    <a href="style.html">Style</a>
-    <a href="centerspread.html">Centerspread</a>
-    <a href="sports.html">Sports</a>
-  </div>
+  <div class="sectionnav-inner"></div>
 </nav>
 
 <main class="container">
@@ -231,52 +323,56 @@
   </div>
 
   <div id="editor-no-access" class="account-prompt" style="display:none;">
-    You need to be signed in as an <strong>editor</strong> to view this page.
-    <a href="#" id="prompt-editor-signin">Sign in here.</a>
+    You need <strong>editor</strong> access to view this page.
+    <a href="#" id="prompt-editor-preview">Enter editor preview.</a>
   </div>
 
   <div id="editor-view" style="display:none;">
     <div class="ed-tabs">
       <a href="editor.html" class="active">Articles</a>
-      <a href="editor-puzzles.html">Puzzles</a>
+      <a href="editor-centerspread.html">Centerspread</a>
+      <a href="editor-sports.html">Sports stats</a>
+      <a href="editor-videos.html">Video</a>
+      <a href="editor-writers.html">Writers</a>
+      <a href="editor-ads.html">Ads</a>
+      <a href="editor-brand.html" class="ed-tab-brand">Brand design</a>
     </div>
     <div class="editor-toolbar">
       <button class="btn-primary" id="btn-new">+ New Article</button>
-      <select id="filter-section">
-        <option value="">All sections</option>
-        <option>News</option>
-        <option>Features</option>
-        <option>Op-Ed</option>
-        <option>Style</option>
-        <option>Sports</option>
-      </select>
       <button class="btn-ghost" id="btn-reset" title="Discard all custom edits and restore the original articles">Reset all changes</button>
     </div>
 
-    <table class="editor-table">
-      <thead>
-        <tr>
-          <th class="col-title">Title</th>
-          <th>Section</th>
-          <th>Byline</th>
-          <th>Date</th>
-          <th class="col-actions">Actions</th>
-        </tr>
-      </thead>
-      <tbody id="editor-rows"></tbody>
-    </table>
+    <div class="sections-manager" id="sections-manager">
+      <h3>Sections</h3>
+      <p class="ed-tip" style="margin:0;">Add, rename, reorder, or remove sections. Renaming carries all of a section's articles with it and updates the site nav. A section must be empty before it can be removed.</p>
+      <ul class="sm-list" id="sm-list"></ul>
+      <form class="sm-add" id="sm-add-form">
+        <input type="text" id="sm-new-name" placeholder="New section name (e.g., Arts)" maxlength="40" autocomplete="off">
+        <button class="btn-primary" type="submit">+ Add section</button>
+      </form>
+      <p class="sm-error" id="sm-error"></p>
+    </div>
+
+    <div class="sections-manager" id="home-layout">
+      <h3>Home page layout</h3>
+      <p class="ed-tip" style="margin:0;">Choose which section fills each spot on the front page. Each spot shows that section's featured story, or its newest article if none is featured.</p>
+      <div class="hl-grid" id="hl-grid"></div>
+    </div>
+
+    <div id="editor-sections"></div>
   </div>
 
   <!-- Edit/Create modal -->
-  <div class="ed-modal-overlay" id="ed-modal">
-    <div class="ed-modal">
-      <button class="ed-modal-close" id="ed-modal-close">×</button>
+  <div class="ed-modal-overlay" id="ed-modal" role="dialog" aria-modal="true" aria-labelledby="ed-modal-title">
+    <div class="ed-modal" role="document">
+      <button class="ed-modal-close" id="ed-modal-close" aria-label="Close article editor">×</button>
       <h2 id="ed-modal-title">New Article</h2>
 
       <div class="ed-form">
         <div class="ed-form-row">
           <label>Section
             <select id="ed-section">
+              <option>Breaking</option>
               <option>News</option>
               <option>Features</option>
               <option>Op-Ed</option>
@@ -295,13 +391,17 @@
         <label>Headline <input type="text" id="ed-title"></label>
         <label>Deck (one-sentence summary) <textarea id="ed-deck" rows="2"></textarea></label>
 
-        <div class="ed-form-row">
-          <label>Byline (writer's name) <input type="text" id="ed-byline"></label>
-          <label>Role (optional, e.g., "Editor-in-Chief") <input type="text" id="ed-role"></label>
-        </div>
+        <label style="margin-bottom:4px;">Writers <span style="font-weight:400;text-transform:none;letter-spacing:0;color:var(--muted);">(add more than one for a co-written article)</span></label>
+        <div id="ed-authors"></div>
+        <button type="button" class="btn-ghost" id="ed-author-add" style="margin:2px 0 14px;">+ Add another writer</button>
+        <label>Role (optional, e.g., "Editor-in-Chief") <input type="text" id="ed-role"></label>
 
         <label>Body (one paragraph per line; blank lines separate paragraphs)
           <textarea id="ed-body" rows="14" placeholder="The story opens here.&#10;&#10;Each paragraph goes on its own line."></textarea>
+        </label>
+
+        <label>Tags (comma-separated, optional)
+          <input type="text" id="ed-tags" placeholder="e.g., seniors, prom, profile">
         </label>
 
         <fieldset class="ed-media">
@@ -317,14 +417,24 @@
           <p class="ed-tip">Files are stored in your browser. Keep them under ~1 MB to avoid running out of space.</p>
 
           <label>Photo caption
-            <input type="text" id="ed-caption" placeholder="Photo by the Leaves photo staff.">
+            <input type="text" id="ed-caption" placeholder="Photo by the Student Times photo staff.">
           </label>
 
           <label>Video URL (YouTube or Vimeo)
             <input type="text" id="ed-video" placeholder="https://youtube.com/watch?v=… or https://vimeo.com/…">
           </label>
 
+          <label>Audio narration URL (MP3/WAV, optional)
+            <input type="text" id="ed-audio" placeholder="https://example.com/narration.mp3">
+          </label>
+          <p class="ed-tip">If left blank, readers will hear the article read via their browser's built-in voice.</p>
+
           <div id="ed-photo-preview" style="margin-top:8px;"></div>
+
+          <hr style="margin:16px 0; border:none; border-top:1px solid var(--rule);">
+          <p class="ed-tip" style="margin-top:0;">Photo gallery (optional) — extra photos displayed below the article.</p>
+          <div id="ed-gallery-rows"></div>
+          <button type="button" class="btn-ghost" id="ed-gallery-add" style="margin-top:6px;">+ Add photo to gallery</button>
         </fieldset>
 
         <div class="ed-error" id="ed-error"></div>
@@ -337,10 +447,12 @@
   </div>
 </main>
 
-<footer>© 2026 The Woodley Leaves · Maret School Student Publication<br>Online Editor-in-Chief: <a href="mailto:arielp2027@maret.org">arielp2027@maret.org</a> · Online Managing Editor: <a href="mailto:farrynb2027@maret.org">farrynb2027@maret.org</a></footer>
+<footer>© 2026 The Student Times · Your School Student Publication · <a href="staff.html">Staff</a> · <a href="tip.html">Pitch a story</a><br>Online Editor-in-Chief: <a href="mailto:editor@example.org">editor@example.org</a> · Online Managing Editor: <a href="mailto:managing@example.org">managing@example.org</a></footer>
 
 <script src="articles.js"></script>
 <script src="articles-store.js"></script>
+<script src="writers.js"></script>
+<script src="submissions.js"></script>
 <script src="auth.js"></script>
 <script src="script.js"></script>
 <script>
@@ -362,8 +474,10 @@
   const view = document.getElementById("editor-view");
   const noAccess = document.getElementById("editor-no-access");
   const welcome = document.getElementById("editor-welcome");
-  const rows = document.getElementById("editor-rows");
-  const filter = document.getElementById("filter-section");
+  const sectionsWrap = document.getElementById("editor-sections");
+
+  // Section list + order come from the editor-managed sections store.
+  function sectionNames() { return WLSections.names(); }
 
   function gateAccess() {
     const user = WLAuth.currentUser();
@@ -379,51 +493,188 @@
     return true;
   }
 
+  // ===== Sections management =====
+  const smList = document.getElementById("sm-list");
+  const smError = document.getElementById("sm-error");
+
+  // Fill the article modal's Section dropdown from the store, keeping the
+  // current pick if it still exists.
+  function populateSectionSelect() {
+    const current = sectionEl.value;
+    const names = sectionNames();
+    sectionEl.innerHTML = names.map(n => `<option>${escapeHtml(n)}</option>`).join("");
+    if (names.includes(current)) sectionEl.value = current;
+  }
+
+  function renderSectionsManager() {
+    const list = WLSections.list();
+    smList.innerHTML = list.map((s, i) => {
+      const count = WLSections.articleCount(s.name);
+      const navTag = s.nav ? "" : `<span class="sm-tag">Home / banner</span>`;
+      const lockTag = s.locked ? `<span class="sm-tag">Locked</span>` : "";
+      const up = `<button class="btn-ghost" data-sm="up" data-name="${escapeHtml(s.name)}" title="Move up"${i === 0 ? " disabled" : ""}>↑</button>`;
+      const down = `<button class="btn-ghost" data-sm="down" data-name="${escapeHtml(s.name)}" title="Move down"${i === list.length - 1 ? " disabled" : ""}>↓</button>`;
+      const rename = s.locked ? "" : `<button class="btn-ghost" data-sm="rename" data-name="${escapeHtml(s.name)}">Rename</button>`;
+      const remove = s.locked ? "" : `<button class="btn-danger" data-sm="remove" data-name="${escapeHtml(s.name)}">Remove</button>`;
+      return `
+        <li class="sm-row">
+          <span class="sm-name">${escapeHtml(s.name)}${navTag}${lockTag}</span>
+          <span class="sm-count">${count} article${count === 1 ? "" : "s"}</span>
+          <span class="sm-actions">${up}${down}${rename}${remove}</span>
+        </li>`;
+    }).join("");
+  }
+
+  // Run a store mutation, surfacing any validation error in the panel.
+  function smRun(fn) {
+    smError.textContent = "";
+    try { fn(); }
+    catch (err) { smError.textContent = err.message || String(err); }
+  }
+
+  document.getElementById("sm-add-form").addEventListener("submit", (e) => {
+    e.preventDefault();
+    const input = document.getElementById("sm-new-name");
+    smRun(() => { WLSections.add(input.value); input.value = ""; });
+  });
+
+  smList.addEventListener("click", (e) => {
+    const btn = e.target.closest("[data-sm]");
+    if (!btn) return;
+    const name = btn.dataset.name;
+    switch (btn.dataset.sm) {
+      case "up":   return smRun(() => WLSections.move(name, -1));
+      case "down": return smRun(() => WLSections.move(name, +1));
+      case "remove":
+        return smRun(() => {
+          if (!confirm(`Remove the "${name}" section?`)) return;
+          WLSections.remove(name);
+        });
+      case "rename": {
+        const next = prompt(`Rename "${name}" to:`, name);
+        if (next === null) return;
+        return smRun(() => WLSections.rename(name, next));
+      }
+    }
+  });
+
+  // ===== Home page layout =====
+  const hlGrid = document.getElementById("hl-grid");
+  const HOME_SLOTS = [
+    ["lede", "Lede — top story"],
+    ["middle1", "Middle column 1"],
+    ["middle2", "Middle column 2"],
+    ["middle3", "Middle column 3"],
+    ["right1", "Right rail 1"],
+    ["right2", "Right rail 2"],
+  ];
+
+  function renderHomeLayout() {
+    const slots = WLSections.homeSlots();
+    const names = sectionNames();
+    hlGrid.innerHTML = HOME_SLOTS.map(([key, label]) => {
+      const cur = slots[key] || "";
+      const opts = ['<option value="">— None —</option>']
+        .concat(names.map(n => `<option${n === cur ? " selected" : ""}>${escapeHtml(n)}</option>`));
+      // Surface a stale value (section since renamed away or removed) so it's visible.
+      if (cur && !names.includes(cur)) opts.push(`<option selected>${escapeHtml(cur)}</option>`);
+      return `
+        <label class="hl-row">
+          <span class="hl-label">${escapeHtml(label)}</span>
+          <select class="hl-select" data-slot="${key}">${opts.join("")}</select>
+        </label>`;
+    }).join("");
+  }
+
+  hlGrid.addEventListener("change", (e) => {
+    const sel = e.target.closest("[data-slot]");
+    if (!sel) return;
+    try { WLSections.setHomeSlot(sel.dataset.slot, sel.value); }
+    catch (err) { alert(err.message || String(err)); }
+  });
+
   function renderTable() {
     if (!gateAccess()) return;
-    const sel = filter.value;
+    populateSectionSelect();
+    renderSectionsManager();
+    renderHomeLayout();
     const all = WLArticles.getAll();
-    rows.innerHTML = "";
-    const entries = Object.entries(all)
+    // Per-section featured map: { "News": "article-id", "Features": "...", ... }
+    const featuredMap = WLArticles.getFeaturedId();
+
+    // Group entries by section. Any article with an unknown section falls into
+    // a trailing "Other" bucket so nothing disappears from the dashboard.
+    const names = sectionNames();
+    const groups = Object.fromEntries(names.map(s => [s, []]));
+    groups["Other"] = [];
+    Object.entries(all)
       .map(([id, a]) => ({ id, ...a }))
-      .filter(a => !sel || a.section === sel)
-      .sort((a, b) => (Date.parse(b.date) || 0) - (Date.parse(a.date) || 0));
+      .sort((a, b) => (Date.parse(b.date) || 0) - (Date.parse(a.date) || 0))
+      .forEach(a => {
+        (groups[a.section] ? groups[a.section] : groups["Other"]).push(a);
+      });
 
-    if (entries.length === 0) {
-      rows.innerHTML = `<tr><td colspan="5" style="padding: 24px; text-align: center; color: var(--muted);">No articles in this section.</td></tr>`;
-      return;
-    }
-
-    const featuredId = WLArticles.getFeaturedId();
-    entries.forEach(a => {
-      const tr = document.createElement("tr");
-      const customBadge = WLArticles.isCustom(a.id) ? `<span class="badge-custom">Edited</span>` : "";
-      const featuredBadge = a.id === featuredId ? `<span class="badge-featured">★ Homepage</span>` : "";
-      const featureBtnLabel = a.id === featuredId ? "Unfeature" : "Feature";
-      tr.innerHTML = `
-        <td class="col-title">
-          <a href="article.html?id=${encodeURIComponent(a.id)}" target="_blank">${escapeHtml(a.title)}</a>${customBadge}${featuredBadge}
-          <div style="color: var(--muted); font-size: 12px; margin-top: 4px;">${escapeHtml(a.deck || "")}</div>
-        </td>
-        <td>${escapeHtml(a.section)}</td>
-        <td>${escapeHtml(a.byline)}</td>
-        <td>${escapeHtml(a.date)}</td>
-        <td class="col-actions">
-          <button class="btn-ghost" data-act="feature" data-id="${escapeHtml(a.id)}">${featureBtnLabel}</button>
-          <button class="btn-ghost" data-act="edit" data-id="${escapeHtml(a.id)}">Edit</button>
-          <button class="btn-danger" data-act="delete" data-id="${escapeHtml(a.id)}">Delete</button>
-        </td>
+    const sectionOrder = names.concat(groups["Other"].length > 0 ? ["Other"] : []);
+    sectionsWrap.innerHTML = sectionOrder.map(section => {
+      const entries = groups[section];
+      if (!entries) return "";
+      const sectionFeaturedId = featuredMap[section] || null;
+      const body = entries.length === 0
+        ? `<div class="ed-section-empty">No articles in this section yet.</div>`
+        : `<table class="editor-table">
+             <thead>
+               <tr>
+                 <th class="col-title">Title</th>
+                 <th>Byline</th>
+                 <th>Date</th>
+                 <th class="col-actions">Actions</th>
+               </tr>
+             </thead>
+             <tbody>
+               ${entries.map(a => {
+                 const customBadge = WLArticles.isCustom(a.id) ? `<span class="badge-custom">Edited</span>` : "";
+                 const isFeatured = a.id === sectionFeaturedId;
+                 const featuredBadge = isFeatured ? `<span class="badge-featured">★ Homepage</span>` : "";
+                 const featureBtnLabel = isFeatured ? "Unfeature" : "Feature";
+                 return `
+                   <tr>
+                     <td class="col-title">
+                       <a href="article.html?id=${encodeURIComponent(a.id)}" target="_blank">${escapeHtml(a.title)}</a>${customBadge}${featuredBadge}
+                       <div style="color: var(--muted); font-size: 12px; margin-top: 4px;">${escapeHtml(a.deck || "")}</div>
+                     </td>
+                     <td>${escapeHtml(a.byline)}</td>
+                     <td>${escapeHtml(a.date)}</td>
+                     <td class="col-actions">
+                       <button class="btn-ghost" data-act="feature" data-id="${escapeHtml(a.id)}">${featureBtnLabel}</button>
+                       <button class="btn-ghost" data-act="edit" data-id="${escapeHtml(a.id)}">Edit</button>
+                       <button class="btn-danger" data-act="delete" data-id="${escapeHtml(a.id)}">Delete</button>
+                     </td>
+                   </tr>
+                 `;
+               }).join("")}
+             </tbody>
+           </table>`;
+      return `
+        <section class="ed-section">
+          <div class="ed-section-head">
+            <h3>${escapeHtml(section)}</h3>
+            <span class="ed-section-count">${entries.length} article${entries.length === 1 ? "" : "s"}</span>
+          </div>
+          ${body}
+        </section>
       `;
-      rows.appendChild(tr);
-    });
-    rows.querySelectorAll('[data-act="edit"]').forEach(b => b.addEventListener("click", () => openEditor(b.dataset.id)));
-    rows.querySelectorAll('[data-act="delete"]').forEach(b => b.addEventListener("click", () => removeArticle(b.dataset.id)));
-    rows.querySelectorAll('[data-act="feature"]').forEach(b => b.addEventListener("click", () => toggleFeature(b.dataset.id)));
+    }).join("");
+
+    sectionsWrap.querySelectorAll('[data-act="edit"]').forEach(b => b.addEventListener("click", () => openEditor(b.dataset.id)));
+    sectionsWrap.querySelectorAll('[data-act="delete"]').forEach(b => b.addEventListener("click", () => removeArticle(b.dataset.id)));
+    sectionsWrap.querySelectorAll('[data-act="feature"]').forEach(b => b.addEventListener("click", () => toggleFeature(b.dataset.id)));
   }
 
   function toggleFeature(id) {
-    const current = WLArticles.getFeaturedId();
-    WLArticles.setFeatured(current === id ? null : id);
+    const a = WLArticles.getById(id);
+    if (!a) return;
+    const currentId = WLArticles.getFeaturedId(a.section);
+    WLArticles.setFeatured(a.section, currentId === id ? null : id);
     renderTable();
   }
 
@@ -442,7 +693,6 @@
   const titleEl = document.getElementById("ed-title");
   const sectionEl = document.getElementById("ed-section");
   const dateEl = document.getElementById("ed-date");
-  const bylineEl = document.getElementById("ed-byline");
   const roleEl = document.getElementById("ed-role");
   const deckEl = document.getElementById("ed-deck");
   const bodyEl = document.getElementById("ed-body");
@@ -452,7 +702,69 @@
   const captionEl = document.getElementById("ed-caption");
   const videoEl = document.getElementById("ed-video");
   const photoPreviewEl = document.getElementById("ed-photo-preview");
+  const galleryRowsEl = document.getElementById("ed-gallery-rows");
   let editingId = null;
+  let workingGallery = [];
+
+  // ── Writers (one or more; co-written articles list every contributor) ──────
+  const authorsEl = document.getElementById("ed-authors");
+  let workingAuthors = [];
+
+  function renderAuthorRows() {
+    authorsEl.innerHTML = "";
+    workingAuthors.forEach((name, i) => {
+      const row = document.createElement("div");
+      row.style.cssText = "display:grid; grid-template-columns: 1fr auto; gap:6px; margin-bottom:6px;";
+      const input = document.createElement("input");
+      input.type = "text";
+      input.value = name;
+      input.placeholder = i === 0 ? "Writer's name" : "Co-writer's name";
+      input.setAttribute("aria-label", i === 0 ? "Writer" : "Co-writer " + (i + 1));
+      input.style.cssText = "padding:8px 10px; border:1px solid var(--rule); background:#fafafa; font-size:14px;";
+      input.addEventListener("input", () => { workingAuthors[i] = input.value; });
+      const rm = document.createElement("button");
+      rm.type = "button"; rm.className = "btn-danger"; rm.textContent = "Remove";
+      rm.style.cssText = "padding:4px 10px; font-size:11px;";
+      rm.disabled = workingAuthors.length <= 1;   // always keep at least one row
+      rm.addEventListener("click", () => { workingAuthors.splice(i, 1); renderAuthorRows(); });
+      row.appendChild(input); row.appendChild(rm);
+      authorsEl.appendChild(row);
+    });
+  }
+  function setAuthors(list) {
+    workingAuthors = (list && list.length) ? list.slice() : [""];
+    renderAuthorRows();
+  }
+  document.getElementById("ed-author-add").addEventListener("click", () => {
+    workingAuthors.push("");
+    renderAuthorRows();
+    authorsEl.querySelector("div:last-child input").focus();
+  });
+
+  function renderGalleryRows() {
+    galleryRowsEl.innerHTML = "";
+    workingGallery.forEach((g, i) => {
+      const row = document.createElement("div");
+      row.style.cssText = "display:grid; grid-template-columns: 2fr 2fr auto; gap:6px; margin-bottom:6px;";
+      row.innerHTML = `
+        <input type="text" placeholder="Photo URL" value="${(g.url || "").replace(/"/g, "&quot;")}" data-gi="${i}" data-gfield="url" style="padding:6px 8px; border:1px solid var(--rule); background:#fafafa; font-size:13px;">
+        <input type="text" placeholder="Caption (optional)" value="${(g.caption || "").replace(/"/g, "&quot;")}" data-gi="${i}" data-gfield="caption" style="padding:6px 8px; border:1px solid var(--rule); background:#fafafa; font-size:13px;">
+        <button type="button" class="btn-danger" data-gi="${i}" data-gremove style="padding:4px 8px; font-size:11px;">Remove</button>
+      `;
+      galleryRowsEl.appendChild(row);
+    });
+    galleryRowsEl.querySelectorAll("[data-gfield]").forEach(el => el.addEventListener("input", (e) => {
+      workingGallery[+e.target.dataset.gi][e.target.dataset.gfield] = e.target.value;
+    }));
+    galleryRowsEl.querySelectorAll("[data-gremove]").forEach(b => b.addEventListener("click", (e) => {
+      workingGallery.splice(+e.target.dataset.gi, 1);
+      renderGalleryRows();
+    }));
+  }
+  document.getElementById("ed-gallery-add").addEventListener("click", () => {
+    workingGallery.push({ url: "", caption: "" });
+    renderGalleryRows();
+  });
 
   function refreshPhotoPreview() {
     photoPreviewEl.innerHTML = "";
@@ -491,37 +803,50 @@
   function openEditor(id) {
     editingId = id || null;
     errEl.textContent = "";
+    populateSectionSelect();
+    const defaultSection = (WLSections.navSections()[0] || WLSections.list()[0] || {}).name || "";
     if (id) {
       const a = WLArticles.getById(id);
       document.getElementById("ed-modal-title").textContent = "Edit Article";
       idEl.value = id;
       idEl.disabled = true;
       titleEl.value = a.title || "";
-      sectionEl.value = a.section || "News";
+      // Keep showing the article's own section even if it was later renamed away.
+      if (a.section && !sectionNames().includes(a.section)) {
+        sectionEl.insertAdjacentHTML("beforeend", `<option>${escapeHtml(a.section)}</option>`);
+      }
+      sectionEl.value = a.section || defaultSection;
       dateEl.value = a.date || "";
-      bylineEl.value = a.byline || "";
+      setAuthors(WL_articleAuthors(a));
       roleEl.value = a.role || "";
       deckEl.value = a.deck || "";
       bodyEl.value = (a.body || []).join("\n\n");
       photoEl.value = a.photo || "";
       captionEl.value = a.photoCaption || "";
       videoEl.value = a.video || "";
+      document.getElementById("ed-audio").value = a.audio || "";
+      workingGallery = (a.gallery || []).map(g => ({ ...g }));
+      document.getElementById("ed-tags").value = (a.tags || []).join(", ");
     } else {
       document.getElementById("ed-modal-title").textContent = "New Article";
       idEl.value = "";
       idEl.disabled = false;
       titleEl.value = "";
-      sectionEl.value = "News";
+      sectionEl.value = defaultSection;
       dateEl.value = todayString();
-      bylineEl.value = WLAuth.currentUser() || "";
+      setAuthors([WLAuth.currentUser() || ""]);
       roleEl.value = "";
       deckEl.value = "";
       bodyEl.value = "";
       photoEl.value = "";
       captionEl.value = "";
       videoEl.value = "";
+      document.getElementById("ed-audio").value = "";
+      workingGallery = [];
+      document.getElementById("ed-tags").value = "";
     }
     photoFileEl.value = "";
+    renderGalleryRows();
     refreshPhotoPreview();
     idPreview.textContent = idEl.value || "…";
     modal.classList.add("visible");
@@ -550,7 +875,8 @@
     const id = (idEl.value || "").trim();
     const title = titleEl.value.trim();
     const deck = deckEl.value.trim();
-    const byline = bylineEl.value.trim();
+    const authors = workingAuthors.map(x => x.trim()).filter(Boolean);
+    const byline = WL_bylineText(authors);
     const date = dateEl.value.trim();
     const section = sectionEl.value;
     const role = roleEl.value.trim();
@@ -559,7 +885,7 @@
     if (!id || !/^[a-z0-9-]+$/.test(id)) { errEl.textContent = "ID must be lowercase letters, numbers, and dashes only."; return; }
     if (!title) { errEl.textContent = "Headline is required."; return; }
     if (!deck) { errEl.textContent = "Deck is required."; return; }
-    if (!byline) { errEl.textContent = "Byline is required."; return; }
+    if (authors.length === 0) { errEl.textContent = "At least one writer is required."; return; }
     if (!date) { errEl.textContent = "Date is required."; return; }
     if (bodyParas.length === 0) { errEl.textContent = "Body cannot be empty."; return; }
 
@@ -570,8 +896,9 @@
 
     const data = {
       title, deck, section, byline, date, body: bodyParas,
-      sectionPage: { News:"news.html", Features:"features.html", "Op-Ed":"opinion.html", Style:"style.html", Sports:"sports.html" }[section] || "index.html"
+      sectionPage: WLSections.pageFor(section)
     };
+    if (authors.length > 1) data.authors = authors;
     if (role) data.role = role;
     const photoVal = photoEl.value.trim();
     const captionVal = captionEl.value.trim();
@@ -579,6 +906,17 @@
     if (photoVal) data.photo = photoVal;
     if (captionVal) data.photoCaption = captionVal;
     if (videoVal) data.video = videoVal;
+    const audioVal = document.getElementById("ed-audio").value.trim();
+    if (audioVal) data.audio = audioVal;
+    // Strip empty gallery rows
+    const cleanGallery = workingGallery.filter(g => g.url && g.url.trim());
+    cleanGallery.forEach(g => { g.url = g.url.trim(); g.caption = (g.caption || "").trim(); if (!g.caption) delete g.caption; });
+    if (cleanGallery.length > 0) data.gallery = cleanGallery;
+    const rawTags = document.getElementById("ed-tags").value.trim();
+    if (rawTags) {
+      const tagList = rawTags.split(",").map(t => t.trim()).filter(Boolean);
+      if (tagList.length > 0) data.tags = tagList;
+    }
 
     try {
       WLArticles.save(id, data);
@@ -594,8 +932,20 @@
   document.getElementById("ed-modal-close").addEventListener("click", closeEditor);
   modal.addEventListener("click", e => { if (e.target === modal) closeEditor(); });
 
+  // Escape-to-close + focus trap inside the article editor
+  modal.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") { closeEditor(); return; }
+    if (e.key !== "Tab") return;
+    const f = modal.querySelectorAll(
+      'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])'
+    );
+    if (f.length === 0) return;
+    const first = f[0], last = f[f.length - 1];
+    if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+    else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+  });
+
   document.getElementById("btn-new").addEventListener("click", () => openEditor(null));
-  filter.addEventListener("change", renderTable);
 
   document.getElementById("btn-reset").addEventListener("click", () => {
     if (!confirm("Discard ALL editor changes (new articles, edits, deletions) and restore the original article set? This cannot be undone.")) return;
@@ -603,9 +953,10 @@
     renderTable();
   });
 
-  document.getElementById("prompt-editor-signin").addEventListener("click", (e) => { e.preventDefault(); WLAuth.showEditorSignIn(); });
+  document.getElementById("prompt-editor-preview").addEventListener("click", (e) => { e.preventDefault(); WLAuth.enableEditorPreview(); });
 
   document.addEventListener("wl-auth-change", renderTable);
+  document.addEventListener("wl-sections-change", renderTable);
   // Initial render
   renderTable();
 })();

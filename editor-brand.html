@@ -1,0 +1,548 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Brand design — The Student Times</title>
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Old+Standard+TT:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css" />
+<script src="config.js"></script>
+<script src="brand-store.js"></script>
+<script src="brand.js"></script>
+<script src="sections-store.js"></script>
+<script src="nav.js"></script>
+<style>
+  .ed-tabs { display: flex; gap: 4px; margin-bottom: 18px; border-bottom: 1px solid var(--rule); flex-wrap: wrap; }
+  .ed-tabs a { font-family: "Helvetica Neue", Arial, sans-serif; font-size: 13px; font-weight: 600; padding: 10px 16px; color: var(--muted); text-decoration: none; border-bottom: 3px solid transparent; }
+  .ed-tabs a.active { color: var(--ink); border-bottom-color: var(--accent); }
+  .btn-primary { background: var(--accent); color: #fff; border: none; padding: 10px 16px; font-family: "Helvetica Neue", Arial, sans-serif; font-weight: 600; font-size: 14px; cursor: pointer; }
+  .btn-primary:hover { filter: brightness(0.92); }
+  .btn-ghost { background: #fff; color: var(--ink); border: 1px solid var(--ink); padding: 6px 10px; font-family: "Helvetica Neue", Arial, sans-serif; font-weight: 600; font-size: 12px; cursor: pointer; }
+  .btn-ghost:hover { background: var(--cream); }
+  .btn-danger { background: none; color: #b8002a; border: 1px solid #b8002a; padding: 6px 10px; font-family: "Helvetica Neue", Arial, sans-serif; font-weight: 600; font-size: 12px; cursor: pointer; }
+  .badge-custom { display: inline-block; background: var(--accent); color: #fff; font-size: 10px; padding: 2px 6px; margin-left: 6px; letter-spacing: 0.5px; text-transform: uppercase; font-weight: 700; vertical-align: middle; }
+
+  .ed-form label { display: block; font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: var(--muted); margin-bottom: 12px; }
+  .ed-form input[type="text"], .ed-form input[type="email"], .ed-form input[type="number"], .ed-form select {
+    display: block; width: 100%; padding: 8px 10px; margin-top: 4px; border: 1px solid var(--rule);
+    font-family: inherit; font-size: 14px; background: #fafafa; box-sizing: border-box;
+  }
+  .ed-form .row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+
+  /* Panels — one per group of settings. */
+  .bp { border: 1px solid var(--rule); padding: 20px 22px; margin-bottom: 16px; font-family: "Helvetica Neue", Arial, sans-serif; }
+  .bp > h3 { font-family: Georgia, serif; font-size: 19px; margin: 0 0 4px; }
+  .bp > .bp-hint { font-size: 12px; color: var(--muted); margin: 0 0 16px; line-height: 1.5; }
+
+  /* Scope warning — the single most important thing on this page. */
+  .scope-note { border: 1px solid var(--rule); border-left: 4px solid #b8002a; background: var(--cream);
+    padding: 14px 16px; margin-bottom: 18px; font-family: "Helvetica Neue", Arial, sans-serif;
+    font-size: 13px; line-height: 1.55; }
+  .scope-note strong { color: #b8002a; }
+
+  /* Flourish */
+  .orn-preview { display: flex; align-items: center; justify-content: center; gap: 40px;
+    background: var(--paper); border: 1px dashed var(--rule); padding: 18px; margin-top: 4px; min-height: 92px; }
+  .orn-preview .slot img { display: block; height: auto; }
+  .orn-preview .slot.mirrored img { transform: scaleX(-1); }
+  .orn-preview .slot span { font-size: 34px; line-height: 1; }
+  .orn-empty { color: var(--muted); font-size: 13px; font-style: italic; }
+  .swatch-row { display: flex; align-items: center; gap: 10px; margin-top: 4px; }
+  .swatch-row input[type="color"] { width: 46px; height: 38px; padding: 0; border: 1px solid var(--rule); background: none; cursor: pointer; }
+  .checkbox-row { display: flex; align-items: center; gap: 8px; margin-bottom: 12px; }
+  .checkbox-row input { width: auto; margin: 0; }
+  .checkbox-row label { margin: 0; text-transform: none; letter-spacing: 0; font-size: 13px; color: var(--ink); }
+  .field-note { font-size: 11px; color: var(--muted); text-transform: none; letter-spacing: 0; margin-top: 3px; line-height: 1.45; }
+
+  .contact-row { display: grid; grid-template-columns: 1fr 1fr auto; gap: 8px; margin-bottom: 8px; align-items: start; }
+  .contact-row input { margin-top: 0; }
+
+  .save-bar { position: sticky; bottom: 0; background: var(--paper); border-top: 1px solid var(--rule);
+    padding: 14px 0; display: flex; justify-content: space-between; align-items: center; gap: 14px;
+    font-family: "Helvetica Neue", Arial, sans-serif; }
+  .save-msg { font-size: 13px; color: var(--muted); }
+  .save-msg.err { color: #b8002a; }
+  .save-msg.ok { color: #1c7a34; }
+</style>
+</head>
+<body>
+
+<div class="topbar"><div class="topbar-inner"><div><a href="#" class="topbar-cta">Subscribe</a></div><div></div></div></div>
+
+<div class="masthead">
+  <div class="masthead-ornament left" aria-hidden="true"><img src="media/leaf.svg" alt="" width="60" height="30"></div>
+  <div class="masthead-ornament right" aria-hidden="true"><img src="media/leaf.svg" alt="" width="60" height="30"></div>
+  <h1><a href="index.html">The Student Times</a></h1>
+  <div class="dateline">YOUR SCHOOL</div>
+</div>
+
+<nav class="sectionnav">
+  <div class="sectionnav-inner"></div>
+</nav>
+
+<main class="container">
+  <div class="section-header brand-header">
+    <div>
+      <h2>Brand design</h2>
+      <p class="brand-subtitle">Site-wide look &amp; feel — not a content section. Changes here affect every page.</p>
+    </div>
+    <span class="see-all" id="welcome"></span>
+  </div>
+
+  <div id="no-access" class="account-prompt" style="display:none;">
+    You need <strong>editor</strong> access to change the paper's design.
+    <a href="#" id="prompt-preview">Enter editor preview.</a>
+  </div>
+
+  <div id="editor-view" style="display:none;">
+    <div class="ed-tabs">
+      <a href="editor.html">Articles</a>
+      <a href="editor-centerspread.html">Centerspread</a>
+      <a href="editor-sports.html">Sports stats</a>
+      <a href="editor-videos.html">Video</a>
+      <a href="editor-writers.html">Writers</a>
+      <a href="editor-ads.html">Ads</a>
+      <a href="editor-brand.html" class="ed-tab-brand active">Brand design</a>
+    </div>
+
+    <div class="scope-note">
+      <strong>These changes are saved in this browser only.</strong> They let you
+      see and fine-tune your design right away, but readers still see the original
+      design. To make it permanent for everyone, click <em>Download config</em> at
+      the bottom and send the file(s) to whoever manages your site — that is a
+      one-time step.
+    </div>
+
+    <div class="ed-form">
+
+      <!-- ── Names ─────────────────────────────────────────────────────── -->
+      <section class="bp">
+        <h3>Names</h3>
+        <p class="bp-hint">Shown in the masthead, the browser tab, and under the masthead.</p>
+        <label>Paper name
+          <input type="text" id="f-name" placeholder="The Riverside Register">
+        </label>
+        <div class="row-2">
+          <label>School
+            <input type="text" id="f-school" placeholder="Riverside High School">
+          </label>
+          <label>Tagline
+            <input type="text" id="f-tagline" placeholder="Student Press Since 1998">
+          </label>
+        </div>
+      </section>
+
+      <!-- ── Flourish ──────────────────────────────────────────────────── -->
+      <section class="bp">
+        <h3>Masthead flourish</h3>
+        <p class="bp-hint">
+          The artwork on either side of your paper's name. Upload your own — a crest,
+          a logo, a drawing. Your file keeps its own colors, so it looks exactly as
+          you made it. SVG stays sharpest; PNG, JPG, and WEBP also work.
+        </p>
+
+        <div class="orn-preview" id="orn-preview" aria-live="polite"></div>
+        <p class="field-note" style="margin-bottom:14px;">Preview — this is how it sits beside the masthead.</p>
+
+        <label>Upload artwork
+          <input type="file" id="f-orn-file" accept="image/svg+xml,image/png,image/jpeg,image/webp,image/avif">
+          <span class="field-note">Keep it under 500 KB if you can. Large files can fill up browser storage.</span>
+        </label>
+
+        <div class="row-2">
+          <label>Width on screen
+            <input type="number" id="f-orn-width" min="16" max="240" step="1">
+            <span class="field-note">In pixels. Height follows your artwork's own shape.</span>
+          </label>
+          <label>Strength
+            <input type="number" id="f-orn-opacity" min="0" max="100" step="5">
+            <span class="field-note">0–100. Lower is more subtle.</span>
+          </label>
+        </div>
+
+        <div class="checkbox-row">
+          <input type="checkbox" id="f-orn-mirror">
+          <label for="f-orn-mirror">Mirror the right-hand copy so the two face each other</label>
+        </div>
+        <p class="field-note" style="margin:-8px 0 14px;">
+          Good for a leaf or a vine. Turn this <strong>off</strong> for a crest or logo
+          with text — it reads backwards when flipped.
+        </p>
+
+        <button class="btn-ghost" type="button" id="orn-remove">Remove flourish</button>
+        <button class="btn-ghost" type="button" id="orn-revert">Back to the leaf</button>
+      </section>
+
+      <!-- ── Color ─────────────────────────────────────────────────────── -->
+      <section class="bp">
+        <h3>School color</h3>
+        <p class="bp-hint">
+          Used for the masthead rule, links, and buttons. Your flourish is not
+          affected — it always keeps its own colors.
+        </p>
+        <label for="f-accent">Accent</label>
+        <span class="swatch-row">
+          <input type="color" id="f-accent-picker" aria-label="Pick accent color">
+          <input type="text" id="f-accent" placeholder="#1d4e89" spellcheck="false" style="max-width:160px;">
+        </span>
+        <span class="field-note">Leave empty to go back to the original color.</span>
+      </section>
+
+      <!-- ── Favicon ───────────────────────────────────────────────────── -->
+      <section class="bp">
+        <h3>Tab icon</h3>
+        <p class="bp-hint">The small badge in the browser tab. Letters on a colored square.</p>
+        <div class="row-2">
+          <label>Letters
+            <input type="text" id="f-fav-initials" maxlength="2" placeholder="RR">
+            <span class="field-note">One or two.</span>
+          </label>
+          <div>
+            <label for="f-fav-bg">Background</label>
+            <span class="swatch-row">
+              <input type="color" id="f-fav-bg-picker" aria-label="Pick tab icon background">
+              <input type="text" id="f-fav-bg" placeholder="#1d4e89" spellcheck="false">
+            </span>
+          </div>
+        </div>
+      </section>
+
+      <!-- ── Footer ────────────────────────────────────────────────────── -->
+      <section class="bp">
+        <h3>Footer contacts</h3>
+        <p class="bp-hint">Shown at the bottom of every page.</p>
+        <div id="contacts-list"></div>
+        <button class="btn-ghost" type="button" id="add-contact">+ Add contact</button>
+      </section>
+
+      <div class="save-bar">
+        <div>
+          <button class="btn-primary" type="button" id="save-all">Save design</button>
+          <button class="btn-ghost" type="button" id="download-config" style="margin-left:6px;">Download config</button>
+          <button class="btn-danger" type="button" id="reset-all" style="margin-left:6px;">Reset everything</button>
+        </div>
+        <span class="save-msg" id="save-msg" role="status" aria-live="polite"></span>
+      </div>
+
+    </div>
+  </div>
+</main>
+
+<footer></footer>
+
+<script src="submissions.js"></script>
+<script src="auth.js"></script>
+<script>
+(function () {
+  const view = document.getElementById("editor-view");
+  const noAccess = document.getElementById("no-access");
+  const welcome = document.getElementById("welcome");
+  const msg = document.getElementById("save-msg");
+
+  const DEFAULT_ORNAMENT = { file: "media/leaf.svg", width: 72, mirror: true, opacity: 0.55 };
+  const MAX_UPLOAD = 2 * 1024 * 1024;
+
+  function gate() {
+    const user = WLAuth.currentUser();
+    if (!user || !WLAuth.isEditor()) {
+      view.style.display = "none"; noAccess.style.display = "block"; welcome.textContent = "";
+      return false;
+    }
+    noAccess.style.display = "none"; view.style.display = "block";
+    welcome.textContent = `Signed in as ${user}`;
+    return true;
+  }
+
+  function say(text, kind) {
+    msg.textContent = text;
+    msg.className = "save-msg" + (kind ? " " + kind : "");
+  }
+
+  // ── Form state ──────────────────────────────────────────────────────────
+  //  Held here so the preview can update without saving on every keystroke.
+  let ornament = null;
+  let dirty = false;   // unsaved edits in this tab
+
+  const el = id => document.getElementById(id);
+
+  function normalizeOrnament(o) {
+    if (!o) return Object.assign({}, DEFAULT_ORNAMENT);
+    if (typeof o === "string") return Object.assign({}, DEFAULT_ORNAMENT, { file: o });
+    return {
+      file: typeof o.file === "string" ? o.file : "",
+      width: Number(o.width) > 0 ? Number(o.width) : 72,
+      mirror: o.mirror !== false,
+      opacity: Number(o.opacity) >= 0 ? Number(o.opacity) : 0.55,
+    };
+  }
+
+  function renderOrnamentPreview() {
+    const box = el("orn-preview");
+    box.innerHTML = "";
+    if (!ornament.file) {
+      box.innerHTML = '<span class="orn-empty">No flourish — the masthead shows just your paper\'s name.</span>';
+      return;
+    }
+    const isImage = /^data:image\//i.test(ornament.file) || /\.(svg|png|jpe?g|webp|avif)$/i.test(ornament.file);
+    ["left", "right"].forEach(side => {
+      const slot = document.createElement("div");
+      slot.className = "slot" + (side === "right" && ornament.mirror ? " mirrored" : "");
+      slot.style.opacity = String(ornament.opacity);
+      if (isImage) {
+        const img = document.createElement("img");
+        img.alt = "";
+        img.src = ornament.file;
+        img.style.width = ornament.width + "px";
+        img.onerror = () => { slot.innerHTML = '<span class="orn-empty">Could not load that file.</span>'; };
+        slot.appendChild(img);
+      } else {
+        const span = document.createElement("span");
+        span.textContent = ornament.file;
+        slot.appendChild(span);
+      }
+      box.appendChild(slot);
+    });
+  }
+
+  function renderContacts(contacts) {
+    const list = el("contacts-list");
+    list.innerHTML = "";
+    (contacts || []).forEach((c, i) => {
+      const row = document.createElement("div");
+      row.className = "contact-row";
+      row.innerHTML =
+        '<input type="text" placeholder="Editor-in-Chief">' +
+        '<input type="email" placeholder="eic@school.org">' +
+        '<button class="btn-ghost" type="button">Remove</button>';
+      row.children[0].value = c.title || "";
+      row.children[1].value = c.email || "";
+      // Name each control by its row, so a screen reader doesn't hear the same
+      // "Role / Email / Remove" three times over with no way to tell them apart.
+      const who = c.title || `contact ${i + 1}`;
+      row.children[0].setAttribute("aria-label", `Role for ${who}`);
+      row.children[1].setAttribute("aria-label", `Email for ${who}`);
+      row.children[2].setAttribute("aria-label", `Remove ${who}`);
+      row.children[2].addEventListener("click", () => { row.remove(); });
+      list.appendChild(row);
+    });
+  }
+
+  function readContacts() {
+    return [...document.querySelectorAll("#contacts-list .contact-row")]
+      .map(r => ({ title: r.children[0].value.trim(), email: r.children[1].value.trim() }))
+      .filter(c => c.title || c.email);
+  }
+
+  // Load the live merged config into the form.
+  function loadForm() {
+    const cfg = WLBrand.get();
+    el("f-name").value = cfg.name || "";
+    el("f-school").value = cfg.school || "";
+    el("f-tagline").value = cfg.tagline || "";
+
+    const accent = (cfg.colors && cfg.colors.accent) || "#2e7d32";
+    el("f-accent").value = accent;
+    syncPicker("f-accent-picker", accent);
+
+    const fav = (cfg.favicon && typeof cfg.favicon === "object") ? cfg.favicon : {};
+    el("f-fav-initials").value = fav.initials || "";
+    const favBg = fav.bg || accent;
+    el("f-fav-bg").value = favBg;
+    syncPicker("f-fav-bg-picker", favBg);
+
+    ornament = normalizeOrnament(cfg.ornament);
+    el("f-orn-width").value = ornament.width;
+    el("f-orn-opacity").value = Math.round(ornament.opacity * 100);
+    el("f-orn-mirror").checked = ornament.mirror;
+    renderOrnamentPreview();
+
+    renderContacts(cfg.contacts);
+    dirty = false;
+  }
+
+  // Any edit anywhere in the form counts — used to avoid silently discarding
+  // (or silently clobbering) work when another tab saves.
+  document.getElementById("editor-view").addEventListener("input", () => { dirty = true; });
+  document.getElementById("editor-view").addEventListener("change", () => { dirty = true; });
+  window.addEventListener("beforeunload", (e) => {
+    if (!dirty) return;
+    e.preventDefault();
+    e.returnValue = "";
+  });
+
+  // Another Design tab saved. Only reload the form if this tab has nothing to
+  // lose; otherwise warn rather than silently overwrite either side.
+  window.addEventListener("storage", (e) => {
+    if (e.key !== "wl_brand") return;
+    if (dirty) {
+      say("The design was just changed in another tab. Saving here will overwrite it — or reload this page to see those changes.", "err");
+      return;
+    }
+    loadForm();
+    say("The design was changed in another tab. This page is now showing it.", "");
+  });
+
+  // <input type="color"> only accepts #rrggbb — never feed it a stray value.
+  function syncPicker(pickerId, value) {
+    if (/^#[0-9a-f]{6}$/i.test(value)) el(pickerId).value = value;
+  }
+
+  function bindColorPair(textId, pickerId) {
+    el(pickerId).addEventListener("input", () => { el(textId).value = el(pickerId).value; });
+    el(textId).addEventListener("input", () => syncPicker(pickerId, el(textId).value.trim()));
+  }
+  bindColorPair("f-accent", "f-accent-picker");
+  bindColorPair("f-fav-bg", "f-fav-bg-picker");
+
+  // ── Flourish controls ───────────────────────────────────────────────────
+  el("f-orn-file").addEventListener("change", () => {
+    const f = el("f-orn-file").files[0];
+    if (!f) return;
+    if (f.size > MAX_UPLOAD) {
+      if (!confirm("That file is over 2 MB. Browser storage may fill up fast. Continue?")) {
+        el("f-orn-file").value = ""; return;
+      }
+    }
+    const reader = new FileReader();
+    reader.onload = e => {
+      ornament.file = e.target.result;      // base64 data URL
+      renderOrnamentPreview();
+      say("Artwork loaded — click Save design to keep it.", "");
+    };
+    reader.onerror = () => say("Could not read that file.", "err");
+    reader.readAsDataURL(f);
+  });
+
+  el("f-orn-width").addEventListener("input", () => {
+    const v = Number(el("f-orn-width").value);
+    if (v > 0) { ornament.width = v; renderOrnamentPreview(); }
+  });
+  el("f-orn-opacity").addEventListener("input", () => {
+    const v = Number(el("f-orn-opacity").value);
+    if (v >= 0 && v <= 100) { ornament.opacity = v / 100; renderOrnamentPreview(); }
+  });
+  el("f-orn-mirror").addEventListener("change", () => {
+    ornament.mirror = el("f-orn-mirror").checked;
+    renderOrnamentPreview();
+  });
+  el("orn-remove").addEventListener("click", () => {
+    ornament.file = "";
+    el("f-orn-file").value = "";
+    renderOrnamentPreview();
+    say("Flourish removed — click Save design to keep it.", "");
+  });
+  el("orn-revert").addEventListener("click", () => {
+    ornament = Object.assign({}, DEFAULT_ORNAMENT);
+    el("f-orn-file").value = "";
+    el("f-orn-width").value = ornament.width;
+    el("f-orn-opacity").value = Math.round(ornament.opacity * 100);
+    el("f-orn-mirror").checked = ornament.mirror;
+    renderOrnamentPreview();
+    say("Back to the leaf — click Save design to keep it.", "");
+  });
+
+  el("add-contact").addEventListener("click", () => {
+    renderContacts(readContacts().concat([{ title: "", email: "" }]));
+  });
+
+  // ── Save ────────────────────────────────────────────────────────────────
+  function validate() {
+    const accent = el("f-accent").value.trim();
+    if (accent && !/^#[0-9a-f]{3,8}$/i.test(accent)) return "That accent color isn't a valid hex code (like #1d4e89).";
+    const favBg = el("f-fav-bg").value.trim();
+    if (favBg && !/^#[0-9a-f]{3,8}$/i.test(favBg)) return "That tab icon color isn't a valid hex code (like #1d4e89).";
+    const bad = readContacts().find(c => c.email && !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(c.email));
+    if (bad) return `"${bad.email}" doesn't look like an email address.`;
+    return null;
+  }
+
+  // An empty field means "use the config.js default", never "store a blank" —
+  // otherwise emptying a box would strand a value the form can't undo.
+  function formPatch() {
+    return {
+      name: el("f-name").value.trim() || undefined,
+      school: el("f-school").value.trim() || undefined,
+      tagline: el("f-tagline").value.trim() || undefined,
+      colors: { accent: el("f-accent").value.trim() || undefined },
+      ornament: Object.assign({}, ornament),
+      favicon: {
+        initials: el("f-fav-initials").value.trim().toUpperCase(),
+        bg: el("f-fav-bg").value.trim() || undefined,
+        fg: "#ffffff",
+      },
+      contacts: readContacts(),
+    };
+  }
+
+  // Returns true when the design is safely in storage.
+  function commit() {
+    const err = validate();
+    if (err) { say(err, "err"); return false; }
+    const res = WLBrand.save(formPatch());
+    if (res.ok) { dirty = false; return true; }
+    say(res.error === "quota"
+      ? "Your browser is out of storage — the artwork is probably too big. Try an SVG or a smaller image."
+      : "Could not save. Your browser may be blocking storage.", "err");
+    return false;
+  }
+
+  el("save-all").addEventListener("click", () => {
+    if (commit()) say("Saved. Every page in this browser now uses your design.", "ok");
+  });
+
+  el("reset-all").addEventListener("click", () => {
+    if (!confirm("Put everything back to the original design? Your uploaded artwork will be removed.")) return;
+    WLBrand.reset();
+    loadForm();
+    say("Back to the original design.", "ok");
+  });
+
+  // ── Download ────────────────────────────────────────────────────────────
+  function download(name, blob) {
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url; a.download = name;
+    document.body.appendChild(a); a.click(); a.remove();
+    URL.revokeObjectURL(url);
+  }
+
+  function dataUrlToBlob(dataUrl) {
+    const [head, body] = dataUrl.split(",");
+    const mime = (/^data:([^;]+)/.exec(head) || [])[1] || "application/octet-stream";
+    if (/base64/i.test(head)) {
+      const bin = atob(body);
+      const bytes = new Uint8Array(bin.length);
+      for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+      return new Blob([bytes], { type: mime });
+    }
+    return new Blob([decodeURIComponent(body)], { type: mime });
+  }
+
+  el("download-config").addEventListener("click", () => {
+    // Export reads from storage, so save first — otherwise an editor who
+    // uploads artwork and clicks Download straight away (the two buttons sit
+    // side by side) would ship the PREVIOUS design to every reader while the
+    // page cheerfully reported success.
+    if (!commit()) return;
+    download("config.js", new Blob([WLBrand.exportConfigSource()], { type: "text/javascript" }));
+    const art = WLBrand.exportArtwork();
+    if (art) download(art.name, dataUrlToBlob(art.dataUrl));
+    say(art
+      ? `Saved, and downloaded config.js and ${art.name}. Send both to whoever manages your site.`
+      : "Saved, and downloaded config.js. Send it to whoever manages your site.", "ok");
+  });
+
+  document.getElementById("prompt-preview").addEventListener("click", (e) => { e.preventDefault(); WLAuth.enableEditorPreview(); });
+
+  function renderAll() {
+    if (!gate()) return;
+    loadForm();
+  }
+  document.addEventListener("wl-auth-change", renderAll);
+  renderAll();
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Writer — The Student Times</title>
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Old+Standard+TT:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css" />
+<script src="config.js"></script>
+<script src="brand-store.js"></script>
+<script src="brand.js"></script>
+<script src="sections-store.js"></script>
+<script src="nav.js"></script>
+</head>
+<body>
+
+<div class="topbar"><div class="topbar-inner"><div><a href="#" class="topbar-cta">Subscribe</a></div><div></div></div></div>
+
+<div class="masthead">
+  <div class="masthead-ornament left" aria-hidden="true"><img src="media/leaf.svg" alt="" width="60" height="30"></div>
+  <div class="masthead-ornament right" aria-hidden="true"><img src="media/leaf.svg" alt="" width="60" height="30"></div>
+  <h1><a href="index.html">The Student Times</a></h1>
+  <div class="dateline" data-wl-text="writer-dateline">YOUR SCHOOL</div>
+</div>
+
+<nav class="sectionnav">
+  <div class="sectionnav-inner"></div>
+</nav>
+
+<main class="container">
+  <a href="staff.html" class="back-link">← Back to all staff</a>
+
+  <div id="not-found" style="display:none;">
+    <h2>Writer not found</h2>
+    <p>We couldn't find that writer. <a href="staff.html">Return to staff</a>.</p>
+  </div>
+
+  <div id="writer-body" style="display:none;">
+    <div class="writer-hero">
+      <div class="writer-text">
+        <div class="kicker">Contributor</div>
+        <h1 id="writer-name"></h1>
+        <div class="writer-year" id="writer-count"></div>
+      </div>
+    </div>
+
+    <section class="writer-articles-section">
+      <h2 class="writer-articles-heading">All articles</h2>
+      <ul class="writer-articles-list" id="writer-articles"></ul>
+    </section>
+  </div>
+</main>
+
+<footer>© 2026 The Student Times · Your School Student Publication · <a href="staff.html">Staff</a> · <a href="tip.html">Pitch a story</a><br>Online Editor-in-Chief: <a href="mailto:editor@example.org">editor@example.org</a> · Online Managing Editor: <a href="mailto:managing@example.org">managing@example.org</a></footer>
+
+<script src="articles.js"></script>
+<script src="articles-store.js"></script>
+<script src="writers.js"></script>
+<script src="writers-store.js"></script>
+<script src="submissions.js"></script>
+<script src="auth.js"></script>
+<script src="script.js"></script>
+<script src="text-editor.js"></script>
+<script>
+(function () {
+  function escapeHtml(s) {
+    return String(s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+  }
+
+  const params = new URLSearchParams(location.search);
+  const slug = params.get("slug");
+  if (!slug) {
+    document.getElementById("not-found").style.display = "block";
+    document.title = "Writer not found — The Student Times";
+    return;
+  }
+
+  const entry = (window.WLWriters && WLWriters.getBySlug) ? WLWriters.getBySlug(slug) : (window.WL_WRITERS || {})[slug];
+  const all = WLArticles.getAll();
+  // Match any article this writer contributed to — sole author or co-author.
+  const articles = Object.entries(all)
+    .map(([id, a]) => ({ id, ...a }))
+    .filter(a => WL_articleAuthors(a).some(n => WL_writerSlug(n) === slug))
+    .sort((a, b) => (Date.parse(b.date) || 0) - (Date.parse(a.date) || 0));
+
+  // The writer's name as spelled on their articles (the matching author),
+  // preferring any override in the Writers directory.
+  const nameFromArticle = articles[0]
+    ? WL_articleAuthors(articles[0]).find(n => WL_writerSlug(n) === slug)
+    : null;
+  const displayName = (entry && entry.name) || nameFromArticle || slug;
+  if (articles.length === 0) {
+    document.getElementById("not-found").style.display = "block";
+    document.title = "Writer not found — The Student Times";
+    return;
+  }
+
+  document.getElementById("writer-body").style.display = "block";
+  document.title = `${displayName} — The Student Times`;
+
+  document.getElementById("writer-name").textContent = displayName;
+  document.getElementById("writer-count").textContent =
+    `${articles.length} article${articles.length === 1 ? "" : "s"}`;
+
+  // Article list
+  const list = document.getElementById("writer-articles");
+  if (articles.length === 0) {
+    list.innerHTML = `<li class="search-empty">No articles yet.</li>`;
+  } else {
+    list.innerHTML = articles.map(a => `
+      <li>
+        <div class="kicker">${escapeHtml(a.section)}</div>
+        <h3><a href="article.html?id=${encodeURIComponent(a.id)}">${escapeHtml(a.title)}</a></h3>
+        <p>${escapeHtml(a.deck)}</p>
+        <div class="byline">${escapeHtml(a.date)}</div>
+      </li>
+    `).join("");
+  }
+})();
+</script>
+</body>
+</html>

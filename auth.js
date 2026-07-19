@@ -1,9 +1,26 @@
-// Woodley Leaves — demo auth + bookmarks + puzzle stats.
-// All data lives in localStorage (per-browser). Not secure — for mockup only.
+// Student Times — identity adapter + reader features (comments, subscribe).
+//
+// IDENTITY MODEL
+//  • HOSTED (production): the host platform (e.g. Finalsite) authenticates the
+//    school community and injects, before this script runs:
+//        window.WL_CONTEXT = { signedIn: true,
+//                              user: { name: "Jane Doe", id: "jdoe" },
+//                              role: "editor" | "reader" };
+//    Who may SEE the paper ("students & faculty only") is enforced by the host's
+//    page-audience restriction. Who is an EDITOR is the host role a school
+//    administrator assigns, mapped to role:"editor". We simply trust WL_CONTEXT.
+//  • STANDALONE (demo/preview): no context is injected, so we fall back to
+//    per-browser demo accounts in localStorage, plus a one-click "editor preview"
+//    so the dashboard can be shown without the host. No codes, nothing secure.
 
 (function () {
   const LS_CURRENT = "wl_current_user";
   const LS_USERS = "wl_users";
+  const LS_PREVIEW = "wl_preview_role"; // demo only: "editor" forces editor preview
+
+  // Identity injected by the host platform (Finalsite). Present only in production.
+  const CTX = window.WL_CONTEXT || null;
+  const HOSTED = !!(CTX && CTX.signedIn);
 
   function getUsers() {
     try { return JSON.parse(localStorage.getItem(LS_USERS) || "{}"); }
@@ -16,43 +33,34 @@
     else localStorage.removeItem(LS_CURRENT);
   }
 
-  // Anyone signing up as editor must enter this code. Change it to rotate access.
-  const EDITOR_CLUB_CODE = "LEAVES2026";
+  // Resolve the active identity. In hosted mode the host is the source of truth;
+  // in standalone/demo mode we use the localStorage account plus an optional
+  // "editor preview" override. Returns { hosted, user, role } (user may be null).
+  function resolved() {
+    if (HOSTED) {
+      const name = (CTX.user && (CTX.user.name || CTX.user.id)) || "Member";
+      return { hosted: true, user: name, role: CTX.role === "editor" ? "editor" : "reader" };
+    }
+    if (localStorage.getItem(LS_PREVIEW) === "editor") {
+      return { hosted: false, user: getCurrentUser() || "Editor Preview", role: "editor" };
+    }
+    const u = getCurrentUser();
+    const ud = u ? (getUsers()[u] || null) : null;
+    return { hosted: false, user: u, role: ud ? (ud.role || "reader") : null };
+  }
 
   function defaultUserData() {
     return {
       password: "",
       role: "reader",          // "reader" or "editor"
       created: Date.now(),
-      bookmarks: [],
-      stats: {
-        wordle: { played: 0, won: 0, currentStreak: 0, maxStreak: 0, distribution: [0,0,0,0,0,0] },
-        crossword: { attempted: 0, completed: 0, bestTime: null }
-      }
     };
-  }
-
-  function getUserData() {
-    const u = getCurrentUser();
-    if (!u) return null;
-    const users = getUsers();
-    return users[u] || null;
-  }
-  function updateUserData(fn) {
-    const u = getCurrentUser();
-    if (!u) return;
-    const users = getUsers();
-    if (!users[u]) users[u] = defaultUserData();
-    // merge in case old data is missing fields
-    const merged = { ...defaultUserData(), ...users[u] };
-    merged.stats = { ...defaultUserData().stats, ...(users[u].stats || {}) };
-    users[u] = fn(merged);
-    saveUsers(users);
   }
 
   // ===== Public API =====
   const WLAuth = {
-    currentUser: getCurrentUser,
+    hosted: HOSTED,
+    currentUser() { return resolved().user; },
 
     signUp(username, password, opts) {
       opts = opts || {};
@@ -61,9 +69,6 @@
       if (!password) throw new Error("Password is required");
       if (username.length < 2) throw new Error("Username must be at least 2 characters");
       if (password.length < 4) throw new Error("Password must be at least 4 characters");
-      if (opts.role === "editor" && opts.clubCode !== EDITOR_CLUB_CODE) {
-        throw new Error("Invalid editor club code");
-      }
       const users = getUsers();
       if (users[username]) throw new Error("That username is taken");
       users[username] = defaultUserData();
@@ -88,84 +93,35 @@
       renderTopbar();
     },
 
-    currentRole() {
-      const ud = getUserData();
-      return ud ? (ud.role || "reader") : null;
-    },
+    currentRole() { return resolved().role; },
 
-    isEditor() {
-      const ud = getUserData();
-      return !!ud && ud.role === "editor";
-    },
+    isEditor() { return resolved().role === "editor"; },
 
     signOut() {
+      if (HOSTED) return; // host owns the session
       setCurrentUser(null);
+      localStorage.removeItem(LS_PREVIEW);
       renderTopbar();
     },
 
-    toggleBookmark(id, title, section) {
-      if (!getCurrentUser()) return { needsAuth: true };
-      let added = false;
-      updateUserData(u => {
-        const idx = u.bookmarks.findIndex(b => b.id === id);
-        if (idx >= 0) u.bookmarks.splice(idx, 1);
-        else { u.bookmarks.push({ id, title, section, savedAt: Date.now() }); added = true; }
-        return u;
-      });
-      return { added };
+    // Demo-only: flip in/out of the editor experience without the host platform.
+    enableEditorPreview() {
+      if (HOSTED) return;
+      localStorage.setItem(LS_PREVIEW, "editor");
+      renderTopbar();
+    },
+    disableEditorPreview() {
+      localStorage.removeItem(LS_PREVIEW);
+      renderTopbar();
     },
 
-    isBookmarked(id) {
-      const ud = getUserData();
-      if (!ud) return false;
-      return ud.bookmarks.some(b => b.id === id);
-    },
-
-    getBookmarks() {
-      const ud = getUserData();
-      return ud ? ud.bookmarks : [];
-    },
-
-    getStats() {
-      const ud = getUserData();
-      return ud ? ud.stats : null;
-    },
-
-    recordWordleResult(won, guessesUsed) {
-      if (!getCurrentUser()) return;
-      updateUserData(u => {
-        u.stats.wordle.played++;
-        if (won) {
-          u.stats.wordle.won++;
-          u.stats.wordle.currentStreak++;
-          u.stats.wordle.maxStreak = Math.max(u.stats.wordle.maxStreak, u.stats.wordle.currentStreak);
-          if (guessesUsed >= 1 && guessesUsed <= 6) u.stats.wordle.distribution[guessesUsed - 1]++;
-        } else {
-          u.stats.wordle.currentStreak = 0;
-        }
-        return u;
-      });
-    },
-
-    recordCrosswordAttempt() {
-      if (!getCurrentUser()) return;
-      updateUserData(u => { u.stats.crossword.attempted++; return u; });
-    },
-    recordCrosswordComplete(timeSeconds) {
-      if (!getCurrentUser()) return;
-      updateUserData(u => {
-        u.stats.crossword.completed++;
-        if (u.stats.crossword.bestTime === null || timeSeconds < u.stats.crossword.bestTime) {
-          u.stats.crossword.bestTime = timeSeconds;
-        }
-        return u;
-      });
-    },
-
-    showSignIn() { showModal("signin"); },
-    showSignUp() { showModal("signup"); },
-    showEditorSignIn() { showModal("editor-signin"); },
-    showEditorSignUp() { showModal("editor-signup"); }
+    // Reader login is handled by the host platform (Finalsite); there is no
+    // in-app reader sign-in. Kept as no-ops so any legacy caller won't throw.
+    showSignIn() {},
+    showSignUp() {}
+    // Editor rights come from the school-assigned role in production (WL_CONTEXT),
+    // or from the demo-only editor preview (enableEditorPreview) when standalone.
+    // There is no separate editor sign-in.
   };
   window.WLAuth = WLAuth;
 
@@ -189,23 +145,37 @@
     ensureTopbarSlot();
     const el = document.getElementById("wl-account");
     if (!el) return;
-    const user = getCurrentUser();
-    const ud = getUserData();
-    const role = ud ? (ud.role || "reader") : null;
-    if (user) {
-      const homeLink = role === "editor"
-        ? `<a href="editor.html">Editor Dashboard</a>`
-        : `<a href="account.html">My Account</a>`;
-      el.innerHTML = `<span class="topbar-user">${escapeHtml(user)}</span> · ${homeLink} · <a href="#" id="wl-signout">Sign Out</a>`;
-      const sb = document.getElementById("wl-signout");
-      if (sb) sb.addEventListener("click", (e) => { e.preventDefault(); WLAuth.signOut(); });
-    } else {
-      el.innerHTML = `<a href="#" id="wl-signin">Sign In</a> · <a href="#" id="wl-editor-signin">Editor Sign In</a>`;
-      document.getElementById("wl-signin").addEventListener("click", (e) => { e.preventDefault(); showModal("signin"); });
-      document.getElementById("wl-editor-signin").addEventListener("click", (e) => { e.preventDefault(); showModal("editor-signin"); });
+    const id = resolved();
+    const parts = [];
+
+    if (id.user) {
+      parts.push(`<span class="topbar-user">${escapeHtml(id.user)}</span>`);
+      if (id.role === "editor") {
+        parts.push(`<a href="editor.html" class="wl-account-primary">Editor Dashboard</a>`);
+      }
+      if (!HOSTED) {
+        parts.push(id.role === "editor"
+          ? `<a href="#" id="wl-preview-off" class="wl-demo-link">Exit editor preview</a>`
+          : `<a href="#" id="wl-preview-on" class="wl-demo-link">Preview as editor</a>`);
+      }
+    } else if (!HOSTED) {
+      // Standalone demo: one-click editor preview. Reader login is handled by
+      // the host platform (Finalsite) in production — there is no in-app sign-in.
+      parts.push(`<a href="#" id="wl-preview-on" class="wl-demo-link">Editor preview</a>`);
     }
-    // fire a custom event so pages can re-render bookmark UI etc.
-    document.dispatchEvent(new CustomEvent("wl-auth-change", { detail: { user, role } }));
+    // Hosted + not signed in: the host platform handles login, so show nothing.
+
+    el.innerHTML = parts.join(" · ");
+
+    const on = (elId, fn) => {
+      const e = document.getElementById(elId);
+      if (e) e.addEventListener("click", (ev) => { ev.preventDefault(); fn(); });
+    };
+    on("wl-preview-on", () => WLAuth.enableEditorPreview());
+    on("wl-preview-off", () => WLAuth.disableEditorPreview());
+
+    // fire a custom event so pages can re-render account / editor UI etc.
+    document.dispatchEvent(new CustomEvent("wl-auth-change", { detail: { user: id.user, role: id.role } }));
   }
 
   function escapeHtml(s) {
@@ -213,130 +183,54 @@
   }
 
   // ===== Modal =====
+  let modalLastFocused = null;
+
   function createModal() {
     const overlay = document.createElement("div");
     overlay.className = "wl-modal-overlay";
     overlay.id = "wl-modal-overlay";
+    overlay.setAttribute("role", "dialog");
+    overlay.setAttribute("aria-modal", "true");
+    overlay.setAttribute("aria-label", "Account");
     overlay.innerHTML = `
-      <div class="wl-modal">
-        <button class="wl-modal-close" id="wl-modal-close" aria-label="Close">×</button>
+      <div class="wl-modal" role="document">
+        <button class="wl-modal-close" id="wl-modal-close" aria-label="Close dialog">×</button>
         <div id="wl-modal-content"></div>
       </div>
     `;
     document.body.appendChild(overlay);
     overlay.addEventListener("click", (e) => { if (e.target === overlay) hideModal(); });
     document.getElementById("wl-modal-close").addEventListener("click", hideModal);
-  }
 
-  function showModal(mode) {
-    if (!document.getElementById("wl-modal-overlay")) createModal();
-    const c = document.getElementById("wl-modal-content");
-
-    if (mode === "signin") {
-      c.innerHTML = `
-        <h2>Reader Sign In</h2>
-        <p class="wl-demo-note">For students who want to bookmark articles and track puzzle stats. Demo accounts are stored in your browser only.</p>
-        <label>Username <input type="text" id="wl-u" autocomplete="username"></label>
-        <label>Password <input type="password" id="wl-p" autocomplete="current-password"></label>
-        <div class="wl-error" id="wl-err"></div>
-        <button class="wl-submit" id="wl-go">Sign In</button>
-        <div class="wl-alt">No account? <a href="#" id="wl-to-signup">Sign up</a> &nbsp;·&nbsp; <a href="#" id="wl-to-editor">Editor sign in</a></div>
-      `;
-      document.getElementById("wl-go").addEventListener("click", () => {
-        try {
-          WLAuth.signIn(document.getElementById("wl-u").value, document.getElementById("wl-p").value);
-          hideModal();
-        } catch (err) { document.getElementById("wl-err").textContent = err.message; }
-      });
-      document.getElementById("wl-to-signup").addEventListener("click", (e) => { e.preventDefault(); showModal("signup"); });
-      document.getElementById("wl-to-editor").addEventListener("click", (e) => { e.preventDefault(); showModal("editor-signin"); });
-      document.getElementById("wl-u").focus();
-    }
-
-    else if (mode === "signup") {
-      c.innerHTML = `
-        <h2>Create reader account</h2>
-        <p class="wl-demo-note">Demo accounts are stored in your browser only. Don't use a real password.</p>
-        <label>Username <input type="text" id="wl-u" autocomplete="username"></label>
-        <label>Password <input type="password" id="wl-p" autocomplete="new-password"></label>
-        <label>Confirm <input type="password" id="wl-p2" autocomplete="new-password"></label>
-        <div class="wl-error" id="wl-err"></div>
-        <button class="wl-submit" id="wl-go">Create account</button>
-        <div class="wl-alt">Have an account? <a href="#" id="wl-to-signin">Sign in</a></div>
-      `;
-      document.getElementById("wl-go").addEventListener("click", () => {
-        const p = document.getElementById("wl-p").value;
-        const p2 = document.getElementById("wl-p2").value;
-        if (p !== p2) { document.getElementById("wl-err").textContent = "Passwords don't match"; return; }
-        try {
-          WLAuth.signUp(document.getElementById("wl-u").value, p, { role: "reader" });
-          hideModal();
-        } catch (err) { document.getElementById("wl-err").textContent = err.message; }
-      });
-      document.getElementById("wl-to-signin").addEventListener("click", (e) => { e.preventDefault(); showModal("signin"); });
-      document.getElementById("wl-u").focus();
-    }
-
-    else if (mode === "editor-signin") {
-      c.innerHTML = `
-        <h2>Editor Sign In</h2>
-        <p class="wl-demo-note">For Leaves staff. Editors can add and edit articles from the dashboard.</p>
-        <label>Username <input type="text" id="wl-u" autocomplete="username"></label>
-        <label>Password <input type="password" id="wl-p" autocomplete="current-password"></label>
-        <div class="wl-error" id="wl-err"></div>
-        <button class="wl-submit" id="wl-go">Sign In</button>
-        <div class="wl-alt">New editor? <a href="#" id="wl-to-editor-signup">Create an editor account</a> &nbsp;·&nbsp; <a href="#" id="wl-to-reader">Reader sign in</a></div>
-      `;
-      document.getElementById("wl-go").addEventListener("click", () => {
-        try {
-          WLAuth.signIn(document.getElementById("wl-u").value, document.getElementById("wl-p").value, { requireEditor: true });
-          hideModal();
-          if (location.pathname.endsWith("editor.html")) location.reload();
-          else location.href = "editor.html";
-        } catch (err) { document.getElementById("wl-err").textContent = err.message; }
-      });
-      document.getElementById("wl-to-editor-signup").addEventListener("click", (e) => { e.preventDefault(); showModal("editor-signup"); });
-      document.getElementById("wl-to-reader").addEventListener("click", (e) => { e.preventDefault(); showModal("signin"); });
-      document.getElementById("wl-u").focus();
-    }
-
-    else if (mode === "editor-signup") {
-      c.innerHTML = `
-        <h2>Create editor account</h2>
-        <p class="wl-demo-note">Editors need the club code from the editor-in-chief. Don't use a real password.</p>
-        <label>Username <input type="text" id="wl-u" autocomplete="username"></label>
-        <label>Password <input type="password" id="wl-p" autocomplete="new-password"></label>
-        <label>Confirm <input type="password" id="wl-p2" autocomplete="new-password"></label>
-        <label>Club code <input type="text" id="wl-cc"></label>
-        <div class="wl-error" id="wl-err"></div>
-        <button class="wl-submit" id="wl-go">Create editor account</button>
-        <div class="wl-alt">Have an editor account? <a href="#" id="wl-to-editor-signin">Sign in</a></div>
-      `;
-      document.getElementById("wl-go").addEventListener("click", () => {
-        const p = document.getElementById("wl-p").value;
-        const p2 = document.getElementById("wl-p2").value;
-        const cc = document.getElementById("wl-cc").value;
-        if (p !== p2) { document.getElementById("wl-err").textContent = "Passwords don't match"; return; }
-        try {
-          WLAuth.signUp(document.getElementById("wl-u").value, p, { role: "editor", clubCode: cc });
-          hideModal();
-          location.href = "editor.html";
-        } catch (err) { document.getElementById("wl-err").textContent = err.message; }
-      });
-      document.getElementById("wl-to-editor-signin").addEventListener("click", (e) => { e.preventDefault(); showModal("editor-signin"); });
-      document.getElementById("wl-u").focus();
-    }
-
-    // allow Enter to submit
-    ["wl-u","wl-p","wl-p2","wl-cc"].forEach(id => {
-      const el = document.getElementById(id);
-      if (el) el.addEventListener("keydown", e => { if (e.key === "Enter") document.getElementById("wl-go").click(); });
+    // Focus trap + Escape to close
+    overlay.addEventListener("keydown", (e) => {
+      if (e.key === "Escape") { hideModal(); return; }
+      if (e.key !== "Tab") return;
+      const focusables = overlay.querySelectorAll(
+        'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])'
+      );
+      if (focusables.length === 0) return;
+      const first = focusables[0];
+      const last = focusables[focusables.length - 1];
+      if (e.shiftKey && document.activeElement === first) {
+        e.preventDefault(); last.focus();
+      } else if (!e.shiftKey && document.activeElement === last) {
+        e.preventDefault(); first.focus();
+      }
     });
-    document.getElementById("wl-modal-overlay").classList.add("visible");
   }
+
+  // Reader sign-in/sign-up has been removed: the host platform (Finalsite)
+  // authenticates readers in production. createModal()/hideModal() remain below
+  // because the newsletter subscribe modal still uses them.
   function hideModal() {
     const o = document.getElementById("wl-modal-overlay");
     if (o) o.classList.remove("visible");
+    // Restore focus to the element that triggered the modal
+    if (modalLastFocused && modalLastFocused.focus) {
+      modalLastFocused.focus();
+      modalLastFocused = null;
+    }
   }
 
   // ===== Newsletter subscribe =====
@@ -352,18 +246,31 @@
     localStorage.setItem(LS_SUBSCRIBERS, JSON.stringify(list));
   }
 
+  // Show why a send failed, with a mailto: escape hatch. Reader input must
+  // never be reported as received when it wasn't.
+  function showSendError(errEl, res) {
+    errEl.textContent = WLSubmit.explain(res) + " ";
+    if (res.mailto) {
+      const a = document.createElement("a");
+      a.href = res.mailto;
+      a.textContent = "Email us instead";
+      errEl.appendChild(a);
+    }
+  }
+
   function showSubscribeModal() {
     if (!document.getElementById("wl-modal-overlay")) createModal();
     const c = document.getElementById("wl-modal-content");
     c.innerHTML = `
       <h2>Weekly Newsletter</h2>
-      <p class="wl-demo-note">Get The Woodley Leaves delivered every Friday. Enter your email, phone, or both.</p>
+      <p class="wl-demo-note">Get The Student Times delivered every Friday. Enter your email, phone, or both.</p>
       <label>Email <input type="email" id="sub-email" placeholder="you@example.com" autocomplete="email"></label>
       <label>Phone <input type="tel" id="sub-phone" placeholder="(202) 555-0123" autocomplete="tel"></label>
+      <div class="wl-hp" aria-hidden="true"><label>Leave this empty <input type="text" id="sub-hp" tabindex="-1" autocomplete="off"></label></div>
       <div class="wl-error" id="sub-err"></div>
       <button class="wl-submit" id="sub-go">Subscribe</button>
     `;
-    document.getElementById("sub-go").addEventListener("click", () => {
+    document.getElementById("sub-go").addEventListener("click", async () => {
       const email = document.getElementById("sub-email").value.trim();
       const phone = document.getElementById("sub-phone").value.trim();
       const errEl = document.getElementById("sub-err");
@@ -375,13 +282,19 @@
       if (phone && phone.replace(/\D/g, "").length < 10) {
         errEl.textContent = "Please enter a valid phone number."; return;
       }
+      const btn = document.getElementById("sub-go");
+      btn.disabled = true; btn.textContent = "Sending…";
+      const res = await WLSubmit.send("subscribe", { email, phone },
+        { honeypot: !!(document.getElementById("sub-hp") || {}).value });
+      btn.disabled = false; btn.textContent = "Subscribe";
+      if (!res.ok) { showSendError(errEl, res); return; }
       saveSubscriber({ email, phone, joinedAt: Date.now() });
       const delivery = email && phone ? "by email, with a text reminder"
                       : phone ? "by text"
                       : "by email";
       c.innerHTML = `
         <h2>You're on the list</h2>
-        <p style="color:#333; font-size:14px; margin: 6px 0 16px;">Thanks — you'll get the next Friday edition of The Woodley Leaves ${delivery}.</p>
+        <p style="color:#333; font-size:14px; margin: 6px 0 16px;">Thanks — you'll get the next Friday edition of The Student Times ${delivery}.</p>
         <button class="wl-submit" id="sub-close">Close</button>
       `;
       document.getElementById("sub-close").addEventListener("click", hideModal);
@@ -425,13 +338,14 @@
     if (!document.getElementById("wl-modal-overlay")) createModal();
     const c = document.getElementById("wl-modal-content");
     c.innerHTML = `
-      <h2>Join the Leaves staff</h2>
+      <h2>Join the Student Times staff</h2>
       <p class="wl-demo-note">Add your email to the club mailing list. You'll get pitch deadlines, story assignments, and meeting times.</p>
       <label>Email <input type="email" id="wr-email" placeholder="you@example.com" autocomplete="email"></label>
+      <div class="wl-hp" aria-hidden="true"><label>Leave this empty <input type="text" id="wr-hp" tabindex="-1" autocomplete="off"></label></div>
       <div class="wl-error" id="wr-err"></div>
       <button class="wl-submit" id="wr-go">Join the list</button>
     `;
-    document.getElementById("wr-go").addEventListener("click", () => {
+    document.getElementById("wr-go").addEventListener("click", async () => {
       const email = document.getElementById("wr-email").value.trim();
       const errEl = document.getElementById("wr-err");
       errEl.textContent = "";
@@ -439,6 +353,12 @@
       if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
         errEl.textContent = "That email doesn't look right."; return;
       }
+      const wbtn = document.getElementById("wr-go");
+      wbtn.disabled = true; wbtn.textContent = "Sending…";
+      const wres = await WLSubmit.send("writers", { email },
+        { honeypot: !!(document.getElementById("wr-hp") || {}).value });
+      wbtn.disabled = false; wbtn.textContent = "Join the list";
+      if (!wres.ok) { showSendError(errEl, wres); return; }
       saveWriter({ email, joinedAt: Date.now() });
       c.innerHTML = `
         <h2>You're in</h2>

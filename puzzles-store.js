@@ -1,12 +1,10 @@
-// Stores pools of puzzles (Wordle / Spelling Bee / Crossword) in localStorage.
-// Each day, a deterministic daily index picks one puzzle from each pool, so
-// every visitor sees the same puzzle on the same day.
+// Stores pools of puzzles (Spelling Bee / Crossword / Connections) in
+// localStorage. Each day, a deterministic daily index picks one puzzle from
+// each pool, so every visitor sees the same puzzle on the same day.
 window.WLPuzzles = (function () {
   const KEY = "wl_puzzles_pools";
 
   // ===== Defaults — seed the pools with the original puzzles =====
-  const DEFAULT_WORDLE = ["WRITE", "PRESS", "PAPER", "STORY", "SCOOP", "MEDIA", "DAILY", "WORDS", "GREEN", "QUOTE"];
-
   const DEFAULT_BEE = [{
     center: "T",
     outer: ["A", "E", "R", "L", "I", "N"],
@@ -40,16 +38,31 @@ window.WLPuzzles = (function () {
     }
   }];
 
+  // NYT-Connections-style: 16 words split into 4 groups of 4, each with a
+  // category label and a difficulty color (yellow easiest → purple hardest).
+  const DEFAULT_CONNECTIONS = [{
+    groups: [
+      { difficulty: "yellow", category: "Woodley Leaves sections", words: ["NEWS", "FEATURES", "STYLE", "SPORTS"] },
+      { difficulty: "green",  category: "Parts of a frog",         words: ["LEG", "EYE", "TONGUE", "TOE"] },
+      { difficulty: "blue",   category: "Shades of green",         words: ["MOSS", "OLIVE", "EMERALD", "LIME"] },
+      { difficulty: "purple", category: "___ leaf",                words: ["MAPLE", "TEA", "GOLD", "BAY"] }
+    ]
+  }];
+
   function readPools() {
     try {
       const stored = JSON.parse(localStorage.getItem(KEY) || "{}");
       return {
-        wordle: Array.isArray(stored.wordle) && stored.wordle.length ? stored.wordle : DEFAULT_WORDLE.slice(),
-        bee: Array.isArray(stored.bee) && stored.bee.length ? stored.bee : DEFAULT_BEE.slice(),
-        crossword: Array.isArray(stored.crossword) && stored.crossword.length ? stored.crossword : DEFAULT_CROSSWORD.slice()
+        bee:         Array.isArray(stored.bee)         && stored.bee.length         ? stored.bee         : DEFAULT_BEE.slice(),
+        crossword:   Array.isArray(stored.crossword)   && stored.crossword.length   ? stored.crossword   : DEFAULT_CROSSWORD.slice(),
+        connections: Array.isArray(stored.connections) && stored.connections.length ? stored.connections : DEFAULT_CONNECTIONS.slice()
       };
     } catch {
-      return { wordle: DEFAULT_WORDLE.slice(), bee: DEFAULT_BEE.slice(), crossword: DEFAULT_CROSSWORD.slice() };
+      return {
+        bee: DEFAULT_BEE.slice(),
+        crossword: DEFAULT_CROSSWORD.slice(),
+        connections: DEFAULT_CONNECTIONS.slice()
+      };
     }
   }
 
@@ -73,44 +86,38 @@ window.WLPuzzles = (function () {
   // ===== Public API =====
   return {
     // Read pools
-    getWordlePool() { return readPools().wordle; },
-    getBeePool() { return readPools().bee; },
-    getCrosswordPool() { return readPools().crossword; },
+    getBeePool()         { return readPools().bee; },
+    getCrosswordPool()   { return readPools().crossword; },
+    getConnectionsPool() { return readPools().connections; },
 
     // Today's pick
-    todayWordle() { return pickToday(readPools().wordle); },
-    todayBee() { return pickToday(readPools().bee); },
-    todayCrossword() { return pickToday(readPools().crossword); },
+    todayBee()         { return pickToday(readPools().bee); },
+    todayCrossword()   { return pickToday(readPools().crossword); },
+    todayConnections() { return pickToday(readPools().connections); },
 
     // Index of today's pick within each pool (for UI labeling)
-    todayWordleIndex() { const p = readPools().wordle; return p.length ? dayIndex() % p.length : -1; },
-    todayBeeIndex() { const p = readPools().bee; return p.length ? dayIndex() % p.length : -1; },
-    todayCrosswordIndex() { const p = readPools().crossword; return p.length ? dayIndex() % p.length : -1; },
-
-    // CRUD — Wordle
-    addWordle(word) {
-      const p = readPools(); p.wordle.push(word.toUpperCase()); writePools(p);
-    },
-    setWordleAt(i, word) {
-      const p = readPools(); p.wordle[i] = word.toUpperCase(); writePools(p);
-    },
-    removeWordleAt(i) {
-      const p = readPools(); p.wordle.splice(i, 1); writePools(p);
-    },
+    todayBeeIndex()         { const p = readPools().bee;         return p.length ? dayIndex() % p.length : -1; },
+    todayCrosswordIndex()   { const p = readPools().crossword;   return p.length ? dayIndex() % p.length : -1; },
+    todayConnectionsIndex() { const p = readPools().connections; return p.length ? dayIndex() % p.length : -1; },
 
     // CRUD — Spelling Bee
-    addBee(entry) { const p = readPools(); p.bee.push(entry); writePools(p); },
-    setBeeAt(i, entry) { const p = readPools(); p.bee[i] = entry; writePools(p); },
-    removeBeeAt(i) { const p = readPools(); p.bee.splice(i, 1); writePools(p); },
+    addBee(entry)       { const p = readPools(); p.bee.push(entry);  writePools(p); },
+    setBeeAt(i, entry)  { const p = readPools(); p.bee[i] = entry;   writePools(p); },
+    removeBeeAt(i)      { const p = readPools(); p.bee.splice(i, 1); writePools(p); },
 
     // CRUD — Crossword
-    addCrossword(entry) { const p = readPools(); p.crossword.push(entry); writePools(p); },
-    setCrosswordAt(i, entry) { const p = readPools(); p.crossword[i] = entry; writePools(p); },
-    removeCrosswordAt(i) { const p = readPools(); p.crossword.splice(i, 1); writePools(p); },
+    addCrossword(entry)       { const p = readPools(); p.crossword.push(entry);  writePools(p); },
+    setCrosswordAt(i, entry)  { const p = readPools(); p.crossword[i] = entry;   writePools(p); },
+    removeCrosswordAt(i)      { const p = readPools(); p.crossword.splice(i, 1); writePools(p); },
+
+    // CRUD — Connections
+    addConnections(entry)       { const p = readPools(); p.connections.push(entry);  writePools(p); },
+    setConnectionsAt(i, entry)  { const p = readPools(); p.connections[i] = entry;   writePools(p); },
+    removeConnectionsAt(i)      { const p = readPools(); p.connections.splice(i, 1); writePools(p); },
 
     // Reset everything to defaults
     reset() { localStorage.removeItem(KEY); document.dispatchEvent(new CustomEvent("wl-puzzles-change")); },
 
-    DEFAULTS: { wordle: DEFAULT_WORDLE, bee: DEFAULT_BEE, crossword: DEFAULT_CROSSWORD }
+    DEFAULTS: { bee: DEFAULT_BEE, crossword: DEFAULT_CROSSWORD, connections: DEFAULT_CONNECTIONS }
   };
 })();

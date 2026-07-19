@@ -57,7 +57,6 @@
       article.innerHTML = `
         ${mediaHtml}
         <h3><a href="article.html?id=${encodeURIComponent(a.id)}">${escapeHtml(a.title)}</a></h3>
-        <p>${escapeHtml(a.deck)}</p>
         <div class="byline">By ${escapeHtml(a.byline)} · ${escapeHtml(a.date)}</div>
       `;
       list.appendChild(article);

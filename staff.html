@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Staff — The Student Times</title>
+<meta name="description" content="The editorial staff of The Student Times at Your School.">
+<meta property="og:title" content="Staff — The Student Times">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="The Student Times">
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Old+Standard+TT:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css" />
+<script src="config.js"></script>
+<script src="brand-store.js"></script>
+<script src="brand.js"></script>
+<script src="sections-store.js"></script>
+<script src="nav.js"></script>
+<style>
+  .staff-intro {
+    max-width: 620px;
+    font-size: 16px;
+    line-height: 1.6;
+    color: #333;
+    margin: 0 0 36px;
+  }
+
+  .staff-section {
+    margin-bottom: 44px;
+  }
+  .staff-section h3 {
+    font-family: Georgia, serif;
+    font-size: 22px;
+    border-bottom: 2px solid var(--ink);
+    padding-bottom: 4px;
+    margin: 0 0 20px;
+  }
+
+  .staff-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 26px;
+  }
+
+  .staff-card {
+    display: flex;
+    flex-direction: column;
+  }
+  .staff-photo {
+    background: #ece8df;
+    aspect-ratio: 1 / 1;
+    margin-bottom: 12px;
+    border-radius: 50%;
+    max-width: 140px;
+  }
+  .staff-card h4 {
+    font-family: Georgia, serif;
+    font-size: 18px;
+    margin: 0 0 2px;
+    font-weight: 700;
+  }
+  .staff-card .staff-role {
+    font-family: "Helvetica Neue", Arial, sans-serif;
+    font-size: 12px;
+    color: var(--accent);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin: 0 0 2px;
+  }
+  .staff-card .staff-year {
+    font-family: "Helvetica Neue", Arial, sans-serif;
+    font-size: 12px;
+    color: var(--muted);
+    margin: 0 0 4px;
+  }
+  .staff-card a {
+    font-family: "Helvetica Neue", Arial, sans-serif;
+    font-size: 12px;
+    color: var(--ink);
+  }
+
+  .staff-empty {
+    font-family: "Helvetica Neue", Arial, sans-serif;
+    font-size: 13px;
+    color: var(--muted);
+    font-style: italic;
+    padding: 16px 18px;
+    background: var(--cream);
+  }
+</style>
+</head>
+<body>
+
+<div class="topbar"><div class="topbar-inner"><div><a href="#" class="topbar-cta">Subscribe</a></div><div></div></div></div>
+
+<div class="masthead">
+  <div class="masthead-ornament left" aria-hidden="true"><img src="media/leaf.svg" alt="" width="60" height="30"></div>
+  <div class="masthead-ornament right" aria-hidden="true"><img src="media/leaf.svg" alt="" width="60" height="30"></div>
+  <h1><a href="index.html">The Student Times</a></h1>
+  <div class="dateline" data-wl-text="staff-dateline">YOUR SCHOOL</div>
+</div>
+
+<nav class="sectionnav">
+  <div class="sectionnav-inner"></div>
+</nav>
+
+<main class="container">
+  <header class="section-hero">
+    <div class="kicker" data-wl-text="staff-kicker">Masthead · 2025–2026</div>
+    <h2>The Staff</h2>
+    <div class="section-hero-flourish" aria-hidden="true">
+      <svg viewBox="0 0 160 24" xmlns="http://www.w3.org/2000/svg">
+        <path d="M 4 12 L 62 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" fill="none"/>
+        <circle cx="74" cy="8" r="2.2" fill="currentColor"/>
+        <circle cx="86" cy="8" r="2.2" fill="currentColor"/>
+        <circle cx="80" cy="17" r="2.2" fill="currentColor"/>
+        <path d="M 98 12 L 156 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" fill="none"/>
+      </svg>
+    </div>
+  </header>
+
+  <section class="staff-section">
+    <h3 data-wl-text="staff-leadership-heading">Leadership</h3>
+    <div class="staff-grid">
+      <div class="staff-card">
+        <div class="staff-photo"></div>
+        <h4><a href="writer.html?slug=ariel-pollard">Ariel Pollard</a></h4>
+        <p class="staff-role">Online Editor-in-Chief</p>
+        <p class="staff-year">Class of 2027</p>
+        <a href="mailto:arielp2027@maret.org">arielp2027@maret.org</a>
+      </div>
+      <div class="staff-card">
+        <div class="staff-photo"></div>
+        <h4><a href="writer.html?slug=farryn-b">the Online Managing Editor</a></h4>
+        <p class="staff-role">Online Managing Editor</p>
+        <p class="staff-year">Class of 2027</p>
+        <a href="mailto:farrynb2027@maret.org">farrynb2027@maret.org</a>
+      </div>
+      <!-- Add more leadership here using the same pattern. -->
+    </div>
+  </section>
+
+  <section class="staff-section">
+    <h3 data-wl-text="staff-section-editors-heading">Section Editors</h3>
+    <!-- Replace this with staff-cards for each section editor (News, Features, Op-Ed, Style, Sports) -->
+    <p class="staff-empty" data-wl-text="staff-section-editors-empty">Section editors will be listed here. Follow the card pattern above to add them.</p>
+  </section>
+
+  <section class="staff-section">
+    <h3 data-wl-text="staff-writers-heading">Writers &amp; Contributors</h3>
+    <p class="staff-empty" data-wl-text="staff-writers-empty">Staff writers and contributors will be listed here.</p>
+  </section>
+
+  <section class="staff-section">
+    <h3 data-wl-text="staff-photo-heading">Photography &amp; Design</h3>
+    <p class="staff-empty" data-wl-text="staff-photo-empty">Photo editors and designers will be listed here.</p>
+  </section>
+
+  <section class="staff-section">
+    <h3 data-wl-text="staff-adviser-heading">Faculty Adviser</h3>
+    <p class="staff-empty" data-wl-text="staff-adviser-empty">The faculty adviser's name and email will appear here.</p>
+  </section>
+
+  <div class="page-flourish flourish-large" aria-hidden="true">
+    <svg viewBox="0 0 160 80" xmlns="http://www.w3.org/2000/svg">
+      <path d="M 10 48 C 30 28, 55 28, 70 48 M 70 48 C 82 64, 68 74, 60 66 C 54 59, 64 52, 70 57" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"/>
+      <path d="M 90 48 C 105 28, 130 28, 148 48 M 148 48 C 152 58, 140 66, 136 58" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"/>
+      <circle cx="78" cy="48" r="2" fill="currentColor"/>
+    </svg>
+    <span class="page-flourish-caption">More staff profiles coming soon.</span>
+  </div>
+</main>
+
+<footer>© 2026 The Student Times · Your School Student Publication · <a href="staff.html">Staff</a> · <a href="tip.html">Pitch a story</a><br>Online Editor-in-Chief: <a href="mailto:editor@example.org">editor@example.org</a> · Online Managing Editor: <a href="mailto:managing@example.org">managing@example.org</a></footer>
+
+<script src="submissions.js"></script>
+<script src="auth.js"></script>
+<script src="script.js"></script>
+<script src="text-editor.js"></script>
+</body>
+</html>

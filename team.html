@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Team — The Student Times</title>
+<meta name="description" content="Team record, schedule, and game results from The Student Times.">
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Old+Standard+TT:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css" />
+<script src="config.js"></script>
+<script src="brand-store.js"></script>
+<script src="brand.js"></script>
+<script src="sections-store.js"></script>
+<script src="nav.js"></script>
+</head>
+<body>
+
+<div class="topbar"><div class="topbar-inner"><div><a href="#" class="topbar-cta">Subscribe</a></div><div></div></div></div>
+
+<div class="masthead">
+  <div class="masthead-ornament left" aria-hidden="true"><img src="media/leaf.svg" alt="" width="60" height="30"></div>
+  <div class="masthead-ornament right" aria-hidden="true"><img src="media/leaf.svg" alt="" width="60" height="30"></div>
+  <h1><a href="index.html">The Student Times</a></h1>
+  <div class="dateline" data-wl-text="team-dateline">YOUR SCHOOL</div>
+</div>
+
+<nav class="sectionnav">
+  <div class="sectionnav-inner"></div>
+</nav>
+
+<main class="container">
+  <div id="team-not-found" style="display:none;">
+    <div class="section-header">
+      <h2>Team not found</h2>
+    </div>
+    <p>We couldn't find that team. <a href="sports.html">Return to Sports</a>.</p>
+  </div>
+
+  <div id="team-body" style="display:none;">
+    <a href="sports.html" class="back-link">← Back to Sports</a>
+
+    <div class="team-hero">
+      <div class="team-hero-left">
+        <div class="kicker" id="team-sport-label"></div>
+        <h1 id="team-name"></h1>
+        <div class="team-meta" id="team-meta"></div>
+      </div>
+      <div class="team-hero-right">
+        <div class="record-block">
+          <div class="record-label">Record</div>
+          <div class="record-number" id="team-record"></div>
+          <div class="record-sub" id="team-record-pct"></div>
+        </div>
+      </div>
+    </div>
+
+    <section class="sports-subsection">
+      <div class="sports-sub-head"><h3 data-wl-text="team-upcoming-heading">Upcoming</h3></div>
+      <div class="game-list" id="upcoming-list"></div>
+    </section>
+
+    <section class="sports-subsection">
+      <div class="sports-sub-head"><h3 data-wl-text="team-results-heading">Season Results</h3></div>
+      <table class="game-table">
+        <thead>
+          <tr><th>Date</th><th>Opponent</th><th>Home/Away</th><th>Result</th><th>Score</th></tr>
+        </thead>
+        <tbody id="games-rows"></tbody>
+      </table>
+    </section>
+  </div>
+</main>
+
+<footer>© 2026 The Student Times · Your School Student Publication · <a href="staff.html">Staff</a> · <a href="tip.html">Pitch a story</a><br>Online Editor-in-Chief: <a href="mailto:editor@example.org">editor@example.org</a> · Online Managing Editor: <a href="mailto:managing@example.org">managing@example.org</a></footer>
+
+<script src="teams.js"></script>
+<script src="teams-store.js"></script>
+<script src="submissions.js"></script>
+<script src="auth.js"></script>
+<script src="script.js"></script>
+<script src="text-editor.js"></script>
+<script>
+(function () {
+  function escapeHtml(s) {
+    return String(s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+  }
+
+  const params = new URLSearchParams(location.search);
+  const slug = params.get("team");
+  const t = slug ? WLTeams.getTeam(slug) : null;
+
+  if (!t) {
+    document.getElementById("team-not-found").style.display = "block";
+    document.title = "Team not found — The Student Times";
+    return;
+  }
+
+  document.getElementById("team-body").style.display = "block";
+  document.title = `${t.name} — The Student Times`;
+
+  document.getElementById("team-sport-label").textContent = `${t.sport} · ${t.season}`;
+  document.getElementById("team-name").textContent = t.name;
+  const metaParts = [];
+  if (t.coach) metaParts.push(`Coach ${t.coach}`);
+  if (t.league) metaParts.push(t.league);
+  document.getElementById("team-meta").textContent = metaParts.join(" · ");
+
+  const r = t.record;
+  const recStr = r.t ? `${r.w}–${r.l}–${r.t}` : `${r.w}–${r.l}`;
+  document.getElementById("team-record").textContent = recStr;
+  const total = r.w + r.l + r.t;
+  const pct = total > 0 ? Math.round(100 * r.w / total) : 0;
+  document.getElementById("team-record-pct").textContent = `${pct}% win rate`;
+
+  // Upcoming
+  const upEl = document.getElementById("upcoming-list");
+  if ((t.upcoming || []).length === 0) {
+    upEl.innerHTML = `<div class="week-empty">No upcoming games scheduled.</div>`;
+  } else {
+    upEl.innerHTML = "";
+    t.upcoming.forEach(g => {
+      const div = document.createElement("div");
+      div.className = "week-item upcoming";
+      const vs = g.home ? "vs." : "at";
+      div.innerHTML = `
+        <div class="week-day">${escapeHtml(g.date)}</div>
+        <div class="week-body">
+          <div class="week-matchup"><b>${escapeHtml(t.name)}</b> ${vs} ${escapeHtml(g.opponent)}</div>
+          <div class="week-note">${escapeHtml(g.note || (g.home ? "Home" : "Away"))}</div>
+        </div>
+        <div class="week-right"><span class="week-time">${escapeHtml(g.time || "TBD")}</span></div>
+      `;
+      upEl.appendChild(div);
+    });
+  }
+
+  // Games table
+  const rows = document.getElementById("games-rows");
+  if ((t.games || []).length === 0) {
+    rows.innerHTML = `<tr><td colspan="5" style="padding: 24px; text-align: center; color: var(--muted); font-style: italic;">No games played yet.</td></tr>`;
+  } else {
+    t.games.forEach(g => {
+      const tr = document.createElement("tr");
+      tr.className = `game-row result-${(g.result || "").toLowerCase()}`;
+      tr.innerHTML = `
+        <td>${escapeHtml(g.date)}</td>
+        <td>${escapeHtml(g.opponent)}${g.note ? ` <span class="game-note">· ${escapeHtml(g.note)}</span>` : ""}</td>
+        <td>${g.home ? "Home" : "Away"}</td>
+        <td><span class="result-badge result-${(g.result || "").toLowerCase()}">${escapeHtml(g.result || "—")}</span></td>
+        <td class="game-score">${escapeHtml(g.score || "")}</td>
+      `;
+      rows.appendChild(tr);
+    });
+  }
+})();
+</script>
+</body>
+</html>

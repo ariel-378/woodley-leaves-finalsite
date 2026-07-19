@@ -3,11 +3,8 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Features — The Student Times</title>
-<meta name="description" content="Long-form features and profiles from The Student Times at Your School.">
-<meta property="og:title" content="Features — The Student Times">
-<meta property="og:type" content="website">
-<meta property="og:site_name" content="The Student Times">
+<title>Search — The Student Times</title>
+<meta name="description" content="Search articles, writers, and section coverage from The Student Times.">
 <link rel="icon" type="image/svg+xml" href="favicon.svg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Old+Standard+TT:wght@400;700&display=swap" rel="stylesheet">
@@ -26,7 +23,7 @@
   <div class="masthead-ornament left" aria-hidden="true"><img src="media/leaf.svg" alt="" width="60" height="30"></div>
   <div class="masthead-ornament right" aria-hidden="true"><img src="media/leaf.svg" alt="" width="60" height="30"></div>
   <h1><a href="index.html">The Student Times</a></h1>
-  <div class="dateline" data-wl-text="features-dateline">YOUR SCHOOL</div>
+  <div class="dateline" data-wl-text="search-dateline">YOUR SCHOOL</div>
 </div>
 
 <nav class="sectionnav">
@@ -35,41 +32,59 @@
 
 <main class="container">
   <header class="section-hero">
-    <div class="kicker" data-wl-text="features-kicker">Long Reads</div>
-    <h2>Features</h2>
+    <div class="kicker" data-wl-text="search-kicker">Find It Fast</div>
+    <h2>Search</h2>
     <div class="section-hero-flourish" aria-hidden="true">
       <svg viewBox="0 0 160 24" xmlns="http://www.w3.org/2000/svg">
-        <path d="M 4 12 L 54 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" fill="none"/>
-        <circle cx="66" cy="12" r="6" fill="none" stroke="currentColor" stroke-width="2"/>
+        <path d="M 4 12 Q 25 2 45 12 Q 60 20 75 12 Q 95 2 115 12 Q 130 20 145 12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
         <circle cx="80" cy="12" r="3" fill="currentColor"/>
-        <circle cx="94" cy="12" r="6" fill="none" stroke="currentColor" stroke-width="2"/>
-        <path d="M 106 12 L 156 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" fill="none"/>
+        <circle cx="156" cy="12" r="2" fill="currentColor"/>
       </svg>
     </div>
+    <p class="section-hero-deck" id="search-summary">Look up articles, writers, and coverage across every section of The Student Times.</p>
   </header>
 
-  <div data-move-group="features-main">
-    <div class="wl-row">
-      <div class="article-list" id="article-list" data-section="Features" data-move-key="articles" data-move-label="Articles"></div>
-      <div class="sidebar-ads ad-block" data-move-key="ad-1" data-move-label="Ad 1" data-ads-offset="0" data-ads-limit="1"></div>
-    </div>
-    <div class="wl-row">
-      <div class="sidebar-ads ad-block" data-move-key="ad-2" data-move-label="Ad 2" data-ads-offset="1" data-ads-limit="1"></div>
-      <div class="sidebar-ads ad-block" data-move-key="ad-3" data-move-label="Ad 3" data-ads-offset="2" data-ads-limit="1"></div>
-    </div>
+  <form class="search-form-page" id="search-form" autocomplete="off">
+    <input
+      type="search"
+      id="search-input"
+      name="q"
+      placeholder="Search articles, writers, or keywords…"
+      autofocus>
+    <select id="section-filter" aria-label="Filter by section">
+      <option value="">All sections</option>
+      <option>Breaking</option>
+      <option>News</option>
+      <option>Features</option>
+      <option>Op-Ed</option>
+      <option>Style</option>
+      <option>Sports</option>
+    </select>
+    <button type="submit" class="btn-primary">Search</button>
+  </form>
+
+  <p class="search-tip">Tip: search by a writer's name (e.g., "Maya Chen") to find every article they've written.</p>
+
+  <div id="search-results"></div>
+
+  <div class="page-flourish" aria-hidden="true">
+    <svg viewBox="0 0 140 70" xmlns="http://www.w3.org/2000/svg">
+      <path d="M 20 48 C 40 22, 68 22, 80 44 C 88 58, 72 68, 64 60 C 58 53, 70 46, 76 52" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"/>
+      <circle cx="100" cy="38" r="2.5" fill="currentColor"/>
+      <circle cx="115" cy="35" r="2" fill="currentColor"/>
+      <circle cx="128" cy="32" r="1.5" fill="currentColor"/>
+    </svg>
   </div>
 </main>
 
 <footer>© 2026 The Student Times · Your School Student Publication · <a href="staff.html">Staff</a> · <a href="tip.html">Pitch a story</a><br>Online Editor-in-Chief: <a href="mailto:editor@example.org">editor@example.org</a> · Online Managing Editor: <a href="mailto:managing@example.org">managing@example.org</a></footer>
+
 <script src="articles.js"></script>
 <script src="articles-store.js"></script>
-<script src="section.js"></script>
-<script src="ads.js"></script>
-<script src="ads-store.js"></script>
 <script src="submissions.js"></script>
 <script src="auth.js"></script>
 <script src="script.js"></script>
+<script src="search.js"></script>
 <script src="text-editor.js"></script>
-<script src="layout-editor.js"></script>
 </body>
 </html>

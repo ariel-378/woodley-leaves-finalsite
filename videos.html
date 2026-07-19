@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Video — The Student Times</title>
+<meta name="description" content="Video interviews from The Student Times.">
+<meta property="og:title" content="Video — The Student Times">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="The Student Times">
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Old+Standard+TT:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css" />
+<script src="config.js"></script>
+<script src="brand-store.js"></script>
+<script src="brand.js"></script>
+<script src="sections-store.js"></script>
+<script src="nav.js"></script>
+</head>
+<body>
+
+<div class="topbar"><div class="topbar-inner"><div><a href="#" class="topbar-cta">Subscribe</a></div><div></div></div></div>
+
+<div class="masthead">
+  <div class="masthead-ornament left" aria-hidden="true"><img src="media/leaf.svg" alt="" width="60" height="30"></div>
+  <div class="masthead-ornament right" aria-hidden="true"><img src="media/leaf.svg" alt="" width="60" height="30"></div>
+  <h1><a href="index.html">The Student Times</a></h1>
+  <div class="dateline" data-wl-text="videos-dateline">YOUR SCHOOL</div>
+</div>
+
+<nav class="sectionnav">
+  <div class="sectionnav-inner"></div>
+</nav>
+
+<main class="container">
+  <header class="section-hero">
+    <div class="kicker" data-wl-text="videos-kicker">Watch &amp; Listen</div>
+    <h2>Video</h2>
+    <div class="section-hero-flourish" aria-hidden="true">
+      <svg viewBox="0 0 160 24" xmlns="http://www.w3.org/2000/svg">
+        <path d="M 4 12 L 64 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" fill="none"/>
+        <path d="M 72 3 L 94 12 L 72 21 Z" fill="currentColor"/>
+        <path d="M 98 12 L 156 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" fill="none"/>
+      </svg>
+    </div>
+  </header>
+
+  <div class="video-grid wide" id="interviews-grid"></div>
+  <div id="videos-empty" class="search-empty" hidden>No videos yet. Check back soon.</div>
+</main>
+
+<footer>© 2026 The Student Times · Your School Student Publication · <a href="staff.html">Staff</a> · <a href="tip.html">Pitch a story</a><br>Online Editor-in-Chief: <a href="mailto:editor@example.org">editor@example.org</a> · Online Managing Editor: <a href="mailto:managing@example.org">managing@example.org</a></footer>
+
+<script src="videos.js"></script>
+<script src="videos-store.js"></script>
+<script src="submissions.js"></script>
+<script src="auth.js"></script>
+<script src="script.js"></script>
+<script src="text-editor.js"></script>
+<script>
+(function () {
+  function escapeHtml(s) {
+    return String(s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+  }
+
+  function thumb(v) {
+    const info = WLVideos.parseVideo(v.url);
+    if (info && info.type === "youtube") {
+      return `<img src="https://img.youtube.com/vi/${info.id}/hqdefault.jpg" alt="${escapeHtml(v.title)}" loading="lazy">`;
+    }
+    return `<div class="video-placeholder"></div>`;
+  }
+
+  function videoCard(v) {
+    return `
+      <a class="video-card" href="video.html?id=${encodeURIComponent(v.id)}">
+        <div class="video-thumb">
+          ${thumb(v)}
+          <span class="video-play" aria-hidden="true">▶</span>
+          ${v.duration ? `<span class="video-duration">${escapeHtml(v.duration)}</span>` : ""}
+        </div>
+        <div class="video-body">
+          <h4>${escapeHtml(v.title)}</h4>
+          <div class="byline">By ${escapeHtml(v.byline)} · ${escapeHtml(v.date)}</div>
+        </div>
+      </a>
+    `;
+  }
+
+  function render() {
+    const videos = Object.entries(WLVideos.getAll())
+      .map(([id, v]) => ({ id, ...v }))
+      .sort((a, b) => (Date.parse(b.date) || 0) - (Date.parse(a.date) || 0));
+    document.getElementById("interviews-grid").innerHTML = videos.map(videoCard).join("");
+    document.getElementById("videos-empty").hidden = videos.length > 0;
+  }
+
+  document.addEventListener("wl-videos-change", render);
+  render();
+})();
+</script>
+</body>
+</html>

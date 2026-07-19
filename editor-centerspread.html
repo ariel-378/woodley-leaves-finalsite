@@ -1,0 +1,843 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Centerspread Editor — The Student Times</title>
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Old+Standard+TT:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css" />
+<script src="config.js"></script>
+<script src="brand-store.js"></script>
+<script src="brand.js"></script>
+<script src="sections-store.js"></script>
+<script src="nav.js"></script>
+<style>
+  .ed-tabs { display: flex; gap: 4px; margin-bottom: 18px; border-bottom: 1px solid var(--rule); flex-wrap: wrap; }
+  .ed-tabs a { font-family: "Helvetica Neue", Arial, sans-serif; font-size: 13px; font-weight: 600; padding: 10px 16px; color: var(--muted); text-decoration: none; border-bottom: 3px solid transparent; }
+  .ed-tabs a.active { color: var(--ink); border-bottom-color: var(--accent); }
+  .btn-primary { background: var(--accent); color: #fff; border: none; padding: 10px 16px; font-family: "Helvetica Neue", Arial, sans-serif; font-weight: 600; font-size: 14px; cursor: pointer; }
+  .btn-primary:hover { filter: brightness(0.92); }
+  .btn-ghost { background: #fff; color: var(--ink); border: 1px solid var(--ink); padding: 6px 10px; font-family: "Helvetica Neue", Arial, sans-serif; font-weight: 600; font-size: 12px; cursor: pointer; }
+  .btn-ghost:hover { background: var(--cream); }
+  .btn-ghost:disabled { opacity: 0.4; cursor: default; }
+  .btn-danger { background: none; color: #b8002a; border: 1px solid #b8002a; padding: 6px 10px; font-family: "Helvetica Neue", Arial, sans-serif; font-weight: 600; font-size: 12px; cursor: pointer; }
+  .badge-custom { display: inline-block; background: var(--accent); color: #fff; font-size: 10px; padding: 2px 6px; margin-left: 6px; letter-spacing: 0.5px; text-transform: uppercase; font-weight: 700; vertical-align: middle; }
+  .badge-type { display: inline-block; background: var(--cream); color: var(--muted); font-size: 10px; padding: 2px 6px; margin-left: 6px; letter-spacing: 0.5px; text-transform: uppercase; font-weight: 700; vertical-align: middle; border: 1px solid var(--rule); }
+  .pool-list { list-style: none; padding: 0; margin: 0; border: 1px solid var(--rule); }
+  .pool-list li { display: flex; align-items: center; justify-content: space-between; padding: 10px 14px; border-bottom: 1px solid var(--rule); font-family: "Helvetica Neue", Arial, sans-serif; font-size: 14px; gap: 10px; }
+  .pool-list li:last-child { border-bottom: none; }
+  .pool-list .pl-main { min-width: 0; flex: 1; }
+  .pool-list .pl-actions { display: flex; gap: 6px; align-items: center; flex-shrink: 0; }
+
+  .ed-modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); display: none; align-items: flex-start; justify-content: center; z-index: 200; padding: 30px 20px; overflow-y: auto; }
+  .ed-modal-overlay.visible { display: flex; }
+  .ed-modal { background: #fff; width: 100%; max-width: 640px; padding: 28px; border-top: 4px solid var(--accent); position: relative; font-family: "Helvetica Neue", Arial, sans-serif; }
+  .ed-modal h2 { font-family: Georgia, serif; font-size: 24px; margin: 0 0 14px; }
+  .ed-modal-close { position: absolute; top: 8px; right: 14px; background: none; border: none; font-size: 24px; color: var(--muted); cursor: pointer; }
+  .ed-form label { display: block; font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: var(--muted); margin-bottom: 12px; }
+  .ed-form input, .ed-form textarea, .ed-form select { display: block; width: 100%; padding: 8px 10px; margin-top: 4px; border: 1px solid var(--rule); font-family: inherit; font-size: 14px; background: #fafafa; box-sizing: border-box; }
+  .ed-form textarea { resize: vertical; min-height: 80px; }
+  .ed-form .row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .ed-form .ed-error { color: #b8002a; font-size: 13px; min-height: 18px; margin: 6px 0 10px; }
+  .ed-form-actions { display: flex; justify-content: space-between; margin-top: 12px; }
+  .field-note { font-size: 11px; color: var(--muted); text-transform: none; letter-spacing: 0; margin-top: 3px; line-height: 1.45; }
+
+  .checkbox-row { display: flex; align-items: center; gap: 8px; margin: 0 0 10px; }
+  .checkbox-row input { width: auto; margin: 0; }
+  .checkbox-row label { margin: 0; text-transform: none; letter-spacing: 0; font-size: 14px; color: var(--ink); }
+
+  .bp { border: 1px solid var(--rule); padding: 20px 22px; margin-bottom: 20px; font-family: "Helvetica Neue", Arial, sans-serif; }
+  .bp > h3 { font-family: Georgia, serif; font-size: 19px; margin: 0 0 4px; }
+  .bp > .bp-hint { font-size: 12px; color: var(--muted); margin: 0 0 16px; line-height: 1.5; }
+  .orn-preview { margin-top: 8px; }
+  .orn-preview img { max-width: 180px; height: auto; border: 1px solid var(--rule); display: block; }
+
+  /* Puzzle content editing (merged from the old Puzzles tab) */
+  .puzzle-section { margin-bottom: 26px; padding-bottom: 20px; border-bottom: 1px solid var(--rule); }
+  .puzzle-section:last-of-type { border-bottom: none; }
+  .puzzle-section h4 { font-family: Georgia, serif; font-size: 18px; margin: 0 0 4px; }
+  .puzzle-section .today-pick { font-family: "Helvetica Neue", Arial, sans-serif; font-size: 13px; color: var(--muted); margin-bottom: 12px; }
+  .puzzle-section .today-pick b { color: var(--accent); }
+  .puzzle-section .pool-list { margin-bottom: 12px; }
+  .pool-list li.today-row { background: #fff8d6; }
+  .pool-list .badge-today { display:inline-block; background:#c9b458; color:#fff; font-size:10px; padding:2px 6px; margin-left:6px; letter-spacing:0.5px; text-transform:uppercase; font-weight:700; }
+  .pool-list .pool-actions { display:flex; gap:6px; }
+  #bee-modal .ed-form input.letter-cell, #cw-modal .ed-form input.letter-cell { text-align:center; text-transform:uppercase; font-weight:700; font-size:18px; letter-spacing:4px; }
+  #bee-modal .ed-form textarea, #cw-modal .ed-form textarea, #cn-modal .ed-form textarea { font-family: monospace; }
+  .clue-row { display:grid; grid-template-columns:80px 1fr; gap:8px; align-items:center; margin-bottom:6px; }
+  .clue-row label { margin:0; padding-top:8px; }
+  .clue-row input { margin:0; }
+  .clue-section h4 { font-family:Georgia,serif; font-size:16px; margin:14px 0 8px; }
+  .bee-letters { display:grid; grid-template-columns:1fr 3fr; gap:12px; margin-bottom:12px; }
+  .grid-rows { display:grid; grid-template-columns:1fr; gap:6px; }
+  .ed-tip { font-size:12px; color:var(--muted); margin:-6px 0 12px; }
+</style>
+</head>
+<body>
+
+<div class="topbar"><div class="topbar-inner"><div><a href="#" class="topbar-cta">Subscribe</a></div><div></div></div></div>
+
+<div class="masthead">
+  <div class="masthead-ornament left" aria-hidden="true"><img src="media/leaf.svg" alt="" width="60" height="30"></div>
+  <div class="masthead-ornament right" aria-hidden="true"><img src="media/leaf.svg" alt="" width="60" height="30"></div>
+  <h1><a href="index.html">The Student Times</a></h1>
+  <div class="dateline">YOUR SCHOOL</div>
+</div>
+
+<nav class="sectionnav">
+  <div class="sectionnav-inner"></div>
+</nav>
+
+<main class="container">
+  <div class="section-header">
+    <h2>Centerspread</h2>
+    <span class="see-all" id="welcome"></span>
+  </div>
+
+  <div id="no-access" class="account-prompt" style="display:none;">
+    You need <strong>editor</strong> access to edit the centerspread.
+    <a href="#" id="prompt-preview">Enter editor preview.</a>
+  </div>
+
+  <div id="editor-view" style="display:none;">
+    <div class="ed-tabs">
+      <a href="editor.html">Articles</a>
+      <a href="editor-centerspread.html" class="active">Centerspread</a>
+      <a href="editor-sports.html">Sports stats</a>
+      <a href="editor-videos.html">Video</a>
+      <a href="editor-writers.html">Writers</a>
+      <a href="editor-ads.html">Ads</a>
+      <a href="editor-brand.html" class="ed-tab-brand">Brand design</a>
+    </div>
+
+    <!-- ── Print pieces ─────────────────────────────────────────────────── -->
+    <section class="bp">
+      <h3>Print pieces</h3>
+      <p class="bp-hint">
+        The poems, prose, and images shown at the top of the centerspread page.
+        Each piece is a poem, a prose piece, or an image (a painting or photo not
+        tied to an article). Any piece can hide an answer behind a “reveal” toggle.
+      </p>
+      <div style="display:flex;justify-content:flex-end;margin-bottom:12px;">
+        <button class="btn-primary" id="add-piece">+ Add piece</button>
+      </div>
+      <ul class="pool-list" id="pieces-list"></ul>
+    </section>
+
+    <!-- ── Which puzzles show ───────────────────────────────────────────── -->
+    <section class="bp">
+      <h3>Puzzles shown</h3>
+      <p class="bp-hint">
+        Choose which interactive puzzles appear below the print pieces. Turning a
+        puzzle off hides it from readers; it isn't deleted.
+      </p>
+      <div id="puzzle-toggles"></div>
+    </section>
+
+    <!-- ── Edit the puzzles (merged from the old Puzzles tab) ─────────────── -->
+    <section class="bp">
+      <h3>Edit the puzzles</h3>
+      <p class="bp-hint">The crossword, spelling bee, and connections content. Each has a pool — today's puzzle is picked from it by date, so add several to keep the rotation fresh.</p>
+
+      <div class="puzzle-section">
+        <h4>Spelling Bee</h4>
+        <div class="today-pick">Today's letters: <b id="bee-today"></b></div>
+        <ul class="pool-list" id="bee-pool"></ul>
+        <button class="btn-primary" id="bee-add">+ Add Spelling Bee puzzle</button>
+      </div>
+
+      <div class="puzzle-section">
+        <h4>Mini Crossword</h4>
+        <div class="today-pick">Today's solution: <b id="cw-today"></b></div>
+        <ul class="pool-list" id="cw-pool"></ul>
+        <button class="btn-primary" id="cw-add">+ Add Mini Crossword</button>
+      </div>
+
+      <div class="puzzle-section">
+        <h4>Connections</h4>
+        <div class="today-pick">Today's puzzle: <b id="cn-today"></b></div>
+        <ul class="pool-list" id="cn-pool"></ul>
+        <button class="btn-primary" id="cn-add">+ Add Connections puzzle</button>
+      </div>
+
+      <button class="btn-ghost" id="reset-all" style="margin-top:6px;">Reset all puzzle pools to defaults</button>
+    </section>
+  </div>
+
+  <!-- Piece editor modal -->
+  <div class="ed-modal-overlay" id="piece-modal" role="dialog" aria-modal="true" aria-labelledby="piece-modal-title">
+    <div class="ed-modal" role="document">
+      <button class="ed-modal-close" aria-label="Close">×</button>
+      <h2 id="piece-modal-title">Piece</h2>
+      <div class="ed-form">
+        <div class="row-2">
+          <label>Type
+            <select id="p-type">
+              <option value="poem">Poem</option>
+              <option value="prose">Prose</option>
+              <option value="image">Image (painting / photo)</option>
+            </select>
+          </label>
+          <label>ID (slug; lowercase, dashes) <input type="text" id="p-id" placeholder="e.g., spring-poem"></label>
+        </div>
+        <div class="row-2">
+          <label>Kicker (small label) <input type="text" id="p-kicker" placeholder="e.g., Poem"></label>
+          <label>Byline <input type="text" id="p-byline" placeholder="By A Student"></label>
+        </div>
+        <label>Title <input type="text" id="p-title"></label>
+
+        <!-- text pieces -->
+        <div id="p-text-fields">
+          <label id="p-body-label">Body
+            <textarea id="p-body" rows="10"></textarea>
+            <span class="field-note" id="p-body-note"></span>
+          </label>
+        </div>
+
+        <!-- image pieces -->
+        <div id="p-image-fields" style="display:none;">
+          <label>Image URL <input type="text" id="p-image" placeholder="media/your-image.png or https://…"></label>
+          <label>Or upload an image <input type="file" id="p-image-file" accept="image/*">
+            <span class="field-note">Under 2 MB recommended. Stored in your browser for the demo.</span>
+          </label>
+          <label>Alt text (describe the image) <input type="text" id="p-alt"></label>
+          <div class="orn-preview" id="p-image-preview"></div>
+        </div>
+
+        <!-- reveal -->
+        <div class="checkbox-row">
+          <input type="checkbox" id="p-reveal-on">
+          <label for="p-reveal-on">Add a “reveal the answer” toggle</label>
+        </div>
+        <div id="p-reveal-fields" style="display:none;">
+          <div class="row-2">
+            <label>Reveal button text <input type="text" id="p-reveal-summary" placeholder="Reveal the answer"></label>
+            <label>The answer <input type="text" id="p-reveal-answer" placeholder="The hidden answer"></label>
+          </div>
+        </div>
+
+        <div class="ed-error" id="p-error"></div>
+        <div class="ed-form-actions">
+          <button class="btn-ghost" data-cancel>Cancel</button>
+          <button class="btn-primary" id="p-save">Save piece</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- Spelling Bee modal -->
+  <div class="ed-modal-overlay" id="bee-modal" role="dialog" aria-modal="true" aria-labelledby="bee-modal-title">
+    <div class="ed-modal">
+      <button class="ed-modal-close">×</button>
+      <h2 id="bee-modal-title">Add a Spelling Bee puzzle</h2>
+      <div class="ed-form">
+        <div class="bee-letters">
+          <label>Center letter <input type="text" id="bee-center" class="letter-cell" maxlength="1" autocomplete="off"></label>
+          <label>Outer 6 letters (e.g., AERLIN) <input type="text" id="bee-outer" class="letter-cell" maxlength="6" autocomplete="off"></label>
+        </div>
+        <label>Valid words (one per line — must contain the center letter, ≥4 letters, only use the 7 letters)
+          <textarea id="bee-words" rows="14" placeholder="ANTE&#10;LATE&#10;TRAIL&#10;..."></textarea>
+        </label>
+        <div class="ed-error" id="bee-error"></div>
+        <div class="ed-form-actions">
+          <button class="btn-ghost" data-cancel>Cancel</button>
+          <button class="btn-primary" id="bee-save">Save</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Crossword modal -->
+  <div class="ed-modal-overlay" id="cw-modal" role="dialog" aria-modal="true" aria-labelledby="cw-modal-title">
+    <div class="ed-modal">
+      <button class="ed-modal-close">×</button>
+      <h2 id="cw-modal-title">Add a Mini Crossword</h2>
+      <div class="ed-form">
+        <p class="ed-tip">Enter five rows of five letters each. Columns will form the down-clue answers, so make sure they spell real words too.</p>
+        <div class="grid-rows">
+          <label>Row 1 <input type="text" class="letter-cell cw-row" maxlength="5" autocomplete="off" data-row="0"></label>
+          <label>Row 2 <input type="text" class="letter-cell cw-row" maxlength="5" autocomplete="off" data-row="1"></label>
+          <label>Row 3 <input type="text" class="letter-cell cw-row" maxlength="5" autocomplete="off" data-row="2"></label>
+          <label>Row 4 <input type="text" class="letter-cell cw-row" maxlength="5" autocomplete="off" data-row="3"></label>
+          <label>Row 5 <input type="text" class="letter-cell cw-row" maxlength="5" autocomplete="off" data-row="4"></label>
+        </div>
+
+        <div class="clue-section">
+          <h4>Across clues</h4>
+          <div class="clue-row"><label>1 Across</label><input type="text" id="cw-a-1"></div>
+          <div class="clue-row"><label>6 Across</label><input type="text" id="cw-a-6"></div>
+          <div class="clue-row"><label>7 Across</label><input type="text" id="cw-a-7"></div>
+          <div class="clue-row"><label>8 Across</label><input type="text" id="cw-a-8"></div>
+          <div class="clue-row"><label>9 Across</label><input type="text" id="cw-a-9"></div>
+        </div>
+        <div class="clue-section">
+          <h4>Down clues</h4>
+          <div class="clue-row"><label>1 Down</label><input type="text" id="cw-d-1"></div>
+          <div class="clue-row"><label>2 Down</label><input type="text" id="cw-d-2"></div>
+          <div class="clue-row"><label>3 Down</label><input type="text" id="cw-d-3"></div>
+          <div class="clue-row"><label>4 Down</label><input type="text" id="cw-d-4"></div>
+          <div class="clue-row"><label>5 Down</label><input type="text" id="cw-d-5"></div>
+        </div>
+
+        <div class="ed-error" id="cw-error"></div>
+        <div class="ed-form-actions">
+          <button class="btn-ghost" data-cancel>Cancel</button>
+          <button class="btn-primary" id="cw-save">Save</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Connections modal -->
+  <div class="ed-modal-overlay" id="cn-modal" role="dialog" aria-modal="true" aria-labelledby="cn-modal-title">
+    <div class="ed-modal">
+      <button class="ed-modal-close">×</button>
+      <h2 id="cn-modal-title">Add a Connections puzzle</h2>
+      <div class="ed-form">
+        <p class="ed-tip">Four groups of four words. Each group gets a category name and a difficulty (yellow = easiest, purple = hardest). Words will be shuffled before the reader sees them.</p>
+        <div class="cn-group-edit" data-color="yellow" data-difficulty="yellow">
+          <h4 style="margin:14px 0 8px;"><span style="display:inline-block;width:14px;height:14px;background:#f9df6d;margin-right:6px;vertical-align:middle;"></span>Yellow — easiest</h4>
+          <label>Category <input type="text" data-cn-cat="yellow" placeholder="e.g., Parts of a frog"></label>
+          <label>Four words, separated by commas <input type="text" data-cn-words="yellow" placeholder="LEG, EYE, TONGUE, TOE"></label>
+        </div>
+        <div class="cn-group-edit" data-color="green" data-difficulty="green">
+          <h4 style="margin:14px 0 8px;"><span style="display:inline-block;width:14px;height:14px;background:#a0c35a;margin-right:6px;vertical-align:middle;"></span>Green</h4>
+          <label>Category <input type="text" data-cn-cat="green"></label>
+          <label>Four words <input type="text" data-cn-words="green"></label>
+        </div>
+        <div class="cn-group-edit" data-color="blue" data-difficulty="blue">
+          <h4 style="margin:14px 0 8px;"><span style="display:inline-block;width:14px;height:14px;background:#b0c4ef;margin-right:6px;vertical-align:middle;"></span>Blue</h4>
+          <label>Category <input type="text" data-cn-cat="blue"></label>
+          <label>Four words <input type="text" data-cn-words="blue"></label>
+        </div>
+        <div class="cn-group-edit" data-color="purple" data-difficulty="purple">
+          <h4 style="margin:14px 0 8px;"><span style="display:inline-block;width:14px;height:14px;background:#ba81c5;margin-right:6px;vertical-align:middle;"></span>Purple — hardest</h4>
+          <label>Category <input type="text" data-cn-cat="purple"></label>
+          <label>Four words <input type="text" data-cn-words="purple"></label>
+        </div>
+        <div class="ed-error" id="cn-error"></div>
+        <div class="ed-form-actions">
+          <button class="btn-ghost" data-cancel>Cancel</button>
+          <button class="btn-primary" id="cn-save">Save</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<footer></footer>
+
+<script src="centerspread.js"></script>
+<script src="centerspread-store.js"></script>
+<script src="puzzles-store.js"></script>
+<script src="submissions.js"></script>
+<script src="auth.js"></script>
+<script src="script.js"></script>
+<script>
+(function () {
+  const view = document.getElementById("editor-view");
+  const noAccess = document.getElementById("no-access");
+  const welcome = document.getElementById("welcome");
+  const el = (id) => document.getElementById(id);
+  const MAX_UPLOAD = 2 * 1024 * 1024;
+  const TYPE_LABEL = { poem: "Poem", prose: "Prose", image: "Image" };
+
+  function esc(s) {
+    return String(s == null ? "" : s).replace(/[&<>"']/g, c =>
+      ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+  }
+
+  function gate() {
+    const user = WLAuth.currentUser();
+    if (!user || !WLAuth.isEditor()) {
+      view.style.display = "none"; noAccess.style.display = "block"; welcome.textContent = "";
+      return false;
+    }
+    noAccess.style.display = "none"; view.style.display = "block";
+    welcome.textContent = `Signed in as ${user}`;
+    return true;
+  }
+
+  // ── Pieces list ───────────────────────────────────────────────────────────
+  function renderPieces() {
+    const list = el("pieces-list");
+    const pieces = WLCenterspread.list();
+    list.innerHTML = "";
+    if (!pieces.length) {
+      list.innerHTML = `<li><em style="color:var(--muted);">No pieces yet. Click “Add piece”.</em></li>`;
+      return;
+    }
+    pieces.forEach((p, i) => {
+      const li = document.createElement("li");
+      const reveal = p.reveal && (p.reveal.answer || "").trim() ? ' <span class="badge-type">Reveal</span>' : "";
+      const li_main = `<div class="pl-main"><b>${esc(p.title || "(untitled)")}</b>` +
+        `<span class="badge-type">${esc(TYPE_LABEL[p.type] || p.type)}</span>${reveal}</div>`;
+      li.innerHTML = li_main +
+        `<div class="pl-actions">
+          <button class="btn-ghost" data-act="up" ${i === 0 ? "disabled" : ""} aria-label="Move up">↑</button>
+          <button class="btn-ghost" data-act="down" ${i === pieces.length - 1 ? "disabled" : ""} aria-label="Move down">↓</button>
+          <button class="btn-ghost" data-act="edit">Edit</button>
+          <button class="btn-danger" data-act="del">Delete</button>
+        </div>`;
+      li.querySelector('[data-act="up"]').addEventListener("click", () => move(p.id, -1));
+      li.querySelector('[data-act="down"]').addEventListener("click", () => move(p.id, 1));
+      li.querySelector('[data-act="edit"]').addEventListener("click", () => openModal(p.id));
+      li.querySelector('[data-act="del"]').addEventListener("click", () => {
+        if (confirm(`Delete “${p.title || "this piece"}”?`)) WLCenterspread.remove(p.id);
+      });
+      list.appendChild(li);
+    });
+  }
+
+  function move(id, dir) {
+    const ids = WLCenterspread.list().map(p => p.id);
+    const i = ids.indexOf(id);
+    const j = i + dir;
+    if (i < 0 || j < 0 || j >= ids.length) return;
+    ids.splice(j, 0, ids.splice(i, 1)[0]);
+    WLCenterspread.setOrder(ids);
+  }
+
+  // ── Modal ─────────────────────────────────────────────────────────────────
+  const modal = el("piece-modal");
+  let editingId = null;
+
+  function syncTypeFields() {
+    const t = el("p-type").value;
+    el("p-text-fields").style.display = t === "image" ? "none" : "block";
+    el("p-image-fields").style.display = t === "image" ? "block" : "none";
+    el("p-body-note").textContent = t === "poem"
+      ? "One line per line. Leave a blank line between stanzas."
+      : "One paragraph per block. Leave a blank line between paragraphs.";
+  }
+  function syncRevealFields() {
+    el("p-reveal-fields").style.display = el("p-reveal-on").checked ? "block" : "none";
+  }
+  el("p-type").addEventListener("change", syncTypeFields);
+  el("p-reveal-on").addEventListener("change", syncRevealFields);
+
+  function refreshImagePreview() {
+    const src = el("p-image").value.trim();
+    el("p-image-preview").innerHTML = src ? `<img src="${esc(src)}" alt="">` : "";
+  }
+  el("p-image").addEventListener("input", refreshImagePreview);
+  el("p-image-file").addEventListener("change", () => {
+    const f = el("p-image-file").files[0];
+    if (!f) return;
+    if (f.size > MAX_UPLOAD && !confirm("That file is over 2 MB. Browser storage may fill up. Continue?")) {
+      el("p-image-file").value = ""; return;
+    }
+    const reader = new FileReader();
+    reader.onload = e => { el("p-image").value = e.target.result; refreshImagePreview(); };
+    reader.readAsDataURL(f);
+  });
+
+  function slugify(s) {
+    return String(s).toLowerCase().trim().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
+  }
+  el("p-title").addEventListener("input", () => {
+    if (!editingId && !el("p-id").dataset.touched) el("p-id").value = slugify(el("p-title").value);
+  });
+  el("p-id").addEventListener("input", () => { el("p-id").dataset.touched = "1"; });
+
+  function openModal(id) {
+    editingId = id || null;
+    el("p-error").textContent = "";
+    el("piece-modal-title").textContent = id ? "Edit piece" : "New piece";
+    const p = id ? WLCenterspread.getById(id) : null;
+    el("p-type").value = (p && p.type) || "poem";
+    el("p-id").value = (p && p.id) || "";
+    el("p-id").disabled = !!id;
+    el("p-id").dataset.touched = id ? "1" : "";
+    el("p-kicker").value = (p && p.kicker) || "";
+    el("p-byline").value = (p && p.byline) || "";
+    el("p-title").value = (p && p.title) || "";
+    el("p-body").value = (p && p.body) || "";
+    el("p-image").value = (p && p.image) || "";
+    el("p-alt").value = (p && p.alt) || "";
+    el("p-image-file").value = "";
+    const hasReveal = !!(p && p.reveal && (p.reveal.answer || "").trim());
+    el("p-reveal-on").checked = hasReveal;
+    el("p-reveal-summary").value = (p && p.reveal && p.reveal.summary) || "";
+    el("p-reveal-answer").value = (p && p.reveal && p.reveal.answer) || "";
+    syncTypeFields(); syncRevealFields(); refreshImagePreview();
+    modal.classList.add("visible");
+    el("p-type").focus();
+  }
+  function closeModal() { modal.classList.remove("visible"); }
+
+  el("p-save").addEventListener("click", () => {
+    const type = el("p-type").value;
+    const id = (editingId || el("p-id").value).trim();
+    const err = el("p-error");
+    err.textContent = "";
+    if (!/^[a-z0-9]+(-[a-z0-9]+)*$/.test(id)) { err.textContent = "The ID must be lowercase letters, numbers, and dashes."; return; }
+    if (!el("p-title").value.trim()) { err.textContent = "Please give the piece a title."; return; }
+    if (!editingId && WLCenterspread.getById(id)) { err.textContent = "A piece with that ID already exists."; return; }
+    if (type === "image" && !el("p-image").value.trim()) { err.textContent = "Add an image URL or upload an image."; return; }
+    if (type !== "image" && !el("p-body").value.trim()) { err.textContent = "Add the poem or prose text."; return; }
+
+    const piece = {
+      type: type,
+      kicker: el("p-kicker").value.trim(),
+      title: el("p-title").value.trim(),
+      byline: el("p-byline").value.trim(),
+    };
+    if (type === "image") {
+      piece.image = el("p-image").value.trim();
+      piece.alt = el("p-alt").value.trim();
+    } else {
+      piece.body = el("p-body").value;
+    }
+    if (el("p-reveal-on").checked && el("p-reveal-answer").value.trim()) {
+      piece.reveal = {
+        summary: el("p-reveal-summary").value.trim() || "Reveal the answer",
+        answer: el("p-reveal-answer").value.trim(),
+      };
+    }
+    const res = WLCenterspread.save(id, piece);
+    if (!res.ok) { err.textContent = "Couldn't save — your browser storage may be full."; return; }
+    closeModal();
+  });
+
+  // ── Puzzle toggles ────────────────────────────────────────────────────────
+  function renderToggles() {
+    const box = el("puzzle-toggles");
+    box.innerHTML = "";
+    WLCenterspread.PUZZLE_KEYS.forEach(key => {
+      const row = document.createElement("div");
+      row.className = "checkbox-row";
+      const cb = document.createElement("input");
+      cb.type = "checkbox"; cb.id = "pz-" + key;
+      cb.checked = WLCenterspread.isPuzzleVisible(key);
+      cb.addEventListener("change", () => WLCenterspread.setPuzzleVisible(key, cb.checked));
+      const lb = document.createElement("label");
+      lb.htmlFor = "pz-" + key;
+      lb.textContent = WLCenterspread.PUZZLE_LABELS[key] || key;
+      row.appendChild(cb); row.appendChild(lb);
+      box.appendChild(row);
+    });
+  }
+
+  // ── Wiring ────────────────────────────────────────────────────────────────
+  el("add-piece").addEventListener("click", () => openModal(null));
+  document.querySelectorAll(".ed-modal-close, [data-cancel]").forEach(b => b.addEventListener("click", closeModal));
+  modal.addEventListener("click", (e) => { if (e.target === modal) closeModal(); });
+  modal.addEventListener("keydown", (e) => { if (e.key === "Escape") closeModal(); });
+  el("prompt-preview").addEventListener("click", (e) => { e.preventDefault(); WLAuth.enableEditorPreview(); });
+
+  function renderAll() {
+    if (!gate()) return;
+    renderPieces();
+    renderToggles();
+  }
+  document.addEventListener("wl-auth-change", renderAll);
+  document.addEventListener("wl-centerspread-change", renderAll);
+  renderAll();
+})();
+</script>
+<script>
+(function () {
+  const view = document.getElementById("editor-view");
+  const noAccess = document.getElementById("no-access");
+  const welcome = document.getElementById("welcome");
+
+  function gateAccess() {
+    const user = WLAuth.currentUser();
+    if (!user || !WLAuth.isEditor()) {
+      view.style.display = "none";
+      noAccess.style.display = "block";
+      welcome.textContent = "";
+      return false;
+    }
+    noAccess.style.display = "none";
+    view.style.display = "block";
+    welcome.textContent = `Signed in as ${user}`;
+    return true;
+  }
+
+  function escapeHtml(s) {
+    return String(s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+  }
+
+  // ===== Spelling Bee =====
+  function renderBee() {
+    const today = WLPuzzles.todayBee();
+    document.getElementById("bee-today").textContent = today ? `${today.center} · ${(today.outer || []).join("")}` : "—";
+    const todayIdx = WLPuzzles.todayBeeIndex();
+    const list = document.getElementById("bee-pool");
+    const pool = WLPuzzles.getBeePool();
+    list.innerHTML = "";
+    if (pool.length === 0) {
+      list.innerHTML = `<li><em style="color: var(--muted);">No Spelling Bee puzzles in the pool.</em></li>`;
+      return;
+    }
+    pool.forEach((p, i) => {
+      const li = document.createElement("li");
+      if (i === todayIdx) li.classList.add("today-row");
+      li.innerHTML = `
+        <span>
+          <b>${escapeHtml(p.center)}</b> · ${escapeHtml((p.outer || []).join(""))}
+          <span style="color: var(--muted); font-size: 12px; margin-left: 8px;">${(p.words || []).length} words</span>
+          ${i === todayIdx ? '<span class="badge-today">Today</span>' : ""}
+        </span>
+        <span class="pool-actions">
+          <button class="btn-ghost" data-act="edit" data-i="${i}">Edit</button>
+          <button class="btn-danger" data-act="delete" data-i="${i}">Delete</button>
+        </span>
+      `;
+      list.appendChild(li);
+    });
+    list.querySelectorAll('[data-act="edit"]').forEach(b => b.addEventListener("click", () => openBeeModal(+b.dataset.i)));
+    list.querySelectorAll('[data-act="delete"]').forEach(b => b.addEventListener("click", () => {
+      if (!confirm("Delete this Spelling Bee puzzle?")) return;
+      WLPuzzles.removeBeeAt(+b.dataset.i);
+      renderAll();
+    }));
+  }
+
+  let beeEditingIndex = null;
+  function openBeeModal(i) {
+    beeEditingIndex = (typeof i === "number") ? i : null;
+    document.getElementById("bee-modal-title").textContent = beeEditingIndex === null ? "Add a Spelling Bee puzzle" : "Edit Spelling Bee puzzle";
+    if (beeEditingIndex !== null) {
+      const p = WLPuzzles.getBeePool()[beeEditingIndex];
+      document.getElementById("bee-center").value = p.center || "";
+      document.getElementById("bee-outer").value = (p.outer || []).join("");
+      document.getElementById("bee-words").value = (p.words || []).join("\n");
+    } else {
+      document.getElementById("bee-center").value = "";
+      document.getElementById("bee-outer").value = "";
+      document.getElementById("bee-words").value = "";
+    }
+    document.getElementById("bee-error").textContent = "";
+    document.getElementById("bee-modal").classList.add("visible");
+    setTimeout(() => document.getElementById("bee-center").focus(), 50);
+  }
+  document.getElementById("bee-add").addEventListener("click", () => openBeeModal());
+  document.getElementById("bee-save").addEventListener("click", () => {
+    const center = (document.getElementById("bee-center").value || "").trim().toUpperCase();
+    const outer = (document.getElementById("bee-outer").value || "").trim().toUpperCase().split("").filter(Boolean);
+    const wordsRaw = document.getElementById("bee-words").value || "";
+    const words = wordsRaw.split(/\r?\n/).map(w => w.trim().toUpperCase()).filter(Boolean);
+    const err = document.getElementById("bee-error");
+    err.textContent = "";
+    if (!/^[A-Z]$/.test(center)) { err.textContent = "Center must be a single letter."; return; }
+    if (outer.length !== 6 || !outer.every(l => /^[A-Z]$/.test(l))) { err.textContent = "Outer must be 6 letters."; return; }
+    if (new Set([center, ...outer]).size !== 7) { err.textContent = "All 7 letters must be different."; return; }
+    if (words.length === 0) { err.textContent = "Add at least one valid word."; return; }
+    // Validate words against constraints
+    const allowed = new Set([center, ...outer]);
+    const bad = words.find(w => w.length < 4 || !w.includes(center) || [...w].some(c => !allowed.has(c)));
+    if (bad) { err.textContent = `"${bad}" is invalid. Words must be ≥4 letters, contain the center, and only use the 7 letters.`; return; }
+
+    const entry = { center, outer, words };
+    if (beeEditingIndex === null) WLPuzzles.addBee(entry);
+    else WLPuzzles.setBeeAt(beeEditingIndex, entry);
+    closeModals();
+    renderAll();
+  });
+
+  // ===== Crossword =====
+  function renderCrossword() {
+    const today = WLPuzzles.todayCrossword();
+    document.getElementById("cw-today").textContent = today ? today.rows.join(" / ") : "—";
+    const todayIdx = WLPuzzles.todayCrosswordIndex();
+    const list = document.getElementById("cw-pool");
+    const pool = WLPuzzles.getCrosswordPool();
+    list.innerHTML = "";
+    if (pool.length === 0) {
+      list.innerHTML = `<li><em style="color: var(--muted);">No crosswords in the pool.</em></li>`;
+      return;
+    }
+    pool.forEach((p, i) => {
+      const li = document.createElement("li");
+      if (i === todayIdx) li.classList.add("today-row");
+      li.innerHTML = `
+        <span><b>${escapeHtml(p.rows.join(" / "))}</b>${i === todayIdx ? '<span class="badge-today">Today</span>' : ""}</span>
+        <span class="pool-actions">
+          <button class="btn-ghost" data-act="edit" data-i="${i}">Edit</button>
+          <button class="btn-danger" data-act="delete" data-i="${i}">Delete</button>
+        </span>
+      `;
+      list.appendChild(li);
+    });
+    list.querySelectorAll('[data-act="edit"]').forEach(b => b.addEventListener("click", () => openCwModal(+b.dataset.i)));
+    list.querySelectorAll('[data-act="delete"]').forEach(b => b.addEventListener("click", () => {
+      if (!confirm("Delete this crossword?")) return;
+      WLPuzzles.removeCrosswordAt(+b.dataset.i);
+      renderAll();
+    }));
+  }
+
+  let cwEditingIndex = null;
+  function openCwModal(i) {
+    cwEditingIndex = (typeof i === "number") ? i : null;
+    document.getElementById("cw-modal-title").textContent = cwEditingIndex === null ? "Add a Mini Crossword" : "Edit Mini Crossword";
+    const rowInputs = document.querySelectorAll(".cw-row");
+    if (cwEditingIndex !== null) {
+      const p = WLPuzzles.getCrosswordPool()[cwEditingIndex];
+      p.rows.forEach((r, ri) => { rowInputs[ri].value = r; });
+      ["1","6","7","8","9"].forEach(n => document.getElementById(`cw-a-${n}`).value = (p.across && p.across[n]) || "");
+      ["1","2","3","4","5"].forEach(n => document.getElementById(`cw-d-${n}`).value = (p.down && p.down[n]) || "");
+    } else {
+      rowInputs.forEach(el => el.value = "");
+      ["1","6","7","8","9"].forEach(n => document.getElementById(`cw-a-${n}`).value = "");
+      ["1","2","3","4","5"].forEach(n => document.getElementById(`cw-d-${n}`).value = "");
+    }
+    document.getElementById("cw-error").textContent = "";
+    document.getElementById("cw-modal").classList.add("visible");
+    setTimeout(() => rowInputs[0].focus(), 50);
+  }
+  document.getElementById("cw-add").addEventListener("click", () => openCwModal());
+  document.getElementById("cw-save").addEventListener("click", () => {
+    const rows = [];
+    document.querySelectorAll(".cw-row").forEach(el => rows.push((el.value || "").trim().toUpperCase()));
+    const err = document.getElementById("cw-error");
+    err.textContent = "";
+    if (!rows.every(r => /^[A-Z]{5}$/.test(r))) { err.textContent = "Each row must be exactly 5 letters."; return; }
+    const across = {};
+    const down = {};
+    ["1","6","7","8","9"].forEach(n => {
+      const v = document.getElementById(`cw-a-${n}`).value.trim();
+      if (v) across[n] = v;
+    });
+    ["1","2","3","4","5"].forEach(n => {
+      const v = document.getElementById(`cw-d-${n}`).value.trim();
+      if (v) down[n] = v;
+    });
+    if (Object.keys(across).length !== 5 || Object.keys(down).length !== 5) {
+      err.textContent = "Fill in all 5 across and 5 down clues.";
+      return;
+    }
+
+    const entry = { rows, across, down };
+    if (cwEditingIndex === null) WLPuzzles.addCrossword(entry);
+    else WLPuzzles.setCrosswordAt(cwEditingIndex, entry);
+    closeModals();
+    renderAll();
+  });
+
+  // ===== Modal helpers =====
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape" && document.querySelector(".ed-modal-overlay.visible")) closeModals();
+  });
+  document.querySelectorAll(".ed-modal-overlay").forEach(m => {
+    m.addEventListener("keydown", (e) => {
+      if (e.key !== "Tab") return;
+      if (!m.classList.contains("visible")) return;
+      const f = m.querySelectorAll(
+        'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])'
+      );
+      if (f.length === 0) return;
+      const first = f[0], last = f[f.length - 1];
+      if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+      else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+    });
+  });
+
+  // ===== Connections =====
+  const CN_COLORS = ["yellow", "green", "blue", "purple"];
+  function renderConnections() {
+    const todayEl = document.getElementById("cn-today");
+    const today = WLPuzzles.todayConnections();
+    todayEl.textContent = today ? today.groups.map(g => g.category).join(" · ") : "—";
+    const todayIdx = WLPuzzles.todayConnectionsIndex();
+    const list = document.getElementById("cn-pool");
+    const pool = WLPuzzles.getConnectionsPool();
+    list.innerHTML = "";
+    if (pool.length === 0) {
+      list.innerHTML = `<li><em style="color: var(--muted);">No Connections puzzles in the pool.</em></li>`;
+      return;
+    }
+    pool.forEach((entry, i) => {
+      const li = document.createElement("li");
+      if (i === todayIdx) li.classList.add("today-row");
+      const cats = entry.groups.map(g => escapeHtml(g.category)).join(" · ");
+      li.innerHTML = `
+        <span><b>${cats}</b>${i === todayIdx ? '<span class="badge-today">Today</span>' : ""}</span>
+        <span class="pool-actions">
+          <button class="btn-ghost" data-act="edit"   data-i="${i}">Edit</button>
+          <button class="btn-danger" data-act="delete" data-i="${i}">Delete</button>
+        </span>
+      `;
+      list.appendChild(li);
+    });
+    list.querySelectorAll('[data-act="edit"]').forEach(b => b.addEventListener("click", () => openConnectionsModal(+b.dataset.i)));
+    list.querySelectorAll('[data-act="delete"]').forEach(b => b.addEventListener("click", () => {
+      if (!confirm("Delete this Connections puzzle?")) return;
+      WLPuzzles.removeConnectionsAt(+b.dataset.i);
+      renderAll();
+    }));
+  }
+
+  let cnEditingIndex = null;
+  function openConnectionsModal(i) {
+    cnEditingIndex = (typeof i === "number") ? i : null;
+    const entry = cnEditingIndex !== null ? WLPuzzles.getConnectionsPool()[cnEditingIndex] : null;
+    document.getElementById("cn-modal-title").textContent = cnEditingIndex === null ? "Add a Connections puzzle" : "Edit Connections puzzle";
+    document.getElementById("cn-error").textContent = "";
+    CN_COLORS.forEach(color => {
+      const group = entry ? entry.groups.find(g => g.difficulty === color) : null;
+      document.querySelector(`[data-cn-cat="${color}"]`).value   = group ? (group.category || "") : "";
+      document.querySelector(`[data-cn-words="${color}"]`).value = group ? (group.words || []).join(", ") : "";
+    });
+    document.getElementById("cn-modal").classList.add("visible");
+    setTimeout(() => document.querySelector('[data-cn-cat="yellow"]').focus(), 50);
+  }
+  document.getElementById("cn-add").addEventListener("click", () => openConnectionsModal());
+  document.getElementById("cn-save").addEventListener("click", () => {
+    const err = document.getElementById("cn-error");
+    err.textContent = "";
+    const groups = [];
+    const seen = new Set();
+    for (const color of CN_COLORS) {
+      const cat   = document.querySelector(`[data-cn-cat="${color}"]`).value.trim();
+      const words = document.querySelector(`[data-cn-words="${color}"]`).value
+        .split(",").map(w => w.trim().toUpperCase()).filter(Boolean);
+      if (!cat) { err.textContent = `Category is required for the ${color} group.`; return; }
+      if (words.length !== 4) { err.textContent = `${color} group needs exactly 4 words.`; return; }
+      for (const w of words) {
+        if (seen.has(w)) { err.textContent = `"${w}" appears in more than one group.`; return; }
+        seen.add(w);
+      }
+      groups.push({ difficulty: color, category: cat, words });
+    }
+    const entry = { groups };
+    if (cnEditingIndex === null) WLPuzzles.addConnections(entry);
+    else WLPuzzles.setConnectionsAt(cnEditingIndex, entry);
+    closeModals();
+    renderAll();
+  });
+
+  function closeModals() {
+    document.querySelectorAll(".ed-modal-overlay").forEach(m => m.classList.remove("visible"));
+  }
+  document.querySelectorAll(".ed-modal-close, [data-cancel]").forEach(b => b.addEventListener("click", closeModals));
+  document.querySelectorAll(".ed-modal-overlay").forEach(m => {
+    m.addEventListener("click", e => { if (e.target === m) closeModals(); });
+  });
+
+  document.getElementById("reset-all").addEventListener("click", () => {
+    if (!confirm("Reset every puzzle pool to the original defaults? You'll lose any custom puzzles.")) return;
+    WLPuzzles.reset();
+    renderAll();
+  });
+
+  document.getElementById("prompt-preview").addEventListener("click", (e) => { e.preventDefault(); WLAuth.enableEditorPreview(); });
+
+  function renderAll() {
+    if (!gateAccess()) return;
+    renderBee();
+    renderCrossword();
+    renderConnections();
+  }
+
+  document.addEventListener("wl-auth-change", renderAll);
+  document.addEventListener("wl-puzzles-change", renderAll);
+  renderAll();
+})();
+</script>
+</body>
+</html>

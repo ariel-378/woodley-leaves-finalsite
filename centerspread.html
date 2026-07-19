@@ -3,16 +3,346 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Puzzles — The Woodley Leaves</title>
-<meta name="description" content="The Mini Crossword, The Daily Five, and Spelling Bee — daily puzzles from The Woodley Leaves.">
-<meta property="og:title" content="Puzzles — The Woodley Leaves">
+<title>Puzzles — The Student Times</title>
+<meta name="description" content="The Mini Crossword and Spelling Bee — daily puzzles from The Student Times.">
+<meta property="og:title" content="Puzzles — The Student Times">
 <meta property="og:type" content="website">
-<meta property="og:site_name" content="The Woodley Leaves">
+<meta property="og:site_name" content="The Student Times">
 <link rel="icon" type="image/svg+xml" href="favicon.svg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Old+Standard+TT:wght@400;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="styles.css" />
+<script src="config.js"></script>
+<script src="brand-store.js"></script>
+<script src="brand.js"></script>
+<script src="sections-store.js"></script>
+<script src="nav.js"></script>
 <style>
+  /* ===== Print edition centerspread pieces ===== */
+  .print-edition {
+    margin-bottom: 48px;
+    padding-bottom: 40px;
+  }
+
+  /* Big display hero for "The Centerspread" */
+  .print-edition-hero {
+    text-align: center;
+    padding: 36px 20px 32px;
+    border-top: 4px solid var(--ink);
+    border-bottom: 4px solid var(--ink);
+    margin-bottom: 40px;
+    background: linear-gradient(180deg, rgba(46,125,50,0.04) 0%, transparent 100%);
+  }
+  .print-edition-kicker {
+    color: var(--accent) !important;
+    letter-spacing: 2.5px;
+  }
+  .print-edition-title {
+    font-family: "Old Standard TT", Georgia, serif;
+    font-size: clamp(44px, 8vw, 88px);
+    line-height: 0.95;
+    margin: 10px 0 14px;
+    letter-spacing: -2px;
+    font-weight: 700;
+  }
+  .print-edition-flourish {
+    color: var(--accent);
+    opacity: 0.75;
+    margin: 8px auto 18px;
+    display: flex;
+    justify-content: center;
+  }
+  .print-edition-flourish svg {
+    width: clamp(180px, 40%, 280px);
+    height: auto;
+    display: block;
+  }
+  .print-edition-deck {
+    font-family: Georgia, serif;
+    font-size: 17px;
+    font-style: italic;
+    color: #333;
+    max-width: 600px;
+    margin: 0 auto;
+    line-height: 1.5;
+  }
+
+  /* Magazine 2-column feel: pieces sit in rows, with soft dividers */
+  .print-pieces .wl-row {
+    gap: 44px;
+    margin-bottom: 36px;
+    padding-bottom: 36px;
+    border-bottom: 1px solid var(--rule);
+    position: relative;
+  }
+  .print-pieces .wl-row:last-child {
+    border-bottom: none;
+    padding-bottom: 8px;
+    margin-bottom: 0;
+  }
+  /* Small decorative ornament between rows */
+  .print-pieces .wl-row:not(:last-child)::after {
+    content: "✦";
+    position: absolute;
+    bottom: -14px;
+    left: 50%;
+    transform: translateX(-50%);
+    color: var(--accent);
+    background: var(--paper);
+    padding: 0 12px;
+    font-size: 13px;
+    opacity: 0.75;
+  }
+
+  .print-piece {
+    margin: 0;
+    padding: 0;
+    border-bottom: none;
+  }
+  .print-piece-head { margin-bottom: 18px; }
+  .print-piece-head h3 {
+    font-family: Georgia, serif;
+    font-size: 28px;
+    line-height: 1.15;
+    margin: 6px 0 6px;
+    font-weight: 700;
+  }
+
+  /* Drop caps on prose pieces (Guess the Teacher specifically) */
+  .teacher-body p:first-of-type::first-letter {
+    font-family: "Old Standard TT", Georgia, serif;
+    font-size: 62px;
+    font-weight: 700;
+    color: var(--accent);
+    float: left;
+    line-height: 0.85;
+    margin: 6px 8px 0 0;
+    padding: 0;
+  }
+  /* Subtle accent background panel on the poem */
+  .poem-piece {
+    background: rgba(46,125,50,0.05);
+    padding: 22px 24px 18px;
+    border-left: 3px solid var(--accent);
+  }
+  .poem-piece .print-piece-head h3 {
+    color: var(--accent);
+  }
+
+  /* Play section hero (between print edition and interactive puzzles) */
+  .play-hero {
+    text-align: center;
+    padding: 44px 20px 10px;
+    margin-bottom: 20px;
+  }
+  .play-hero-flourish {
+    color: var(--accent);
+    opacity: 0.6;
+    margin-bottom: 10px;
+    display: flex;
+    justify-content: center;
+  }
+  .play-hero-flourish svg {
+    width: 160px;
+    height: auto;
+    display: block;
+  }
+  .play-hero-title {
+    font-family: "Old Standard TT", Georgia, serif;
+    font-size: clamp(40px, 7vw, 72px);
+    font-weight: 700;
+    line-height: 0.95;
+    margin: 0 0 14px;
+    letter-spacing: -1.5px;
+  }
+  .play-hero-deck {
+    font-family: Georgia, serif;
+    font-style: italic;
+    font-size: 16px;
+    color: #333;
+    max-width: 560px;
+    margin: 0 auto;
+  }
+  /* Poem styling */
+  .poem-body {
+    font-family: Georgia, serif;
+    font-size: 17px;
+    line-height: 1.6;
+    color: var(--ink);
+  }
+  .poem-stanza { margin-bottom: 18px; }
+  .poem-stanza p {
+    margin: 0;
+    padding: 0;
+  }
+  .poem-stanza p + p { text-indent: 0; }
+  .poem-stanza p:nth-child(even) { padding-left: 24px; }
+
+  /* Teacher body (prose) */
+  .teacher-body p {
+    font-family: Georgia, serif;
+    font-size: 16px;
+    line-height: 1.6;
+    margin: 0 0 14px;
+  }
+
+  /* Reveal details */
+  .reveal {
+    margin-top: 18px;
+    background: var(--cream);
+    padding: 12px 16px;
+    border-left: 4px solid var(--accent);
+  }
+  .reveal summary {
+    font-family: "Helvetica Neue", Arial, sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: var(--accent);
+    cursor: pointer;
+    list-style: none;
+  }
+  .reveal summary::-webkit-details-marker { display: none; }
+  .reveal summary::before {
+    content: "▸ ";
+    color: var(--accent);
+    transition: transform 0.15s;
+    display: inline-block;
+  }
+  .reveal[open] summary::before {
+    content: "▾ ";
+  }
+  .reveal-body {
+    font-family: Georgia, serif;
+    font-size: 19px;
+    margin-top: 10px;
+    line-height: 1.4;
+  }
+
+  /* Figure (riddle image) */
+  .print-piece-figure {
+    margin: 0;
+    border: 1px solid var(--rule);
+    background: #fff;
+    padding: 10px;
+  }
+  .print-piece-figure img {
+    width: 100%;
+    height: auto;
+    display: block;
+  }
+
+  /* Word search layout */
+  .wordsearch-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 2fr) 1fr;
+    gap: 20px;
+    align-items: start;
+  }
+  @media (max-width: 720px) {
+    .wordsearch-layout { grid-template-columns: 1fr; }
+  }
+  .wordsearch-panel {
+    border: 1px solid var(--rule);
+    background: #fff;
+    padding: 12px;
+  }
+
+  .wordsearch-grid {
+    display: grid;
+    gap: 2px;
+    user-select: none;
+    touch-action: none;
+  }
+  .ws-cell {
+    aspect-ratio: 1 / 1;
+    background: var(--cream);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: "Helvetica Neue", Arial, sans-serif;
+    font-size: clamp(10px, 1.4vw, 16px);
+    font-weight: 700;
+    color: var(--ink);
+    cursor: pointer;
+    transition: background 0.1s;
+  }
+  .ws-cell.selecting {
+    background: #ffd84a;
+    color: var(--ink);
+  }
+  .ws-cell.found {
+    background: var(--accent);
+    color: #fff;
+  }
+  .ws-cell.found.selecting {
+    background: #ffd84a;
+    color: var(--ink);
+  }
+
+  .wordsearch-controls {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    margin-top: 12px;
+    flex-wrap: wrap;
+  }
+  .wordsearch-status {
+    font-family: "Helvetica Neue", Arial, sans-serif;
+    font-size: 12px;
+    color: var(--muted);
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    margin-right: auto;
+  }
+  .btn-toggle-solution {
+    font-family: "Helvetica Neue", Arial, sans-serif;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    padding: 8px 14px;
+    background: var(--accent);
+    color: #fff;
+    border: none;
+    cursor: pointer;
+  }
+  .btn-toggle-solution:hover { filter: brightness(0.92); }
+
+  .wordsearch-list {
+    list-style: none;
+    padding: 14px 16px;
+    margin: 0;
+    background: var(--cream);
+    font-family: "Helvetica Neue", Arial, sans-serif;
+    font-size: 14px;
+    line-height: 2;
+    letter-spacing: 0.3px;
+  }
+  .wordsearch-list li::before {
+    content: "☐ ";
+    color: var(--accent);
+    margin-right: 4px;
+  }
+  .wordsearch-list li.found {
+    color: var(--muted);
+    text-decoration: line-through;
+  }
+  .wordsearch-list li.found::before {
+    content: "☑ ";
+    color: var(--accent);
+  }
+
+  .ws-done {
+    margin-top: 14px;
+    padding: 12px 16px;
+    background: var(--accent);
+    color: #fff;
+    font-family: "Helvetica Neue", Arial, sans-serif;
+    font-weight: 600;
+    text-align: center;
+  }
+
   .cw-hero {
     text-align: center;
     padding: 20px 0 18px;
@@ -181,119 +511,6 @@
   }
   .cw-win.visible { display: block; }
 
-  /* ===== Wordle ("The Daily Five") ===== */
-  .wd-section {
-    margin-top: 56px;
-    padding-top: 40px;
-    border-top: 3px solid var(--ink);
-  }
-  .wd-hero {
-    text-align: center;
-    padding: 6px 0 18px;
-    margin-bottom: 16px;
-  }
-  .wd-hero .kicker { margin-bottom: 6px; }
-  .wd-hero h2 {
-    font-size: 46px;
-    line-height: 1.05;
-    margin: 0 auto 10px;
-    font-weight: 700;
-  }
-  .wd-hero .deck {
-    font-size: 16px;
-    color: #333;
-    max-width: 560px;
-    margin: 0 auto;
-  }
-
-  .wd-layout {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 16px;
-  }
-
-  .wd-board {
-    display: grid;
-    grid-template-rows: repeat(6, 1fr);
-    gap: 5px;
-  }
-  .wd-row {
-    display: grid;
-    grid-template-columns: repeat(5, 1fr);
-    gap: 5px;
-  }
-  .wd-tile {
-    width: 56px;
-    height: 56px;
-    border: 2px solid #d3d6da;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-family: "Helvetica Neue", Arial, sans-serif;
-    font-weight: 700;
-    font-size: 28px;
-    text-transform: uppercase;
-    color: var(--ink);
-    background: #fff;
-  }
-  .wd-tile.filled { border-color: #878a8c; }
-  .wd-tile.correct { background: #6aaa64; border-color: #6aaa64; color: #fff; }
-  .wd-tile.present { background: #c9b458; border-color: #c9b458; color: #fff; }
-  .wd-tile.absent  { background: #787c7e; border-color: #787c7e; color: #fff; }
-
-  .wd-message {
-    min-height: 22px;
-    font-family: "Helvetica Neue", Arial, sans-serif;
-    font-size: 14px;
-    color: var(--ink);
-    font-weight: 600;
-    text-align: center;
-  }
-
-  .wd-keyboard {
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-    width: 100%;
-    max-width: 500px;
-  }
-  .wd-key-row {
-    display: flex;
-    justify-content: center;
-    gap: 4px;
-  }
-  .wd-key {
-    flex: 1;
-    min-width: 0;
-    height: 52px;
-    padding: 0 6px;
-    background: #d3d6da;
-    border: none;
-    border-radius: 4px;
-    font-family: "Helvetica Neue", Arial, sans-serif;
-    font-weight: 600;
-    font-size: 14px;
-    cursor: pointer;
-    text-transform: uppercase;
-    color: var(--ink);
-  }
-  .wd-key.wide { flex: 1.6; font-size: 11px; }
-  .wd-key.correct { background: #6aaa64; color: #fff; }
-  .wd-key.present { background: #c9b458; color: #fff; }
-  .wd-key.absent  { background: #787c7e; color: #fff; }
-
-  .wd-reset {
-    font-family: "Helvetica Neue", Arial, sans-serif;
-    font-size: 13px;
-    font-weight: 600;
-    padding: 8px 14px;
-    background: #fff;
-    border: 1px solid var(--ink);
-    cursor: pointer;
-  }
-  .wd-reset:hover { background: var(--cream); }
-
   /* ===== Spelling Bee ===== */
   .sb-section {
     margin-top: 56px;
@@ -451,49 +668,232 @@
     color: var(--muted);
     font-style: italic;
   }
+
+  /* ===== Connections ===== */
+  .cn-section {
+    margin-top: 56px;
+    padding-top: 40px;
+    border-top: 3px solid var(--ink);
+  }
+  .cn-hero {
+    text-align: center;
+    padding: 6px 0 18px;
+    margin-bottom: 16px;
+  }
+  .cn-hero .kicker { margin-bottom: 6px; }
+  .cn-hero h2 {
+    font-size: 46px;
+    line-height: 1.05;
+    margin: 0 auto 10px;
+    font-weight: 700;
+  }
+  .cn-hero .deck {
+    font-size: 16px;
+    color: #333;
+    max-width: 560px;
+    margin: 0 auto;
+  }
+  .cn-mistakes {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 10px;
+    font-family: "Helvetica Neue", Arial, sans-serif;
+    font-size: 13px;
+    color: var(--ink);
+  }
+  .cn-mistakes-label { letter-spacing: 0.3px; }
+  .cn-dots { display: inline-flex; gap: 6px; }
+  .cn-dot {
+    display: inline-block;
+    width: 10px; height: 10px;
+    border-radius: 50%;
+    background: var(--ink);
+  }
+  .cn-dot.used { background: transparent; border: 1.5px solid var(--rule); }
+  .cn-flash {
+    min-height: 22px;
+    text-align: center;
+    font-family: "Helvetica Neue", Arial, sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 10px;
+    color: var(--ink);
+  }
+  .cn-solved {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-bottom: 10px;
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+  .cn-solved-row {
+    padding: 12px 14px;
+    text-align: center;
+    font-family: "Helvetica Neue", Arial, sans-serif;
+    border-radius: 4px;
+  }
+  .cn-solved-row .cn-category {
+    font-size: 11px;
+    letter-spacing: 1.8px;
+    text-transform: uppercase;
+    font-weight: 700;
+    margin-bottom: 3px;
+    opacity: 0.85;
+  }
+  .cn-solved-row .cn-words {
+    font-family: Georgia, serif;
+    font-size: 15px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+  }
+  .cn-solved-row.yellow { background: #f9df6d; color: #3a3100; }
+  .cn-solved-row.green  { background: #a0c35a; color: #1e3a06; }
+  .cn-solved-row.blue   { background: #b0c4ef; color: #11275f; }
+  .cn-solved-row.purple { background: #ba81c5; color: #fff; }
+
+  .cn-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+    max-width: 600px;
+    margin: 0 auto 14px;
+  }
+  .cn-tile {
+    aspect-ratio: 1.5 / 1;
+    background: #efefe6;
+    border: none;
+    cursor: pointer;
+    font-family: "Helvetica Neue", Arial, sans-serif;
+    font-weight: 700;
+    font-size: clamp(11px, 2.2vw, 15px);
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+    color: var(--ink);
+    padding: 4px 6px;
+    border-radius: 4px;
+    transition: transform 0.12s, background 0.1s, color 0.1s;
+  }
+  .cn-tile:hover:not(.cn-tile-selected) { background: #e3e2d4; }
+  .cn-tile-selected {
+    background: var(--ink);
+    color: #fff;
+  }
+  .cn-tile-shake {
+    animation: cn-shake 0.32s cubic-bezier(0.36, 0.07, 0.19, 0.97);
+  }
+  @keyframes cn-shake {
+    10%, 90% { transform: translate3d(-1px, 0, 0); }
+    20%, 80% { transform: translate3d(2px, 0, 0); }
+    30%, 50%, 70% { transform: translate3d(-3px, 0, 0); }
+    40%, 60% { transform: translate3d(3px, 0, 0); }
+  }
+  .cn-controls {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 10px;
+    flex-wrap: wrap;
+  }
+  .cn-controls button {
+    font-family: "Helvetica Neue", Arial, sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    padding: 10px 18px;
+    background: #fff;
+    border: 1px solid var(--ink);
+    color: var(--ink);
+    cursor: pointer;
+    border-radius: 999px;
+  }
+  .cn-controls button:hover { background: var(--cream); }
+  .cn-controls button:disabled { opacity: 0.45; cursor: default; }
+  .cn-controls button.primary {
+    background: var(--ink);
+    color: #fff;
+  }
+  .cn-controls button.primary:hover { filter: brightness(0.85); background: var(--ink); }
+  .cn-controls button.primary:disabled { background: var(--rule); border-color: var(--rule); color: #fff; }
+  .cn-result {
+    text-align: center;
+    font-family: Georgia, serif;
+    font-size: 18px;
+    margin: 18px auto 0;
+    padding: 16px 18px;
+    max-width: 600px;
+    background: var(--cream);
+  }
+  .cn-result.win  { border-left: 4px solid var(--accent); }
+  .cn-result.loss { border-left: 4px solid #b8002a; }
+
 </style>
 </head>
 <body>
 
-<div class="topbar"><div class="topbar-inner"><div><a href="#">Subscribe</a></div><div></div></div></div>
+<div class="topbar"><div class="topbar-inner"><div><a href="#" class="topbar-cta">Subscribe</a></div><div></div></div></div>
 
 <div class="masthead">
-  <h1><a href="index.html">The Woodley Leaves</a></h1>
-  <div class="dateline">FRIDAY, APRIL 17, 2026 &nbsp;·&nbsp; MARET SCHOOL</div>
+  <div class="masthead-ornament left" aria-hidden="true"><img src="media/leaf.svg" alt="" width="60" height="30"></div>
+  <div class="masthead-ornament right" aria-hidden="true"><img src="media/leaf.svg" alt="" width="60" height="30"></div>
+  <h1><a href="index.html">The Student Times</a></h1>
+  <div class="dateline" data-wl-text="cs-dateline">YOUR SCHOOL</div>
 </div>
 
 <nav class="sectionnav">
-  <div class="sectionnav-inner">
-    <a href="index.html">Home</a>
-    <a href="news.html">News</a>
-    <a href="features.html">Features</a>
-    <a href="opinion.html">Op-Ed</a>
-    <a href="style.html">Style</a>
-    <a href="centerspread.html" class="active">Centerspread</a>
-    <a href="sports.html">Sports</a>
-  </div>
+  <div class="sectionnav-inner"></div>
 </nav>
 
 <main class="container">
+  <section class="print-edition" aria-labelledby="print-heading">
+    <div class="print-edition-hero">
+      <div class="kicker print-edition-kicker" data-wl-text="cs-hero-kicker">April 2026 · Print Edition</div>
+      <h2 id="print-heading" class="print-edition-title" data-wl-text="cs-hero-title">The Centerspread</h2>
+      <div class="print-edition-flourish" aria-hidden="true">
+        <svg viewBox="0 0 160 24" xmlns="http://www.w3.org/2000/svg">
+          <path d="M 4 12 Q 25 2 45 12 Q 60 20 75 12 Q 95 2 115 12 Q 130 20 145 12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+          <circle cx="80" cy="12" r="3" fill="currentColor"/>
+          <circle cx="156" cy="12" r="2" fill="currentColor"/>
+        </svg>
+      </div>
+    </div>
+
+   <div class="print-pieces" id="cs-pieces" aria-live="polite"></div>
+   <p id="cs-pieces-empty" class="print-edition-deck" style="text-align:center;display:none;">No centerspread pieces yet. Add poems, prose, or images from the <b>Centerspread</b> tab in the editor dashboard.</p>
+  </section>
+
+  <section class="play-hero" aria-labelledby="play-heading">
+    <div class="play-hero-flourish" aria-hidden="true">
+      <svg viewBox="0 0 160 24" xmlns="http://www.w3.org/2000/svg">
+        <path d="M 4 12 Q 25 2 45 12 Q 60 20 75 12 Q 95 2 115 12 Q 130 20 145 12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        <circle cx="80" cy="12" r="3" fill="currentColor"/>
+      </svg>
+    </div>
+    <div class="kicker" data-wl-text="cs-play-kicker">Interactive</div>
+    <h2 id="play-heading" class="play-hero-title" data-wl-text="cs-play-title">Play</h2>
+  </section>
+
+  <section class="cw-section" data-cs-puzzle="crossword">
   <div class="cw-hero">
-    <div class="kicker">Centerspread · Puzzles</div>
-    <h2>The Mini Crossword</h2>
-    <p class="deck">A daily five-by-five from the Leaves puzzle team. Tap a square to begin — or click a clue.</p>
+    <div class="kicker" data-wl-text="cs-cw-kicker">The Daily</div>
+    <h2 data-wl-text="cs-cw-title">Mini Crossword</h2>
   </div>
 
   <div class="cw-layout">
     <div class="cw-left">
       <div class="cw-meta">
         <div>
-          <div>Friday, April 17, 2026</div>
-          <div>By the Leaves Puzzle Team</div>
+          <div>Today's Edition</div>
+          <div>By the Student Times Puzzle Team</div>
         </div>
         <div class="cw-timer" id="timer">0:00</div>
       </div>
 
-      <div class="cw-grid" id="grid" tabindex="0" aria-label="Crossword grid"></div>
+      <div class="cw-grid" id="grid" tabindex="0" role="grid" aria-label="Mini crossword, 5 by 5 grid. Use arrow keys to navigate and type letters to fill in."></div>
 
-      <div class="cw-current" id="current-clue">
+      <div class="cw-current" id="current-clue" aria-live="polite" aria-atomic="true">
         <span class="label">Clue</span><span id="current-clue-text">Tap a square to begin.</span>
       </div>
 
@@ -515,26 +915,31 @@
     </div>
   </div>
 
-  <section class="wd-section">
-    <div class="wd-hero">
-      <div class="kicker">Centerspread · Puzzles</div>
-      <h2>The Daily Five</h2>
-      <p class="deck">Guess the five-letter word in six tries. Green means the letter is correct and in the right spot; yellow means it's in the word, wrong spot.</p>
-    </div>
-
-    <div class="wd-layout">
-      <div class="wd-board" id="wd-board"></div>
-      <div class="wd-message" id="wd-message"></div>
-      <div class="wd-keyboard" id="wd-keyboard"></div>
-      <button class="wd-reset" id="wd-reset">New game</button>
-    </div>
   </section>
 
-  <section class="sb-section">
+  <section class="ws-section" data-cs-puzzle="wordsearch" aria-labelledby="ws-heading">
+    <div class="cw-hero">
+      <div class="kicker" data-wl-text="cs-wordsearch-kicker">Word Search</div>
+      <h2 id="ws-heading" data-wl-text="cs-wordsearch-title">Spring Word Search</h2>
+    </div>
+    <div class="wordsearch-layout">
+      <div class="wordsearch-panel">
+        <div class="wordsearch-grid" id="ws-grid" aria-label="Interactive word search grid"></div>
+        <div class="wordsearch-controls">
+          <span class="wordsearch-status" id="ws-status">0 of 14 found</span>
+          <button class="btn-toggle-solution" id="ws-reveal" type="button">Reveal all</button>
+          <button class="btn-toggle-solution" id="ws-reset" type="button" style="background:#fff;color:var(--accent);border:1px solid var(--accent);">New grid</button>
+        </div>
+      </div>
+      <ul class="wordsearch-list" id="ws-list"></ul>
+    </div>
+    <div id="ws-done" class="ws-done" hidden>All 14 words found — nice work.</div>
+  </section>
+
+  <section class="sb-section" data-cs-puzzle="spellingbee">
     <div class="sb-hero">
-      <div class="kicker">Centerspread · Puzzles</div>
-      <h2>Spelling Bee</h2>
-      <p class="deck">Make as many words as you can from these letters. Every word must include the green center letter and be at least four letters long. Letters can be reused.</p>
+      <div class="kicker" data-wl-text="cs-sb-kicker">Centerspread · Puzzles</div>
+      <h2 data-wl-text="cs-sb-title">Spelling Bee</h2>
     </div>
 
     <div class="sb-layout">
@@ -543,7 +948,7 @@
           <span id="sb-rank">Beginner</span>
           <span class="sb-score-num" id="sb-score">0</span>
         </div>
-        <div class="sb-msg" id="sb-msg"></div>
+        <div class="sb-msg" id="sb-msg" aria-live="polite" aria-atomic="true"></div>
         <div class="sb-guess" id="sb-guess"></div>
         <div class="sb-honeycomb" id="sb-honeycomb"></div>
         <div class="sb-controls">
@@ -558,13 +963,279 @@
       </div>
     </div>
   </section>
+
+       The puzzle pool (puzzles-store.js), the editor UI (editor-puzzles.html),
+       the CSS (.cn-* rules above), and the game IIFE below are all still
+       present, so un-commenting the block restores the feature with no other
+       changes needed.
+  <section class="cn-section" data-cs-puzzle="connections" aria-labelledby="cn-heading">
+    <div class="cn-hero">
+      <div class="kicker" data-wl-text="cs-cn-kicker">Centerspread · Puzzles</div>
+      <h2 id="cn-heading" data-wl-text="cs-cn-title">Connections</h2>
+    </div>
+
+    <div class="cn-mistakes" aria-live="polite">
+      <span class="cn-mistakes-label">Mistakes remaining:</span>
+      <span class="cn-dots" id="cn-dots"></span>
+    </div>
+    <div class="cn-flash" id="cn-flash" aria-live="polite"></div>
+    <div class="cn-solved" id="cn-solved"></div>
+    <div class="cn-grid" id="cn-grid" role="grid" aria-label="16 words in 4 rows of 4"></div>
+    <div class="cn-controls">
+      <button type="button" id="cn-shuffle">Shuffle</button>
+      <button type="button" id="cn-deselect">Deselect all</button>
+      <button type="button" id="cn-submit" class="primary">Submit</button>
+    </div>
+    <div class="cn-result" id="cn-result" hidden></div>
+  </section>
+
+
 </main>
 
-<footer>© 2026 The Woodley Leaves · Maret School Student Publication<br>Online Editor-in-Chief: <a href="mailto:arielp2027@maret.org">arielp2027@maret.org</a> · Online Managing Editor: <a href="mailto:farrynb2027@maret.org">farrynb2027@maret.org</a></footer>
+<footer>© 2026 The Student Times · Your School Student Publication · <a href="staff.html">Staff</a> · <a href="tip.html">Pitch a story</a><br>Online Editor-in-Chief: <a href="mailto:editor@example.org">editor@example.org</a> · Online Managing Editor: <a href="mailto:managing@example.org">managing@example.org</a></footer>
 
+<script src="centerspread.js"></script>
+<script src="centerspread-store.js"></script>
 <script src="puzzles-store.js"></script>
+<script src="submissions.js"></script>
 <script src="auth.js"></script>
 <script src="script.js"></script>
+<script src="text-editor.js"></script>
+<script src="layout-editor.js"></script>
+<script>
+  // ===== Interactive Spring Word Search =====
+  (function () {
+    const WORDS = [
+      "ALLERGIES", "APRILFOOLSDAY", "BEES", "CHERRYBLOSSOMS", "CLEANING",
+      "DAYLIGHTSAVINGS", "FLOWERS", "GARDENING", "MARCH", "MAY",
+      "PICNIC", "RAIN", "SPRINGBREAK", "SUNSHINE"
+    ];
+    const DISPLAY = {
+      ALLERGIES: "Allergies", APRILFOOLSDAY: "April Fools Day", BEES: "Bees",
+      CHERRYBLOSSOMS: "Cherry Blossoms", CLEANING: "Cleaning",
+      DAYLIGHTSAVINGS: "Daylight Savings", FLOWERS: "Flowers", GARDENING: "Gardening",
+      MARCH: "March", MAY: "May", PICNIC: "Picnic", RAIN: "Rain",
+      SPRINGBREAK: "Spring Break", SUNSHINE: "Sunshine"
+    };
+    const SIZE = 16;
+    const DIRS = [
+      [-1, -1], [-1, 0], [-1, 1],
+      [ 0, -1],          [ 0, 1],
+      [ 1, -1], [ 1, 0], [ 1, 1]
+    ];
+
+    const gridEl = document.getElementById("ws-grid");
+    const listEl = document.getElementById("ws-list");
+    const statusEl = document.getElementById("ws-status");
+    const doneEl = document.getElementById("ws-done");
+    const revealBtn = document.getElementById("ws-reveal");
+    const resetBtn = document.getElementById("ws-reset");
+    if (!gridEl) return;
+
+    let grid = [];           // SIZE x SIZE letters
+    let placements = [];     // [{word, cells: [[r,c],…]}]
+    let found = new Set();   // found word strings
+
+    // ---- Grid generation ----
+    function tryGenerate() {
+      const g = Array.from({ length: SIZE }, () => Array(SIZE).fill(""));
+      const plcs = [];
+      // Place longer words first — they're harder to fit
+      const sorted = [...WORDS].sort((a, b) => b.length - a.length);
+      for (const word of sorted) {
+        let placed = false;
+        for (let attempt = 0; attempt < 400 && !placed; attempt++) {
+          const [dr, dc] = DIRS[Math.floor(Math.random() * DIRS.length)];
+          const r0 = Math.floor(Math.random() * SIZE);
+          const c0 = Math.floor(Math.random() * SIZE);
+          const rEnd = r0 + dr * (word.length - 1);
+          const cEnd = c0 + dc * (word.length - 1);
+          if (rEnd < 0 || rEnd >= SIZE || cEnd < 0 || cEnd >= SIZE) continue;
+          let ok = true;
+          for (let i = 0; i < word.length; i++) {
+            const r = r0 + dr * i, c = c0 + dc * i;
+            if (g[r][c] !== "" && g[r][c] !== word[i]) { ok = false; break; }
+          }
+          if (!ok) continue;
+          const cells = [];
+          for (let i = 0; i < word.length; i++) {
+            const r = r0 + dr * i, c = c0 + dc * i;
+            g[r][c] = word[i];
+            cells.push([r, c]);
+          }
+          plcs.push({ word, cells });
+          placed = true;
+        }
+        if (!placed) return null;  // retry whole grid
+      }
+      // Fill empty with random letters
+      for (let r = 0; r < SIZE; r++) {
+        for (let c = 0; c < SIZE; c++) {
+          if (g[r][c] === "") g[r][c] = String.fromCharCode(65 + Math.floor(Math.random() * 26));
+        }
+      }
+      return { g, plcs };
+    }
+
+    function generate() {
+      for (let tries = 0; tries < 30; tries++) {
+        const result = tryGenerate();
+        if (result) { grid = result.g; placements = result.plcs; return; }
+      }
+      // Should never happen, but if it does fall through with a less-populated grid
+      const result = tryGenerate();
+      if (result) { grid = result.g; placements = result.plcs; }
+    }
+
+    // ---- Rendering ----
+    function renderGrid() {
+      gridEl.style.gridTemplateColumns = `repeat(${SIZE}, 1fr)`;
+      gridEl.innerHTML = "";
+      for (let r = 0; r < SIZE; r++) {
+        for (let c = 0; c < SIZE; c++) {
+          const cell = document.createElement("div");
+          cell.className = "ws-cell";
+          cell.textContent = grid[r][c];
+          cell.dataset.r = r;
+          cell.dataset.c = c;
+          gridEl.appendChild(cell);
+        }
+      }
+    }
+
+    function renderList() {
+      listEl.innerHTML = "";
+      Object.keys(DISPLAY).sort((a, b) => DISPLAY[a].localeCompare(DISPLAY[b])).forEach(word => {
+        const li = document.createElement("li");
+        li.textContent = DISPLAY[word];
+        li.dataset.word = word;
+        if (found.has(word)) li.classList.add("found");
+        listEl.appendChild(li);
+      });
+    }
+
+    function updateStatus() {
+      statusEl.textContent = `${found.size} of ${WORDS.length} found`;
+      if (found.size === WORDS.length) doneEl.hidden = false;
+      else doneEl.hidden = true;
+    }
+
+    // ---- Selection (pointer events) ----
+    let dragging = false;
+    let startCell = null;   // [r, c]
+    let endCell = null;     // [r, c]
+
+    function cellFromPoint(x, y) {
+      const el = document.elementFromPoint(x, y);
+      if (!el) return null;
+      const td = el.closest(".ws-cell");
+      if (!td || !gridEl.contains(td)) return null;
+      return [+td.dataset.r, +td.dataset.c];
+    }
+
+    function linearCells(start, end) {
+      const [r1, c1] = start, [r2, c2] = end;
+      const dr = r2 - r1, dc = c2 - c1;
+      if (dr === 0 && dc === 0) return [[r1, c1]];
+      if (dr !== 0 && dc !== 0 && Math.abs(dr) !== Math.abs(dc)) return null;  // not a line
+      const len = Math.max(Math.abs(dr), Math.abs(dc));
+      const sr = Math.sign(dr), sc = Math.sign(dc);
+      const cells = [];
+      for (let i = 0; i <= len; i++) cells.push([r1 + sr * i, c1 + sc * i]);
+      return cells;
+    }
+
+    function clearSelecting() {
+      gridEl.querySelectorAll(".ws-cell.selecting").forEach(el => el.classList.remove("selecting"));
+    }
+
+    function highlightSelection(cells) {
+      clearSelecting();
+      if (!cells) return;
+      cells.forEach(([r, c]) => {
+        const el = gridEl.querySelector(`.ws-cell[data-r="${r}"][data-c="${c}"]`);
+        if (el) el.classList.add("selecting");
+      });
+    }
+
+    function markFoundCells(cells) {
+      cells.forEach(([r, c]) => {
+        const el = gridEl.querySelector(`.ws-cell[data-r="${r}"][data-c="${c}"]`);
+        if (el) el.classList.add("found");
+      });
+    }
+
+    function finalizeSelection() {
+      const s = startCell, e = endCell;
+      clearSelecting();
+      dragging = false;
+      startCell = null;
+      endCell = null;
+      if (!s || !e) return;
+      const cells = linearCells(s, e);
+      if (!cells) return;
+      const selected = cells.map(([r, c]) => grid[r][c]).join("");
+      const reversed = selected.split("").reverse().join("");
+      const match = WORDS.find(w => (w === selected || w === reversed) && !found.has(w));
+      if (match) {
+        found.add(match);
+        markFoundCells(cells);
+        const li = listEl.querySelector(`li[data-word="${match}"]`);
+        if (li) li.classList.add("found");
+        updateStatus();
+      }
+    }
+
+    gridEl.addEventListener("pointerdown", (e) => {
+      e.preventDefault();
+      const pos = cellFromPoint(e.clientX, e.clientY);
+      if (!pos) return;
+      dragging = true;
+      startCell = pos;
+      endCell = pos;
+      highlightSelection([pos]);
+      gridEl.setPointerCapture(e.pointerId);
+    });
+    gridEl.addEventListener("pointermove", (e) => {
+      if (!dragging) return;
+      const pos = cellFromPoint(e.clientX, e.clientY);
+      if (!pos) return;
+      endCell = pos;
+      const cells = linearCells(startCell, endCell);
+      highlightSelection(cells);
+    });
+    gridEl.addEventListener("pointerup", finalizeSelection);
+    gridEl.addEventListener("pointercancel", finalizeSelection);
+
+    // Reveal all — fill in remaining words
+    revealBtn.addEventListener("click", () => {
+      placements.forEach(p => {
+        if (!found.has(p.word)) {
+          found.add(p.word);
+          markFoundCells(p.cells);
+          const li = listEl.querySelector(`li[data-word="${p.word}"]`);
+          if (li) li.classList.add("found");
+        }
+      });
+      updateStatus();
+    });
+
+    // New grid — regenerate
+    resetBtn.addEventListener("click", () => {
+      found = new Set();
+      generate();
+      renderGrid();
+      renderList();
+      updateStatus();
+    });
+
+    // Initial render
+    generate();
+    renderGrid();
+    renderList();
+    updateStatus();
+  })();
+</script>
 <script>
 // ===== Today's crossword (pulled from the editor-managed pool) =====
 const _todayCw = WLPuzzles.todayCrossword();
@@ -580,7 +1251,6 @@ let startTime = null;
 let timerInterval = null;
 let solved = false;
 let usedReveal = false;
-let attemptRecorded = false;
 
 // ===== Numbering =====
 // A cell starts an across word if col==0 or is the start. In this all-open grid:
@@ -614,15 +1284,19 @@ function renderGrid() {
       cell.className = "cw-cell";
       cell.dataset.row = r;
       cell.dataset.col = c;
+      cell.setAttribute("role", "gridcell");
+      cell.setAttribute("aria-label", `Row ${r + 1}, column ${c + 1}, empty`);
       const num = numbers[`${r},${c}`];
       if (num) {
         const nEl = document.createElement("span");
         nEl.className = "num";
         nEl.textContent = num;
+        nEl.setAttribute("aria-hidden", "true");
         cell.appendChild(nEl);
       }
       const letter = document.createElement("span");
       letter.className = "letter";
+      letter.setAttribute("aria-hidden", "true");
       cell.appendChild(letter);
       cell.addEventListener("click", () => onCellClick(r, c));
       gridEl.appendChild(cell);
@@ -694,7 +1368,11 @@ function updateUI() {
     const letterEl = cell.querySelector(".letter");
     letterEl.textContent = grid[r][c];
     if (wordSet.has(`${r},${c}`)) cell.classList.add("in-word");
-    if (r === selected.row && c === selected.col) cell.classList.add("selected");
+    const isSelected = r === selected.row && c === selected.col;
+    if (isSelected) cell.classList.add("selected");
+    const letter = grid[r][c] || "empty";
+    const selStr = isSelected ? ", selected" : "";
+    cell.setAttribute("aria-label", `Row ${r + 1}, column ${c + 1}, ${letter}${selStr}`);
   });
 
   // update current clue text
@@ -787,7 +1465,6 @@ document.getElementById("btn-reset").addEventListener("click", () => {
   gridEl.querySelectorAll(".cw-cell").forEach(c => c.classList.remove("wrong"));
   solved = false;
   usedReveal = false;
-  attemptRecorded = false;
   document.getElementById("win-banner").classList.remove("visible");
   resetTimer();
   updateUI();
@@ -836,12 +1513,8 @@ function checkWin() {
   banner.classList.add("visible");
   const t = document.getElementById("timer").textContent;
   let msg = `Solved in ${t} — nice work.`;
-  if (usedReveal) msg += " (Stats not recorded — revealed letters.)";
+  if (usedReveal) msg += " (Not counted for your grade — revealed letters.)";
   banner.textContent = msg;
-  if (!usedReveal && startTime && window.WLAuth) {
-    const elapsed = Math.floor((Date.now() - startTime) / 1000);
-    WLAuth.recordCrosswordComplete(elapsed);
-  }
 }
 
 // ===== Timer =====
@@ -849,10 +1522,6 @@ function startTimerIfNeeded() {
   if (startTime || solved) return;
   startTime = Date.now();
   timerInterval = setInterval(tickTimer, 1000);
-  if (!attemptRecorded && window.WLAuth) {
-    WLAuth.recordCrosswordAttempt();
-    attemptRecorded = true;
-  }
 }
 function tickTimer() {
   const sec = Math.floor((Date.now() - startTime) / 1000);
@@ -878,159 +1547,12 @@ let activeGame = "cw";
 document.querySelector(".cw-layout").addEventListener("click", () => { activeGame = "cw"; });
 
 document.addEventListener("keydown", (e) => {
-  if (document.activeElement.tagName === "INPUT" || document.activeElement.tagName === "TEXTAREA") return;
+  const ae = document.activeElement;
+  if (ae && (ae.tagName === "INPUT" || ae.tagName === "TEXTAREA" || ae.isContentEditable)) return;
   if (activeGame !== "cw") return;
   handleKey(e);
 });
 
-// ===== Wordle: "The Daily Five" =====
-(function() {
-  const ANSWER = WLPuzzles.todayWordle();  // pulled from the editor-managed pool
-  const ROWS = 6, COLS = 5;
-  let row = 0, guess = "", over = false;
-  const keyStates = {};
-
-  const boardEl = document.getElementById("wd-board");
-  const msgEl = document.getElementById("wd-message");
-  const kbEl = document.getElementById("wd-keyboard");
-
-  function renderBoard() {
-    boardEl.innerHTML = "";
-    for (let r = 0; r < ROWS; r++) {
-      const rowEl = document.createElement("div");
-      rowEl.className = "wd-row";
-      for (let c = 0; c < COLS; c++) {
-        const tile = document.createElement("div");
-        tile.className = "wd-tile";
-        tile.id = `wd-tile-${r}-${c}`;
-        rowEl.appendChild(tile);
-      }
-      boardEl.appendChild(rowEl);
-    }
-  }
-
-  function makeKey(label, handler, wide) {
-    const b = document.createElement("button");
-    b.className = "wd-key" + (wide ? " wide" : "");
-    b.textContent = label;
-    if (label.length === 1) b.dataset.letter = label;
-    b.addEventListener("click", (e) => { e.preventDefault(); activeGame = "wd"; handler(); });
-    return b;
-  }
-  function renderKeyboard() {
-    kbEl.innerHTML = "";
-    const rowDefs = ["QWERTYUIOP", "ASDFGHJKL", "ZXCVBNM"];
-    rowDefs.forEach((letters, i) => {
-      const rEl = document.createElement("div");
-      rEl.className = "wd-key-row";
-      if (i === 2) rEl.appendChild(makeKey("Enter", onSubmit, true));
-      [...letters].forEach(l => rEl.appendChild(makeKey(l, () => input(l))));
-      if (i === 2) rEl.appendChild(makeKey("Back", onBackspace, true));
-      kbEl.appendChild(rEl);
-    });
-  }
-
-  function updateRow() {
-    for (let c = 0; c < COLS; c++) {
-      const t = document.getElementById(`wd-tile-${row}-${c}`);
-      const l = guess[c] || "";
-      t.textContent = l;
-      t.classList.toggle("filled", !!l);
-    }
-  }
-
-  function input(letter) {
-    if (over) return;
-    if (guess.length < COLS) { guess += letter; updateRow(); }
-  }
-  function onBackspace() {
-    if (over) return;
-    guess = guess.slice(0, -1);
-    updateRow();
-  }
-
-  function evaluate(g) {
-    const res = Array(COLS).fill("absent");
-    const ans = ANSWER.split("");
-    for (let i = 0; i < COLS; i++) {
-      if (g[i] === ans[i]) { res[i] = "correct"; ans[i] = null; }
-    }
-    for (let i = 0; i < COLS; i++) {
-      if (res[i] === "correct") continue;
-      const idx = ans.indexOf(g[i]);
-      if (idx !== -1) { res[i] = "present"; ans[idx] = null; }
-    }
-    return res;
-  }
-
-  function message(text, duration) {
-    msgEl.textContent = text;
-    if (duration !== 0) {
-      const snapshot = text;
-      setTimeout(() => { if (msgEl.textContent === snapshot) msgEl.textContent = ""; }, duration || 1800);
-    }
-  }
-
-  function onSubmit() {
-    if (over) return;
-    if (guess.length !== COLS) { message("Not enough letters"); return; }
-    const res = evaluate(guess);
-    for (let c = 0; c < COLS; c++) {
-      const t = document.getElementById(`wd-tile-${row}-${c}`);
-      t.classList.remove("filled");
-      t.classList.add(res[c]);
-    }
-    const priority = {correct: 3, present: 2, absent: 1};
-    for (let c = 0; c < COLS; c++) {
-      const l = guess[c], s = res[c];
-      if (!keyStates[l] || priority[s] > priority[keyStates[l]]) {
-        keyStates[l] = s;
-        const k = kbEl.querySelector(`.wd-key[data-letter="${l}"]`);
-        if (k) {
-          k.classList.remove("correct","present","absent");
-          k.classList.add(s);
-        }
-      }
-    }
-    if (guess === ANSWER) {
-      message(`Nice! You got it in ${row + 1} ${row === 0 ? "try" : "tries"}.`, 0);
-      over = true;
-      if (window.WLAuth) WLAuth.recordWordleResult(true, row + 1);
-      return;
-    }
-    row++;
-    guess = "";
-    if (row === ROWS) {
-      message(`Out of guesses — the word was ${ANSWER}.`, 0);
-      over = true;
-      if (window.WLAuth) WLAuth.recordWordleResult(false, ROWS);
-    }
-  }
-
-  function reset() {
-    row = 0; guess = ""; over = false;
-    Object.keys(keyStates).forEach(k => delete keyStates[k]);
-    renderBoard();
-    kbEl.querySelectorAll(".wd-key").forEach(k => k.classList.remove("correct","present","absent"));
-    msgEl.textContent = "";
-  }
-
-  document.getElementById("wd-reset").addEventListener("click", () => { activeGame = "wd"; reset(); });
-  document.querySelector(".wd-section").addEventListener("click", () => { activeGame = "wd"; });
-
-  document.addEventListener("keydown", (e) => {
-    if (document.activeElement.tagName === "INPUT" || document.activeElement.tagName === "TEXTAREA") return;
-    if (activeGame !== "wd") return;
-    if (over && e.key !== "Enter") return;
-    const k = e.key;
-    if (/^[a-zA-Z]$/.test(k)) { input(k.toUpperCase()); e.preventDefault(); }
-    else if (k === "Enter") { onSubmit(); e.preventDefault(); }
-    else if (k === "Backspace") { onBackspace(); e.preventDefault(); }
-  });
-
-  renderBoard();
-  renderKeyboard();
-})();
 
 // ===== Spelling Bee =====
 (function () {
@@ -1160,6 +1682,7 @@ document.addEventListener("keydown", (e) => {
     else if (word.length >= 5) flash(`Nice! +${pts}`);
     else flash(`+${pts}`);
 
+
     currentGuess = "";
     renderGuess();
     renderFound();
@@ -1207,7 +1730,8 @@ document.addEventListener("keydown", (e) => {
   document.querySelector(".sb-section").addEventListener("click", () => { activeGame = "sb"; });
 
   document.addEventListener("keydown", (e) => {
-    if (document.activeElement.tagName === "INPUT" || document.activeElement.tagName === "TEXTAREA") return;
+    const ae = document.activeElement;
+    if (ae && (ae.tagName === "INPUT" || ae.tagName === "TEXTAREA" || ae.isContentEditable)) return;
     if (activeGame !== "sb") return;
     if (/^[a-zA-Z]$/.test(e.key)) { addLetter(e.key.toUpperCase()); e.preventDefault(); }
     else if (e.key === "Backspace") { backspace(); e.preventDefault(); }
@@ -1219,6 +1743,266 @@ document.addEventListener("keydown", (e) => {
   renderGuess();
   renderFound();
   renderScore();
+})();
+
+// ===== Connections =====
+// 16 words in 4 hidden groups of 4. The player picks 4 at a time and submits.
+// All-four-same-group → reveal that group. 3-of-4 → "one away" hint + a lost
+// life. Anything else → shake + lost life. 4 mistakes = game over.
+(function () {
+  const gridEl = document.getElementById("cn-grid");
+  // The Connections section is commented out in the HTML for now — bail if
+  // the DOM isn't there so the rest of the page still works.
+  if (!gridEl) return;
+  const PUZZLE = window.WLPuzzles && WLPuzzles.todayConnections();
+  if (!PUZZLE || !PUZZLE.groups || PUZZLE.groups.length !== 4) return;
+  const solvedEl   = document.getElementById("cn-solved");
+  const submitBtn  = document.getElementById("cn-submit");
+  const shuffleBtn = document.getElementById("cn-shuffle");
+  const deselBtn   = document.getElementById("cn-deselect");
+  const dotsEl     = document.getElementById("cn-dots");
+  const flashEl    = document.getElementById("cn-flash");
+  const resultEl   = document.getElementById("cn-result");
+  const MAX_MISTAKES = 4;
+
+  // Build the word list with group provenance.
+  const allWords = [];
+  PUZZLE.groups.forEach((g, gi) => {
+    g.words.forEach(w => allWords.push({ word: w, groupIdx: gi }));
+  });
+
+  let remaining = shuffle(allWords.slice()); // words not yet solved
+  let selected  = new Set();                 // indices into `remaining`
+  let mistakes  = 0;
+  let foundGroupIdxs = [];                   // solved group indexes in order
+  let gameOver = false;
+
+  function shuffle(arr) {
+    for (let i = arr.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [arr[i], arr[j]] = [arr[j], arr[i]];
+    }
+    return arr;
+  }
+
+  function renderDots() {
+    dotsEl.innerHTML = "";
+    for (let i = 0; i < MAX_MISTAKES; i++) {
+      const d = document.createElement("span");
+      d.className = "cn-dot" + (i < mistakes ? " used" : "");
+      dotsEl.appendChild(d);
+    }
+  }
+
+  function renderSolved() {
+    solvedEl.innerHTML = "";
+    foundGroupIdxs.forEach(gi => {
+      const g = PUZZLE.groups[gi];
+      const row = document.createElement("div");
+      row.className = "cn-solved-row " + (g.difficulty || "yellow");
+      row.innerHTML = `
+        <div class="cn-category">${escapeHtml(g.category || "")}</div>
+        <div class="cn-words">${g.words.map(escapeHtml).join(" · ")}</div>
+      `;
+      solvedEl.appendChild(row);
+    });
+  }
+
+  function renderGrid() {
+    gridEl.innerHTML = "";
+    remaining.forEach((entry, idx) => {
+      const btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = "cn-tile" + (selected.has(idx) ? " cn-tile-selected" : "");
+      btn.textContent = entry.word;
+      btn.dataset.idx = String(idx);
+      btn.disabled = gameOver;
+      btn.addEventListener("click", () => toggleSelect(idx));
+      gridEl.appendChild(btn);
+    });
+    updateButtons();
+  }
+
+  function toggleSelect(idx) {
+    if (gameOver) return;
+    if (selected.has(idx)) selected.delete(idx);
+    else if (selected.size < 4) selected.add(idx);
+    renderGrid();
+  }
+
+  function updateButtons() {
+    submitBtn.disabled = gameOver || selected.size !== 4;
+    deselBtn.disabled  = gameOver || selected.size === 0;
+    shuffleBtn.disabled = gameOver;
+  }
+
+  function escapeHtml(s) {
+    return String(s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+  }
+
+  function flash(msg) {
+    flashEl.textContent = msg;
+    if (msg) setTimeout(() => { if (flashEl.textContent === msg) flashEl.textContent = ""; }, 1800);
+  }
+
+  function shakeSelected() {
+    [...gridEl.querySelectorAll(".cn-tile-selected")].forEach(el => {
+      el.classList.add("cn-tile-shake");
+      setTimeout(() => el.classList.remove("cn-tile-shake"), 400);
+    });
+  }
+
+  function submit() {
+    if (selected.size !== 4 || gameOver) return;
+    const selArr = [...selected];
+    const groups = selArr.map(i => remaining[i].groupIdx);
+    const first = groups[0];
+    const allSame = groups.every(g => g === first);
+
+    if (allSame) {
+      foundGroupIdxs.push(first);
+      // Remove solved words from the remaining grid (high-to-low so indices
+      // stay valid).
+      selArr.sort((a, b) => b - a).forEach(i => remaining.splice(i, 1));
+      selected.clear();
+      renderSolved();
+      renderGrid();
+      if (foundGroupIdxs.length === 4) {
+        endGame(true);
+      } else {
+        const g = PUZZLE.groups[first];
+        flash(`${g.category} ✓`);
+      }
+      return;
+    }
+
+    // Not a match. "One away" = exactly 3 of the 4 belong to one group.
+    const counts = {};
+    groups.forEach(g => { counts[g] = (counts[g] || 0) + 1; });
+    const maxCount = Math.max(...Object.values(counts));
+    mistakes++;
+    renderDots();
+    shakeSelected();
+    if (mistakes >= MAX_MISTAKES) {
+      endGame(false);
+    } else {
+      flash(maxCount === 3 ? "One away…" : "Not quite");
+    }
+  }
+
+  function endGame(won) {
+    gameOver = true;
+    // Reveal remaining groups (in canonical color order) no matter the outcome.
+    const revealed = new Set(foundGroupIdxs);
+    PUZZLE.groups.forEach((_, gi) => {
+      if (!revealed.has(gi)) foundGroupIdxs.push(gi);
+    });
+    // Empty the grid since everything's solved/revealed.
+    remaining = [];
+    selected.clear();
+    renderSolved();
+    renderGrid();
+    resultEl.hidden = false;
+    resultEl.className = "cn-result " + (won ? "win" : "loss");
+    resultEl.textContent = won
+      ? "Solved — nice work."
+      : "Out of guesses. Here's the full grid — come back tomorrow for a new one.";
+  }
+
+  shuffleBtn.addEventListener("click", () => {
+    remaining = shuffle(remaining);
+    selected.clear();
+    renderGrid();
+  });
+  deselBtn.addEventListener("click", () => { selected.clear(); renderGrid(); });
+  submitBtn.addEventListener("click", submit);
+
+  // Initial paint.
+  renderDots();
+  renderSolved();
+  renderGrid();
+})();
+
+</script>
+
+<!-- Centerspread print pieces + puzzle visibility, from WLCenterspread -->
+<script>
+(function () {
+  if (!window.WLCenterspread) return;
+  const wrap = document.getElementById("cs-pieces");
+  const empty = document.getElementById("cs-pieces-empty");
+  if (!wrap) return;
+
+  function esc(s) {
+    return String(s == null ? "" : s).replace(/[&<>"']/g, c =>
+      ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+  }
+
+  // "line one\nline two\n\nnext stanza" -> [[l1,l2],[...]]
+  function blocks(body) {
+    return String(body || "").replace(/\r\n/g, "\n").split(/\n\s*\n/)
+      .map(b => b.split("\n").filter(l => l.trim() !== ""))
+      .filter(b => b.length);
+  }
+
+  function headHtml(p) {
+    return `<div class="print-piece-head">
+        ${p.kicker ? `<div class="kicker">${esc(p.kicker)}</div>` : ""}
+        <h3>${esc(p.title || "")}</h3>
+        ${p.byline ? `<div class="byline">${esc(p.byline)}</div>` : ""}
+      </div>`;
+  }
+
+  function revealHtml(p) {
+    if (!p.reveal || !(p.reveal.answer || "").trim()) return "";
+    return `<details class="reveal">
+        <summary>${esc(p.reveal.summary || "Reveal the answer")}</summary>
+        <div class="reveal-body">${esc(p.reveal.answer)}</div>
+      </details>`;
+  }
+
+  function bodyHtml(p) {
+    if (p.type === "image") {
+      if (!p.image) return "";
+      return `<figure class="print-piece-figure"><img src="${esc(p.image)}" alt="${esc(p.alt || "")}"></figure>`;
+    }
+    if (p.type === "poem") {
+      const stanzas = blocks(p.body).map(st =>
+        `<div class="poem-stanza">${st.map(l => `<p>${esc(l)}</p>`).join("")}</div>`).join("");
+      return `<div class="poem-body">${stanzas}</div>`;
+    }
+    // prose
+    const paras = blocks(p.body).map(par => `<p>${esc(par.join(" "))}</p>`).join("");
+    return `<div class="teacher-body">${paras}</div>`;
+  }
+
+  function pieceHtml(p) {
+    const cls = "print-piece" + (p.type === "poem" ? " poem-piece" : "");
+    return `<article class="${cls}">${headHtml(p)}${bodyHtml(p)}${revealHtml(p)}</article>`;
+  }
+
+  function renderPieces() {
+    const pieces = WLCenterspread.list();
+    wrap.innerHTML = "";
+    if (empty) empty.style.display = pieces.length ? "none" : "block";
+    // Two pieces per row, matching the original print layout.
+    for (let i = 0; i < pieces.length; i += 2) {
+      const row = document.createElement("div");
+      row.className = "wl-row";
+      row.innerHTML = pieces.slice(i, i + 2).map(pieceHtml).join("");
+      wrap.appendChild(row);
+    }
+  }
+
+  function applyPuzzleVisibility() {
+    document.querySelectorAll("[data-cs-puzzle]").forEach(el => {
+      el.style.display = WLCenterspread.isPuzzleVisible(el.dataset.csPuzzle) ? "" : "none";
+    });
+  }
+
+  function renderAll() { renderPieces(); applyPuzzleVisibility(); }
+  document.addEventListener("wl-centerspread-change", renderAll);
+  renderAll();
 })();
 </script>
 </body>

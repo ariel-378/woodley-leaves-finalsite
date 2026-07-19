@@ -3,66 +3,71 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Op-Ed — The Woodley Leaves</title>
-<meta name="description" content="Opinion and editorial writing from Maret School students.">
-<meta property="og:title" content="Op-Ed — The Woodley Leaves">
+<title>Op-Ed — The Student Times</title>
+<meta name="description" content="Opinion and editorial writing from Your School students.">
+<meta property="og:title" content="Op-Ed — The Student Times">
 <meta property="og:type" content="website">
-<meta property="og:site_name" content="The Woodley Leaves">
+<meta property="og:site_name" content="The Student Times">
 <link rel="icon" type="image/svg+xml" href="favicon.svg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Old+Standard+TT:wght@400;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="styles.css" />
+<script src="config.js"></script>
+<script src="brand-store.js"></script>
+<script src="brand.js"></script>
+<script src="sections-store.js"></script>
+<script src="nav.js"></script>
 </head>
 <body>
 
-<div class="topbar"><div class="topbar-inner"><div><a href="#">Subscribe</a></div><div></div></div></div>
+<div class="topbar"><div class="topbar-inner"><div><a href="#" class="topbar-cta">Subscribe</a></div><div></div></div></div>
 
 <div class="masthead">
-  <h1><a href="index.html">The Woodley Leaves</a></h1>
-  <div class="dateline">FRIDAY, APRIL 17, 2026 &nbsp;·&nbsp; MARET SCHOOL</div>
+  <div class="masthead-ornament left" aria-hidden="true"><img src="media/leaf.svg" alt="" width="60" height="30"></div>
+  <div class="masthead-ornament right" aria-hidden="true"><img src="media/leaf.svg" alt="" width="60" height="30"></div>
+  <h1><a href="index.html">The Student Times</a></h1>
+  <div class="dateline" data-wl-text="opinion-dateline">YOUR SCHOOL</div>
 </div>
 
 <nav class="sectionnav">
-  <div class="sectionnav-inner">
-    <a href="index.html">Home</a>
-    <a href="news.html">News</a>
-    <a href="features.html">Features</a>
-    <a href="opinion.html" class="active">Op-Ed</a>
-    <a href="style.html">Style</a>
-    <a href="centerspread.html">Centerspread</a>
-    <a href="sports.html">Sports</a>
-  </div>
+  <div class="sectionnav-inner"></div>
 </nav>
 
 <main class="container">
-  <div class="section-header">
+  <header class="section-hero">
+    <div class="kicker" data-wl-text="opinion-kicker">Student Voices</div>
     <h2>Opinion</h2>
-    <span class="see-all">Student voices on what matters</span>
-  </div>
+    <div class="section-hero-flourish" aria-hidden="true">
+      <svg viewBox="0 0 160 24" xmlns="http://www.w3.org/2000/svg">
+        <path d="M 4 12 L 62 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" fill="none"/>
+        <text x="80" y="20" font-family="Georgia, serif" font-size="24" font-weight="700" fill="currentColor" text-anchor="middle">&#8220;&#8221;</text>
+        <path d="M 98 12 L 156 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" fill="none"/>
+      </svg>
+    </div>
+  </header>
 
-  <div class="section-grid">
-    <div class="article-list" id="article-list" data-section="Op-Ed"></div>
-
-    <aside>
-      <div class="ad">
-        <div class="ad-label">Club Advertisement</div>
-        <h4>Debate Team Tryouts</h4>
-        <p>April 28 · Room 107 · All grades welcome.</p>
-      </div>
-      <div class="ad">
-        <div class="ad-label">Submit</div>
-        <h4>Write for Op-Ed</h4>
-        <p>Pitches open to all students. Email leaves@maret.org.</p>
-      </div>
-    </aside>
+  <div data-move-group="opinion-main">
+    <div class="wl-row">
+      <div class="article-list" id="article-list" data-section="Op-Ed" data-move-key="articles" data-move-label="Articles"></div>
+      <div class="sidebar-ads ad-block" data-move-key="ad-1" data-move-label="Ad 1" data-ads-offset="0" data-ads-limit="1"></div>
+    </div>
+    <div class="wl-row">
+      <div class="sidebar-ads ad-block" data-move-key="ad-2" data-move-label="Ad 2" data-ads-offset="1" data-ads-limit="1"></div>
+      <div class="sidebar-ads ad-block" data-move-key="ad-3" data-move-label="Ad 3" data-ads-offset="2" data-ads-limit="1"></div>
+    </div>
   </div>
 </main>
 
-<footer>© 2026 The Woodley Leaves · Maret School Student Publication<br>Online Editor-in-Chief: <a href="mailto:arielp2027@maret.org">arielp2027@maret.org</a> · Online Managing Editor: <a href="mailto:farrynb2027@maret.org">farrynb2027@maret.org</a></footer>
+<footer>© 2026 The Student Times · Your School Student Publication · <a href="staff.html">Staff</a> · <a href="tip.html">Pitch a story</a><br>Online Editor-in-Chief: <a href="mailto:editor@example.org">editor@example.org</a> · Online Managing Editor: <a href="mailto:managing@example.org">managing@example.org</a></footer>
 <script src="articles.js"></script>
 <script src="articles-store.js"></script>
 <script src="section.js"></script>
+<script src="ads.js"></script>
+<script src="ads-store.js"></script>
+<script src="submissions.js"></script>
 <script src="auth.js"></script>
 <script src="script.js"></script>
+<script src="text-editor.js"></script>
+<script src="layout-editor.js"></script>
 </body>
 </html>

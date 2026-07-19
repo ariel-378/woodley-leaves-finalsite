@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>What should we cover? — The Student Times</title>
+<meta name="description" content="Pitch topics, profiles, or stories we've missed. Submit anonymously to The Student Times newsroom.">
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Old+Standard+TT:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css" />
+<script src="config.js"></script>
+<script src="brand-store.js"></script>
+<script src="brand.js"></script>
+<script src="sections-store.js"></script>
+<script src="nav.js"></script>
+<style>
+  .tip-intro { max-width: 620px; font-size: 16px; line-height: 1.6; color: #333; margin: 0 0 24px; }
+  .tip-form { max-width: 620px; }
+  .tip-form label {
+    display: block;
+    font-family: "Helvetica Neue", Arial, sans-serif;
+    font-size: 11px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 16px;
+  }
+  .tip-form input, .tip-form textarea {
+    display: block;
+    width: 100%;
+    padding: 10px 12px;
+    margin-top: 6px;
+    border: 1px solid var(--rule);
+    background: var(--paper);
+    font-family: Georgia, serif;
+    font-size: 15px;
+    box-sizing: border-box;
+    color: var(--ink);
+  }
+  .tip-form textarea { min-height: 180px; resize: vertical; }
+  .tip-form input:focus, .tip-form textarea:focus { outline: 2px solid var(--accent); border-color: var(--accent); }
+  .tip-submit {
+    background: var(--accent);
+    color: #fff;
+    border: none;
+    padding: 12px 22px;
+    font-family: "Helvetica Neue", Arial, sans-serif;
+    font-weight: 600;
+    font-size: 14px;
+    cursor: pointer;
+  }
+  .tip-submit:hover { filter: brightness(0.92); }
+  .tip-error { color: #b8002a; min-height: 18px; font-size: 13px; margin-top: 8px; font-family: "Helvetica Neue", Arial, sans-serif; }
+  .tip-success {
+    background: var(--accent);
+    color: #fff;
+    padding: 20px 24px;
+    margin-top: 16px;
+    font-family: "Helvetica Neue", Arial, sans-serif;
+  }
+  .tip-success h3 { margin: 0 0 6px; font-family: Georgia, serif; font-size: 22px; }
+  .tip-success p { margin: 0; font-size: 14px; opacity: 0.95; }
+  .tip-note {
+    margin-top: 28px;
+    padding: 16px 18px;
+    background: var(--cream);
+    font-family: "Helvetica Neue", Arial, sans-serif;
+    font-size: 13px;
+    color: var(--ink);
+  }
+</style>
+</head>
+<body>
+
+<div class="topbar"><div class="topbar-inner"><div><a href="#" class="topbar-cta">Subscribe</a></div><div></div></div></div>
+
+<div class="masthead">
+  <div class="masthead-ornament left" aria-hidden="true"><img src="media/leaf.svg" alt="" width="60" height="30"></div>
+  <div class="masthead-ornament right" aria-hidden="true"><img src="media/leaf.svg" alt="" width="60" height="30"></div>
+  <h1><a href="index.html">The Student Times</a></h1>
+  <div class="dateline" data-wl-text="tip-dateline">YOUR SCHOOL</div>
+</div>
+
+<nav class="sectionnav">
+  <div class="sectionnav-inner"></div>
+</nav>
+
+<main class="container">
+  <header class="section-hero">
+    <div class="kicker" data-wl-text="tip-kicker">Your Newsroom</div>
+    <h2>What should we cover next?</h2>
+    <div class="section-hero-flourish" aria-hidden="true">
+      <svg viewBox="0 0 160 24" xmlns="http://www.w3.org/2000/svg">
+        <path d="M 4 12 Q 25 2 45 12 Q 60 20 75 12 Q 95 2 115 12 Q 130 20 145 12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        <circle cx="80" cy="12" r="3" fill="currentColor"/>
+        <circle cx="156" cy="12" r="2" fill="currentColor"/>
+      </svg>
+    </div>
+  </header>
+
+  <p class="tip-intro" data-wl-text="tip-intro">The best stories come from inside the building. Drop a topic, a name, a rumor worth checking, or a club or team you wish got more coverage. Leave your info blank if you want — we don't need it to read you.</p>
+
+  <form class="tip-form" id="tip-form">
+    <label>What we should cover
+      <textarea id="tip-body" placeholder="Example: 'A profile on the jazz combo,' or 'Why did the new cafeteria menu change?' — as short or long as you want." required></textarea>
+    </label>
+    <label>Name (optional)
+      <input type="text" id="tip-name" placeholder="Anonymous">
+    </label>
+    <label>Email (optional — so we can follow up)
+      <input type="email" id="tip-email" placeholder="you@example.com">
+    </label>
+    <div class="wl-hp" aria-hidden="true">
+      <label>Leave this empty <input type="text" id="tip-hp" tabindex="-1" autocomplete="off"></label>
+    </div>
+    <div class="tip-error" id="tip-error"></div>
+    <button class="tip-submit" type="submit">Submit pitch</button>
+  </form>
+
+  <div class="tip-success" id="tip-success" hidden>
+    <h3 data-wl-text="tip-success-title">Got it — thanks.</h3>
+    <p data-wl-text="tip-success-body">Our editors read every pitch. If we run with yours, you'll see it on the site soon. If you left an email, we might reach out.</p>
+  </div>
+
+  <div class="tip-note">
+    <strong>Privacy note:</strong> in this demo version, tips are saved locally in your browser only. A real deployment would deliver tips to an editor-only email inbox — we are not using your information for anything else.
+  </div>
+
+  <div class="page-flourish flourish-large" aria-hidden="true">
+    <svg viewBox="0 0 140 70" xmlns="http://www.w3.org/2000/svg">
+      <path d="M 20 48 C 40 22, 68 22, 80 44 C 88 58, 72 68, 64 60 C 58 53, 70 46, 76 52" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"/>
+      <circle cx="100" cy="38" r="2.8" fill="currentColor"/>
+      <circle cx="115" cy="35" r="2.2" fill="currentColor"/>
+      <circle cx="128" cy="32" r="1.6" fill="currentColor"/>
+    </svg>
+    <span class="page-flourish-caption">Thanks for reading.</span>
+  </div>
+</main>
+
+<footer>© 2026 The Student Times · Your School Student Publication · <a href="staff.html">Staff</a> · <a href="tip.html">Pitch a story</a><br>Online Editor-in-Chief: <a href="mailto:editor@example.org">editor@example.org</a> · Online Managing Editor: <a href="mailto:managing@example.org">managing@example.org</a></footer>
+
+<script src="submissions.js"></script>
+<script src="auth.js"></script>
+<script src="script.js"></script>
+<script src="text-editor.js"></script>
+<script>
+(function () {
+  const form = document.getElementById("tip-form");
+  const err = document.getElementById("tip-error");
+  const btn = form.querySelector(".tip-submit");
+
+  // Pitches may be sent anonymously — the page promises that. Name and email
+  // stay optional here and are only passed along if the reader typed them.
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const body = document.getElementById("tip-body").value.trim();
+    const name = document.getElementById("tip-name").value.trim();
+    const email = document.getElementById("tip-email").value.trim();
+    err.textContent = "";
+    err.innerHTML = "";
+    if (body.length < 20) { err.textContent = "Please include a little more detail — at least 20 characters."; return; }
+    if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { err.textContent = "That email doesn't look right."; return; }
+
+    btn.disabled = true;
+    const wasLabel = btn.textContent;
+    btn.textContent = "Sending…";
+
+    const res = await WLSubmit.send("tip",
+      { pitch: body, name, email },
+      { honeypot: !!document.getElementById("tip-hp").value });
+
+    btn.disabled = false;
+    btn.textContent = wasLabel;
+
+    if (res.ok) {
+      form.hidden = true;
+      document.getElementById("tip-success").hidden = false;
+      document.getElementById("tip-success").focus();
+      return;
+    }
+
+    // Never claim a pitch was received when it wasn't — hand it back with a
+    // way to send it that works.
+    err.textContent = WLSubmit.explain(res) + " ";
+    if (res.mailto) {
+      const a = document.createElement("a");
+      a.href = res.mailto;
+      a.textContent = "Email your pitch instead";
+      err.appendChild(a);
+    }
+  });
+})();
+</script>
+</body>
+</html>

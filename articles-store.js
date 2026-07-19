@@ -71,16 +71,50 @@ window.WLArticles = (function () {
     document.dispatchEvent(new CustomEvent("wl-articles-change"));
   }
 
-  // ===== Featured article (homepage lede) =====
-  const LS_FEATURED = "wl_featured_article";
-  function getFeaturedId() { return localStorage.getItem(LS_FEATURED) || null; }
-  function setFeatured(id) {
-    if (id) localStorage.setItem(LS_FEATURED, id);
-    else localStorage.removeItem(LS_FEATURED);
+  // ===== Per-section featured articles =====
+  // The homepage shows one article per section. Clicking "Feature" on an
+  // article in the dashboard marks it as that section's featured pick. Only
+  // one featured pick per section — featuring a new article replaces the old.
+  const LS_FEATURED_MAP = "wl_featured_by_section";
+  const LEGACY_FEATURED = "wl_featured_article";
+
+  function readFeaturedMap() {
+    // Migrate legacy single-featured key into the new per-section map on first
+    // read. The legacy pick becomes the featured article for its own section.
+    const legacyId = localStorage.getItem(LEGACY_FEATURED);
+    let map = {};
+    try { map = JSON.parse(localStorage.getItem(LS_FEATURED_MAP) || "{}"); }
+    catch { map = {}; }
+    if (legacyId) {
+      const a = getById(legacyId);
+      if (a && a.section && !map[a.section]) {
+        map[a.section] = legacyId;
+        localStorage.setItem(LS_FEATURED_MAP, JSON.stringify(map));
+      }
+      localStorage.removeItem(LEGACY_FEATURED);
+    }
+    return map;
+  }
+  function writeFeaturedMap(map) {
+    localStorage.setItem(LS_FEATURED_MAP, JSON.stringify(map));
     document.dispatchEvent(new CustomEvent("wl-articles-change"));
   }
-  function getFeatured() {
-    const id = getFeaturedId();
+
+  function getFeaturedId(section) {
+    const map = readFeaturedMap();
+    if (section) return map[section] || null;
+    // No arg → return the whole map (for dashboard badge rendering).
+    return map;
+  }
+  function setFeatured(section, id) {
+    if (!section) return;
+    const map = readFeaturedMap();
+    if (id) map[section] = id;
+    else delete map[section];
+    writeFeaturedMap(map);
+  }
+  function getFeatured(section) {
+    const id = readFeaturedMap()[section];
     if (!id) return null;
     const a = getById(id);
     return a ? { id, ...a } : null;

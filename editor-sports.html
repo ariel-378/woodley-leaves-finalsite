@@ -1,0 +1,715 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Sports stats — The Student Times</title>
+<meta name="description" content="Manage teams, records, schedules, and brackets for The Student Times.">
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Old+Standard+TT:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css" />
+<script src="config.js"></script>
+<script src="brand-store.js"></script>
+<script src="brand.js"></script>
+<script src="sections-store.js"></script>
+<script src="nav.js"></script>
+<style>
+  .ed-tabs {
+    display: flex;
+    gap: 4px;
+    margin-bottom: 18px;
+    border-bottom: 1px solid var(--rule);
+  }
+  .ed-tabs a {
+    font-family: "Helvetica Neue", Arial, sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    padding: 10px 16px;
+    color: var(--muted);
+    text-decoration: none;
+    border-bottom: 3px solid transparent;
+  }
+  .ed-tabs a.active { color: var(--ink); border-bottom-color: var(--accent); }
+
+  .puzzle-section {
+    margin-bottom: 40px;
+    padding-bottom: 24px;
+    border-bottom: 1px solid var(--rule);
+  }
+  .puzzle-section h3 {
+    font-family: Georgia, serif;
+    font-size: 22px;
+    margin: 0 0 14px;
+  }
+
+  .pool-list { list-style: none; padding: 0; margin: 0 0 12px; border: 1px solid var(--rule); }
+  .pool-list li {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 14px;
+    border-bottom: 1px solid var(--rule);
+    font-family: "Helvetica Neue", Arial, sans-serif;
+    font-size: 14px;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+  .pool-list li:last-child { border-bottom: none; }
+  .pool-list .pool-actions { display: flex; gap: 6px; }
+  .pool-list .pool-record { font-family: Georgia, serif; font-weight: 700; }
+
+  .btn-primary { background: var(--accent); color: #fff; border: none; padding: 8px 14px; font-family: "Helvetica Neue", Arial, sans-serif; font-weight: 600; font-size: 13px; cursor: pointer; }
+  .btn-primary:hover { filter: brightness(0.92); }
+  .btn-ghost { background: #fff; color: var(--ink); border: 1px solid var(--ink); padding: 6px 10px; font-family: "Helvetica Neue", Arial, sans-serif; font-weight: 600; font-size: 12px; cursor: pointer; }
+  .btn-ghost:hover { background: var(--cream); }
+  .btn-danger { background: none; color: #b8002a; border: 1px solid #b8002a; padding: 6px 10px; font-family: "Helvetica Neue", Arial, sans-serif; font-weight: 600; font-size: 12px; cursor: pointer; }
+
+  /* Modal */
+  .ed-modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); display: none; align-items: flex-start; justify-content: center; z-index: 200; padding: 30px 20px; overflow-y: auto; }
+  .ed-modal-overlay.visible { display: flex; }
+  .ed-modal { background: #fff; width: 100%; max-width: 780px; padding: 28px; border-top: 4px solid var(--accent); position: relative; font-family: "Helvetica Neue", Arial, sans-serif; }
+  .ed-modal h2 { font-family: Georgia, serif; font-size: 24px; margin: 0 0 14px; }
+  .ed-modal-close { position: absolute; top: 8px; right: 14px; background: none; border: none; font-size: 24px; color: var(--muted); cursor: pointer; }
+
+  .ed-form label { display: block; font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: var(--muted); margin-bottom: 12px; }
+  .ed-form input, .ed-form textarea, .ed-form select { display: block; width: 100%; padding: 8px 10px; margin-top: 4px; border: 1px solid var(--rule); font-family: inherit; font-size: 14px; background: #fafafa; box-sizing: border-box; }
+  .ed-form textarea { resize: vertical; min-height: 80px; font-family: monospace; }
+  .ed-form .row-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
+  .ed-form .row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .ed-form .ed-error { color: #b8002a; font-size: 13px; min-height: 18px; margin: 6px 0 10px; }
+  .ed-form-actions { display: flex; justify-content: space-between; align-items: center; margin-top: 12px; }
+
+  .game-table-edit { width: 100%; border-collapse: collapse; font-family: "Helvetica Neue", Arial, sans-serif; margin-top: 8px; }
+  .game-table-edit th, .game-table-edit td { padding: 8px 6px; border-bottom: 1px solid var(--rule); font-size: 13px; text-align: left; vertical-align: middle; }
+  .game-table-edit th { font-size: 10px; text-transform: uppercase; letter-spacing: 1px; color: var(--muted); border-bottom: 2px solid var(--ink); }
+  .game-table-edit td .btn-danger { padding: 4px 8px; font-size: 11px; }
+  .game-table-edit td .btn-ghost { padding: 4px 8px; font-size: 11px; }
+  .games-subheader { display: flex; justify-content: space-between; align-items: baseline; margin: 18px 0 6px; }
+  .games-subheader h4 { font-family: Georgia, serif; font-size: 17px; margin: 0; }
+  .badge-custom { display: inline-block; background: var(--accent); color: #fff; font-size: 10px; padding: 2px 6px; margin-left: 6px; letter-spacing: 0.5px; text-transform: uppercase; font-weight: 700; vertical-align: middle; }
+</style>
+</head>
+<body>
+
+<div class="topbar"><div class="topbar-inner"><div><a href="#" class="topbar-cta">Subscribe</a></div><div></div></div></div>
+
+<div class="masthead">
+  <div class="masthead-ornament left" aria-hidden="true"><img src="media/leaf.svg" alt="" width="60" height="30"></div>
+  <div class="masthead-ornament right" aria-hidden="true"><img src="media/leaf.svg" alt="" width="60" height="30"></div>
+  <h1><a href="index.html">The Student Times</a></h1>
+  <div class="dateline">YOUR SCHOOL</div>
+</div>
+
+<nav class="sectionnav">
+  <div class="sectionnav-inner"></div>
+</nav>
+
+<main class="container">
+  <div class="section-header">
+    <h2>Sports stats</h2>
+    <span class="see-all" id="sports-welcome"></span>
+  </div>
+
+  <div id="no-access" class="account-prompt" style="display:none;">
+    You need <strong>editor</strong> access to manage sports data.
+    <a href="#" id="prompt-preview">Enter editor preview.</a>
+  </div>
+
+  <div id="editor-view" style="display:none;">
+    <div class="ed-tabs">
+      <a href="editor.html">Articles</a>
+      <a href="editor-centerspread.html">Centerspread</a>
+      <a href="editor-sports.html" class="active">Sports stats</a>
+      <a href="editor-videos.html">Video</a>
+      <a href="editor-writers.html">Writers</a>
+      <a href="editor-ads.html">Ads</a>
+      <a href="editor-brand.html" class="ed-tab-brand">Brand design</a>
+    </div>
+
+    <p class="ed-tip" style="font-size:12px;color:var(--muted);margin-bottom:24px;">
+      Changes are saved instantly to your browser. <b>Manage Games</b> on each team lets you log results and add upcoming games.
+    </p>
+
+    <section class="puzzle-section">
+      <h3>Game of the Week</h3>
+      <p style="font-size:12px;color:var(--muted);margin:-4px 0 10px;">Pick which upcoming game gets the featured spot on the Sports page. If you don't pick one, the next upcoming game is used automatically.</p>
+      <div id="gotw-current" style="margin-bottom:10px;font-family:'Helvetica Neue',Arial,sans-serif;font-size:14px;"></div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;">
+        <select id="gotw-picker" style="padding:8px 10px;font-family:'Helvetica Neue',Arial,sans-serif;border:1px solid var(--rule);min-width:260px;">
+          <option value="">— Auto (next upcoming game) —</option>
+        </select>
+        <button class="btn-primary" id="gotw-save">Set as Game of the Week</button>
+        <button class="btn-ghost" id="gotw-clear">Clear (use auto)</button>
+      </div>
+    </section>
+
+    <section class="puzzle-section">
+      <div style="display:flex;justify-content:space-between;align-items:baseline;">
+        <h3>Teams</h3>
+        <button class="btn-primary" id="add-team">+ Add team</button>
+      </div>
+      <ul class="pool-list" id="teams-list"></ul>
+    </section>
+
+    <section class="puzzle-section">
+      <div style="display:flex;justify-content:space-between;align-items:baseline;">
+        <h3>Playoff Brackets</h3>
+        <button class="btn-primary" id="add-bracket">+ Add bracket</button>
+      </div>
+      <ul class="pool-list" id="brackets-list"></ul>
+    </section>
+
+    <button class="btn-ghost" id="reset-all">Reset all sports data to defaults</button>
+  </div>
+
+  <!-- Team modal -->
+  <div class="ed-modal-overlay" id="team-modal" role="dialog" aria-modal="true" aria-labelledby="team-modal-title">
+    <div class="ed-modal" role="document">
+      <button class="ed-modal-close" aria-label="Close team editor">×</button>
+      <h2 id="team-modal-title">Team</h2>
+      <div class="ed-form">
+        <label>Team slug (URL identifier, lowercase, dashes only) <input type="text" id="t-slug" placeholder="e.g., boys-tennis"></label>
+        <label>Team name <input type="text" id="t-name" placeholder="e.g., Boys' Tennis"></label>
+        <div class="row-2">
+          <label>Sport <input type="text" id="t-sport" placeholder="e.g., Tennis"></label>
+          <label>Season <input type="text" id="t-season" placeholder="e.g., Spring 2026"></label>
+        </div>
+        <div class="row-2">
+          <label>Coach <input type="text" id="t-coach"></label>
+          <label>League <input type="text" id="t-league" value="Mid-Atlantic Athletic Conference"></label>
+        </div>
+        <div class="row-3">
+          <label>Wins <input type="number" id="t-w" value="0" min="0"></label>
+          <label>Losses <input type="number" id="t-l" value="0" min="0"></label>
+          <label>Ties <input type="number" id="t-t" value="0" min="0"></label>
+        </div>
+
+        <div class="games-subheader">
+          <h4>Results (games played)</h4>
+          <button class="btn-ghost" id="add-result">+ Add result</button>
+        </div>
+        <table class="game-table-edit" id="games-played-table">
+          <thead><tr><th>Date</th><th>Opponent</th><th>Result</th><th>Score</th><th>H/A</th><th>Note</th><th></th></tr></thead>
+          <tbody id="games-played-rows"></tbody>
+        </table>
+
+        <div class="games-subheader">
+          <h4>Upcoming games</h4>
+          <button class="btn-ghost" id="add-upcoming">+ Add upcoming</button>
+        </div>
+        <table class="game-table-edit" id="games-upcoming-table">
+          <thead><tr><th>Date</th><th>Opponent</th><th>Time</th><th>H/A</th><th>Theme</th><th>Note</th><th></th></tr></thead>
+          <tbody id="games-upcoming-rows"></tbody>
+        </table>
+
+        <div class="ed-error" id="t-error"></div>
+        <div class="ed-form-actions">
+          <button class="btn-ghost" data-cancel>Cancel</button>
+          <button class="btn-primary" id="t-save">Save team</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bracket modal -->
+  <div class="ed-modal-overlay" id="bracket-modal" role="dialog" aria-modal="true" aria-labelledby="bracket-modal-title">
+    <div class="ed-modal" role="document">
+      <button class="ed-modal-close" aria-label="Close bracket editor">×</button>
+      <h2 id="bracket-modal-title">Playoff Bracket</h2>
+      <div class="ed-form">
+        <label>Bracket slug (lowercase, dashes only) <input type="text" id="b-slug" placeholder="e.g., tennis-spring-2026"></label>
+        <label>Title <input type="text" id="b-title" placeholder="e.g., Boys' Tennis — Conference Playoffs"></label>
+        <div class="row-2">
+          <label>Sport <input type="text" id="b-sport"></label>
+          <label>Season <input type="text" id="b-season" placeholder="Spring 2026"></label>
+        </div>
+
+        <div id="bracket-rounds"></div>
+        <button class="btn-ghost" id="add-round" style="margin-top:10px;">+ Add round</button>
+
+        <div class="ed-error" id="b-error"></div>
+        <div class="ed-form-actions">
+          <button class="btn-ghost" data-cancel>Cancel</button>
+          <button class="btn-primary" id="b-save">Save bracket</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<footer>© 2026 The Student Times · Your School Student Publication · <a href="staff.html">Staff</a> · <a href="tip.html">Pitch a story</a><br>Online Editor-in-Chief: <a href="mailto:editor@example.org">editor@example.org</a> · Online Managing Editor: <a href="mailto:managing@example.org">managing@example.org</a></footer>
+
+<script src="teams.js"></script>
+<script src="teams-store.js"></script>
+<script src="submissions.js"></script>
+<script src="auth.js"></script>
+<script src="script.js"></script>
+<script>
+(function () {
+  function escapeHtml(s) {
+    return String(s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+  }
+  function slugify(s) {
+    return String(s).toLowerCase().trim().replace(/[^\w\s-]/g, "").replace(/\s+/g, "-").replace(/-+/g, "-").slice(0, 60);
+  }
+
+  const view = document.getElementById("editor-view");
+  const noAccess = document.getElementById("no-access");
+  const welcome = document.getElementById("sports-welcome");
+
+  function gate() {
+    const user = WLAuth.currentUser();
+    if (!user || !WLAuth.isEditor()) {
+      view.style.display = "none"; noAccess.style.display = "block"; welcome.textContent = "";
+      return false;
+    }
+    noAccess.style.display = "none"; view.style.display = "block";
+    welcome.textContent = `Signed in as ${user}`;
+    return true;
+  }
+
+  // ===== Teams list =====
+  function renderTeams() {
+    const list = document.getElementById("teams-list");
+    const teams = WLTeams.getAllTeams();
+    const slugs = Object.keys(teams);
+    list.innerHTML = "";
+    if (slugs.length === 0) {
+      list.innerHTML = `<li><em style="color:var(--muted);">No teams yet. Add one to get started.</em></li>`;
+      return;
+    }
+    slugs.forEach(slug => {
+      const t = teams[slug];
+      const li = document.createElement("li");
+      const r = t.record;
+      const rec = r.t ? `${r.w}–${r.l}–${r.t}` : `${r.w}–${r.l}`;
+      const customBadge = WLTeams.isCustomTeam(slug) ? `<span class="badge-custom">Edited</span>` : "";
+      li.innerHTML = `
+        <span>
+          <b>${escapeHtml(t.name)}</b>
+          <span style="color:var(--muted);font-size:12px;margin-left:6px;">${escapeHtml(t.sport)}</span>
+          <span class="pool-record" style="margin-left:10px;">${rec}</span>
+          ${customBadge}
+        </span>
+        <span class="pool-actions">
+          <button class="btn-ghost" data-act="edit" data-slug="${escapeHtml(slug)}">Edit team + games</button>
+          <button class="btn-danger" data-act="delete" data-slug="${escapeHtml(slug)}">Delete</button>
+        </span>
+      `;
+      list.appendChild(li);
+    });
+    list.querySelectorAll('[data-act="edit"]').forEach(b => b.addEventListener("click", () => openTeamModal(b.dataset.slug)));
+    list.querySelectorAll('[data-act="delete"]').forEach(b => b.addEventListener("click", () => {
+      if (!confirm(`Delete "${teams[b.dataset.slug].name}"? Can be undone with "Reset all".`)) return;
+      WLTeams.removeTeam(b.dataset.slug);
+      renderAll();
+    }));
+  }
+
+  // ===== Team modal =====
+  const tModal = document.getElementById("team-modal");
+  let editingTeamSlug = null;
+  let workingGames = [];      // played games while editing
+  let workingUpcoming = [];   // upcoming games while editing
+
+  function openTeamModal(slug) {
+    editingTeamSlug = slug || null;
+    const t = slug ? WLTeams.getTeam(slug) : null;
+    document.getElementById("team-modal-title").textContent = slug ? "Edit team" : "Add team";
+
+    document.getElementById("t-slug").value = slug || "";
+    document.getElementById("t-slug").disabled = !!slug;
+    document.getElementById("t-name").value = t ? t.name : "";
+    document.getElementById("t-sport").value = t ? t.sport : "";
+    document.getElementById("t-season").value = t ? t.season : "Spring 2026";
+    document.getElementById("t-coach").value = t ? (t.coach || "") : "";
+    document.getElementById("t-league").value = t ? (t.league || "Mid-Atlantic Athletic Conference") : "Mid-Atlantic Athletic Conference";
+    document.getElementById("t-w").value = t ? t.record.w : 0;
+    document.getElementById("t-l").value = t ? t.record.l : 0;
+    document.getElementById("t-t").value = t ? t.record.t : 0;
+    workingGames = t ? (t.games || []).map(g => ({ ...g })) : [];
+    workingUpcoming = t ? (t.upcoming || []).map(g => ({ ...g })) : [];
+    renderGamesTables();
+    document.getElementById("t-error").textContent = "";
+    tModal.classList.add("visible");
+    setTimeout(() => document.getElementById(slug ? "t-name" : "t-slug").focus(), 50);
+  }
+
+  function renderGamesTables() {
+    const playedTbody = document.getElementById("games-played-rows");
+    const upTbody = document.getElementById("games-upcoming-rows");
+
+    playedTbody.innerHTML = "";
+    if (workingGames.length === 0) {
+      playedTbody.innerHTML = `<tr><td colspan="7" style="text-align:center;color:var(--muted);padding:12px;">No games logged yet.</td></tr>`;
+    } else {
+      workingGames.forEach((g, i) => {
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td><input type="text" value="${escapeHtml(g.date || "")}" data-field="date" data-i="${i}" placeholder="April 17, 2026"></td>
+          <td><input type="text" value="${escapeHtml(g.opponent || "")}" data-field="opponent" data-i="${i}"></td>
+          <td>
+            <select data-field="result" data-i="${i}">
+              <option value="W" ${g.result === "W" ? "selected" : ""}>W</option>
+              <option value="L" ${g.result === "L" ? "selected" : ""}>L</option>
+              <option value="T" ${g.result === "T" ? "selected" : ""}>T</option>
+            </select>
+          </td>
+          <td><input type="text" value="${escapeHtml(g.score || "")}" data-field="score" data-i="${i}" placeholder="e.g., 2-1"></td>
+          <td>
+            <select data-field="home" data-i="${i}">
+              <option value="true" ${g.home ? "selected" : ""}>Home</option>
+              <option value="false" ${!g.home ? "selected" : ""}>Away</option>
+            </select>
+          </td>
+          <td><input type="text" value="${escapeHtml(g.note || "")}" data-field="note" data-i="${i}"></td>
+          <td><button class="btn-danger" data-remove="played" data-i="${i}">Remove</button></td>
+        `;
+        playedTbody.appendChild(tr);
+      });
+    }
+
+    upTbody.innerHTML = "";
+    if (workingUpcoming.length === 0) {
+      upTbody.innerHTML = `<tr><td colspan="7" style="text-align:center;color:var(--muted);padding:12px;">No upcoming games.</td></tr>`;
+    } else {
+      workingUpcoming.forEach((g, i) => {
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td><input type="text" value="${escapeHtml(g.date || "")}" data-ufield="date" data-i="${i}" placeholder="April 30, 2026"></td>
+          <td><input type="text" value="${escapeHtml(g.opponent || "")}" data-ufield="opponent" data-i="${i}"></td>
+          <td><input type="text" value="${escapeHtml(g.time || "")}" data-ufield="time" data-i="${i}" placeholder="4:00 PM"></td>
+          <td>
+            <select data-ufield="home" data-i="${i}">
+              <option value="true" ${g.home ? "selected" : ""}>Home</option>
+              <option value="false" ${!g.home ? "selected" : ""}>Away</option>
+            </select>
+          </td>
+          <td><input type="text" value="${escapeHtml(g.theme || "")}" data-ufield="theme" data-i="${i}" placeholder="Whiteout"></td>
+          <td><input type="text" value="${escapeHtml(g.note || "")}" data-ufield="note" data-i="${i}"></td>
+          <td><button class="btn-danger" data-remove="upcoming" data-i="${i}">Remove</button></td>
+        `;
+        upTbody.appendChild(tr);
+      });
+    }
+
+    // Wire inputs
+    playedTbody.querySelectorAll("[data-field]").forEach(el => el.addEventListener("input", (e) => {
+      const i = +e.target.dataset.i, f = e.target.dataset.field;
+      workingGames[i][f] = f === "home" ? (e.target.value === "true") : e.target.value;
+    }));
+    upTbody.querySelectorAll("[data-ufield]").forEach(el => el.addEventListener("input", (e) => {
+      const i = +e.target.dataset.i, f = e.target.dataset.ufield;
+      workingUpcoming[i][f] = f === "home" ? (e.target.value === "true") : e.target.value;
+    }));
+    playedTbody.querySelectorAll("[data-remove]").forEach(b => b.addEventListener("click", (e) => {
+      const i = +e.target.dataset.i;
+      workingGames.splice(i, 1); renderGamesTables();
+    }));
+    upTbody.querySelectorAll("[data-remove]").forEach(b => b.addEventListener("click", (e) => {
+      const i = +e.target.dataset.i;
+      workingUpcoming.splice(i, 1); renderGamesTables();
+    }));
+  }
+
+  document.getElementById("add-result").addEventListener("click", () => {
+    workingGames.push({ date: "", opponent: "", result: "W", score: "", home: true, note: "" });
+    renderGamesTables();
+  });
+  document.getElementById("add-upcoming").addEventListener("click", () => {
+    workingUpcoming.push({ date: "", opponent: "", time: "", home: true, theme: "", note: "" });
+    renderGamesTables();
+  });
+
+  document.getElementById("t-save").addEventListener("click", () => {
+    const err = document.getElementById("t-error"); err.textContent = "";
+    const slug = document.getElementById("t-slug").value.trim();
+    const name = document.getElementById("t-name").value.trim();
+    const sport = document.getElementById("t-sport").value.trim();
+    const season = document.getElementById("t-season").value.trim();
+    const coach = document.getElementById("t-coach").value.trim();
+    const league = document.getElementById("t-league").value.trim();
+    const w = +document.getElementById("t-w").value || 0;
+    const l = +document.getElementById("t-l").value || 0;
+    const tt = +document.getElementById("t-t").value || 0;
+
+    if (!slug || !/^[a-z0-9-]+$/.test(slug)) { err.textContent = "Slug must be lowercase letters, numbers, and dashes only."; return; }
+    if (!name) { err.textContent = "Team name is required."; return; }
+    if (!sport) { err.textContent = "Sport is required."; return; }
+
+    // Clean up empty game rows
+    const cleanGames = workingGames.filter(g => g.date && g.opponent);
+    const cleanUpcoming = workingUpcoming.filter(g => g.date && g.opponent);
+    // Strip empty optional fields
+    cleanUpcoming.forEach(g => { if (!g.theme) delete g.theme; if (!g.note) delete g.note; });
+    cleanGames.forEach(g => { if (!g.note) delete g.note; });
+
+    const data = {
+      name, sport, season, coach, league,
+      record: { w, l, t: tt },
+      games: cleanGames,
+      upcoming: cleanUpcoming
+    };
+    WLTeams.saveTeam(slug, data);
+    closeModals();
+    renderAll();
+  });
+
+  // ===== Brackets list =====
+  function renderBrackets() {
+    const list = document.getElementById("brackets-list");
+    const brackets = WLTeams.getAllBrackets();
+    const slugs = Object.keys(brackets);
+    list.innerHTML = "";
+    if (slugs.length === 0) {
+      list.innerHTML = `<li><em style="color:var(--muted);">No brackets yet.</em></li>`;
+      return;
+    }
+    slugs.forEach(slug => {
+      const b = brackets[slug];
+      const customBadge = WLTeams.isCustomBracket(slug) ? `<span class="badge-custom">Edited</span>` : "";
+      const li = document.createElement("li");
+      li.innerHTML = `
+        <span>
+          <b>${escapeHtml(b.title || slug)}</b>
+          <span style="color:var(--muted);font-size:12px;margin-left:6px;">${escapeHtml(b.sport || "")}${b.season ? " · " + escapeHtml(b.season) : ""}</span>
+          <span style="color:var(--muted);font-size:12px;margin-left:10px;">${(b.rounds || []).length} rounds</span>
+          ${customBadge}
+        </span>
+        <span class="pool-actions">
+          <button class="btn-ghost" data-act="edit" data-slug="${escapeHtml(slug)}">Edit</button>
+          <button class="btn-danger" data-act="delete" data-slug="${escapeHtml(slug)}">Delete</button>
+        </span>
+      `;
+      list.appendChild(li);
+    });
+    list.querySelectorAll('[data-act="edit"]').forEach(b => b.addEventListener("click", () => openBracketModal(b.dataset.slug)));
+    list.querySelectorAll('[data-act="delete"]').forEach(b => b.addEventListener("click", () => {
+      if (!confirm("Delete this bracket?")) return;
+      WLTeams.removeBracket(b.dataset.slug);
+      renderAll();
+    }));
+  }
+
+  // ===== Bracket modal =====
+  const bModal = document.getElementById("bracket-modal");
+  let editingBracketSlug = null;
+  let workingRounds = [];
+
+  function openBracketModal(slug) {
+    editingBracketSlug = slug || null;
+    const b = slug ? WLTeams.getBracket(slug) : null;
+    document.getElementById("bracket-modal-title").textContent = slug ? "Edit bracket" : "Add bracket";
+
+    document.getElementById("b-slug").value = slug || "";
+    document.getElementById("b-slug").disabled = !!slug;
+    document.getElementById("b-title").value = b ? b.title : "";
+    document.getElementById("b-sport").value = b ? b.sport : "";
+    document.getElementById("b-season").value = b ? b.season : "Spring 2026";
+    // Deep-clone rounds so edits don't mutate the store
+    workingRounds = b ? JSON.parse(JSON.stringify(b.rounds || [])) : [];
+    renderBracketRounds();
+    document.getElementById("b-error").textContent = "";
+    bModal.classList.add("visible");
+    setTimeout(() => document.getElementById(slug ? "b-title" : "b-slug").focus(), 50);
+  }
+
+  function renderBracketRounds() {
+    const wrap = document.getElementById("bracket-rounds");
+    wrap.innerHTML = "";
+    workingRounds.forEach((round, rIdx) => {
+      const section = document.createElement("div");
+      section.style.cssText = "border:1px solid var(--rule); padding:12px 14px; margin-top:12px; background:#fafafa;";
+      const matchesHtml = round.matches.map((m, mIdx) => `
+        <div style="display:grid; grid-template-columns:1fr 1fr auto; gap:8px; align-items:center; margin-top:8px;">
+          <input type="text" value="${escapeHtml(m.team1 || "")}" data-round="${rIdx}" data-match="${mIdx}" data-field="team1" placeholder="Team 1">
+          <input type="text" value="${escapeHtml(m.team2 || "")}" data-round="${rIdx}" data-match="${mIdx}" data-field="team2" placeholder="Team 2">
+          <button class="btn-danger" data-remove-match data-round="${rIdx}" data-match="${mIdx}">×</button>
+          <select data-round="${rIdx}" data-match="${mIdx}" data-field="winner" style="grid-column: span 2;">
+            <option value="">No result yet</option>
+            <option value="${escapeHtml(m.team1 || "")}" ${m.result && m.result.winner === m.team1 ? "selected" : ""}>Winner: ${escapeHtml(m.team1 || "Team 1")}</option>
+            <option value="${escapeHtml(m.team2 || "")}" ${m.result && m.result.winner === m.team2 ? "selected" : ""}>Winner: ${escapeHtml(m.team2 || "Team 2")}</option>
+          </select>
+          <input type="text" value="${escapeHtml((m.result && m.result.score) || m.scheduled || "")}" data-round="${rIdx}" data-match="${mIdx}" data-field="extra" placeholder="Score (e.g., 2-1) OR scheduled time" style="grid-column: span 3;">
+        </div>
+      `).join("");
+      section.innerHTML = `
+        <div style="display:flex;justify-content:space-between;align-items:baseline;">
+          <label style="margin:0;">Round name
+            <input type="text" value="${escapeHtml(round.name || "")}" data-round="${rIdx}" data-round-name placeholder="Quarterfinals">
+          </label>
+          <div>
+            <button class="btn-ghost" data-add-match data-round="${rIdx}">+ Match</button>
+            <button class="btn-danger" data-remove-round data-round="${rIdx}">Remove round</button>
+          </div>
+        </div>
+        ${matchesHtml || '<p style="color:var(--muted);font-size:12px;margin:8px 0 0;">No matches yet.</p>'}
+      `;
+      wrap.appendChild(section);
+    });
+
+    // Wire inputs
+    wrap.querySelectorAll("[data-round-name]").forEach(el => el.addEventListener("input", (e) => {
+      workingRounds[+e.target.dataset.round].name = e.target.value;
+    }));
+    wrap.querySelectorAll("[data-field]").forEach(el => el.addEventListener("input", (e) => {
+      const r = +e.target.dataset.round, m = +e.target.dataset.match, f = e.target.dataset.field;
+      const match = workingRounds[r].matches[m];
+      if (f === "team1" || f === "team2") match[f] = e.target.value;
+      else if (f === "winner") {
+        if (e.target.value) match.result = { winner: e.target.value, score: (match.result && match.result.score) || "" };
+        else delete match.result;
+      } else if (f === "extra") {
+        // If there's a winner, treat as score; otherwise as scheduled
+        if (match.result) match.result.score = e.target.value;
+        else match.scheduled = e.target.value;
+      }
+    }));
+    wrap.querySelectorAll("[data-add-match]").forEach(b => b.addEventListener("click", (e) => {
+      const r = +e.target.dataset.round;
+      workingRounds[r].matches.push({ team1: "", team2: "" });
+      renderBracketRounds();
+    }));
+    wrap.querySelectorAll("[data-remove-match]").forEach(b => b.addEventListener("click", (e) => {
+      const r = +e.target.dataset.round, m = +e.target.dataset.match;
+      workingRounds[r].matches.splice(m, 1);
+      renderBracketRounds();
+    }));
+    wrap.querySelectorAll("[data-remove-round]").forEach(b => b.addEventListener("click", (e) => {
+      const r = +e.target.dataset.round;
+      if (!confirm("Remove this round and all its matches?")) return;
+      workingRounds.splice(r, 1);
+      renderBracketRounds();
+    }));
+  }
+
+  document.getElementById("add-round").addEventListener("click", () => {
+    workingRounds.push({ name: "", matches: [] });
+    renderBracketRounds();
+  });
+
+  document.getElementById("b-save").addEventListener("click", () => {
+    const err = document.getElementById("b-error"); err.textContent = "";
+    const slug = document.getElementById("b-slug").value.trim();
+    const title = document.getElementById("b-title").value.trim();
+    const sport = document.getElementById("b-sport").value.trim();
+    const season = document.getElementById("b-season").value.trim();
+
+    if (!slug || !/^[a-z0-9-]+$/.test(slug)) { err.textContent = "Slug must be lowercase letters, numbers, and dashes only."; return; }
+    if (!title) { err.textContent = "Title is required."; return; }
+
+    // Clean up empty matches / rounds
+    const cleanRounds = workingRounds
+      .filter(r => r.name || (r.matches && r.matches.length))
+      .map(r => ({
+        name: r.name || "Round",
+        matches: (r.matches || []).filter(m => m.team1 || m.team2).map(m => {
+          const out = { team1: m.team1 || "TBD", team2: m.team2 || "TBD" };
+          if (m.result && m.result.winner) out.result = m.result;
+          if (m.scheduled && !m.result) out.scheduled = m.scheduled;
+          return out;
+        })
+      }));
+
+    if (cleanRounds.length === 0) { err.textContent = "Add at least one round with one match."; return; }
+
+    WLTeams.saveBracket(slug, { title, sport, season, rounds: cleanRounds });
+    closeModals();
+    renderAll();
+  });
+
+  // ===== Add buttons =====
+  document.getElementById("add-team").addEventListener("click", () => openTeamModal(null));
+  document.getElementById("add-bracket").addEventListener("click", () => openBracketModal(null));
+
+  // ===== Close modals / focus trap =====
+  function closeModals() { document.querySelectorAll(".ed-modal-overlay").forEach(m => m.classList.remove("visible")); }
+  document.querySelectorAll(".ed-modal-close, [data-cancel]").forEach(b => b.addEventListener("click", closeModals));
+  document.querySelectorAll(".ed-modal-overlay").forEach(m => {
+    m.addEventListener("click", e => { if (e.target === m) closeModals(); });
+    m.addEventListener("keydown", (e) => {
+      if (e.key === "Escape") { closeModals(); return; }
+      if (e.key !== "Tab") return;
+      if (!m.classList.contains("visible")) return;
+      const f = m.querySelectorAll('a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])');
+      if (f.length === 0) return;
+      const first = f[0], last = f[f.length - 1];
+      if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+      else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+    });
+  });
+
+  document.getElementById("reset-all").addEventListener("click", () => {
+    if (!confirm("Reset all sports data (teams, games, brackets) to original defaults? Cannot be undone.")) return;
+    WLTeams.reset();
+    renderAll();
+  });
+
+  document.getElementById("prompt-preview").addEventListener("click", (e) => { e.preventDefault(); WLAuth.enableEditorPreview(); });
+
+  // ===== Game of the Week picker =====
+  function renderGameOfWeek() {
+    const picker = document.getElementById("gotw-picker");
+    const current = document.getElementById("gotw-current");
+    if (!picker) return;
+
+    const ref = WLTeams.getFeaturedGameRef();
+    const resolved = WLTeams.getFeaturedGame();
+
+    // Populate picker options
+    picker.innerHTML = `<option value="">— Auto (next upcoming game) —</option>`;
+    const teams = WLTeams.getAllTeams();
+    const options = [];
+    Object.entries(teams).forEach(([slug, t]) => {
+      (t.upcoming || []).forEach(g => {
+        const val = `${slug}|${g.date}|${g.opponent}`;
+        const label = `${t.name} ${g.home ? "vs." : "@"} ${g.opponent} — ${g.date}`;
+        options.push({ val, label, dateObj: new Date(g.date) });
+      });
+    });
+    options.sort((a, b) => a.dateObj - b.dateObj);
+    options.forEach(o => {
+      const opt = document.createElement("option");
+      opt.value = o.val;
+      opt.textContent = o.label;
+      picker.appendChild(opt);
+    });
+
+    if (ref) picker.value = `${ref.teamSlug}|${ref.date}|${ref.opponent}`;
+
+    // Current display
+    if (resolved) {
+      const label = resolved.manual ? "Currently featured (manual)" : "Currently showing (auto-pick)";
+      current.innerHTML = `<b>${label}:</b> ${escapeHtml(resolved.teamName)} ${resolved.home ? "vs." : "@"} ${escapeHtml(resolved.opponent)} — ${escapeHtml(resolved.date)}`;
+    } else {
+      current.innerHTML = `<span style="color:var(--muted);">No upcoming games — nothing to feature.</span>`;
+    }
+  }
+
+  document.getElementById("gotw-save").addEventListener("click", () => {
+    const val = document.getElementById("gotw-picker").value;
+    if (!val) { WLTeams.clearFeaturedGame(); renderAll(); return; }
+    const [teamSlug, date, opponent] = val.split("|");
+    WLTeams.setFeaturedGame(teamSlug, date, opponent);
+    renderAll();
+  });
+  document.getElementById("gotw-clear").addEventListener("click", () => {
+    WLTeams.clearFeaturedGame();
+    renderAll();
+  });
+
+  function renderAll() {
+    if (!gate()) return;
+    renderGameOfWeek();
+    renderTeams();
+    renderBrackets();
+  }
+
+  document.addEventListener("wl-auth-change", renderAll);
+  document.addEventListener("wl-teams-change", renderAll);
+  renderAll();
+})();
+</script>
+</body>
+</html>
