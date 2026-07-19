@@ -1,7 +1,7 @@
 # The Woodley Leaves
 
 The online home of **The Woodley Leaves** — Maret School's student newspaper.
-Section pages, articles, sports, videos, puzzles/centerspread, search, and an
+Section pages, articles, sports, videos, puzzles & games, search, and an
 in-app **editor dashboard**. Framework-free (vanilla HTML/CSS/JS), no build step,
 no dependencies.
 
@@ -13,7 +13,7 @@ content.
 ## Highlights
 
 - **Editor dashboard** — create and edit articles, and manage staff, sports, ads,
-  videos, and the centerspread.
+  videos, and the puzzles & games pages.
 - **Editor-managed sections** — add, rename, reorder, and remove sections, and
   choose which section fills each home-page slot. The nav, section pages, home
   page, and search all update automatically.
