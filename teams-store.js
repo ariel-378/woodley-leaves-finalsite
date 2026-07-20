@@ -13,6 +13,18 @@ window.WLTeams = (function () {
   function write(key, value) { localStorage.setItem(key, JSON.stringify(value)); }
   function fire() { document.dispatchEvent(new CustomEvent("wl-teams-change")); }
 
+  // Sitewide on/off toggle for the sports-stats feature (Game of the Week,
+  // team records, and playoff brackets). On by default.
+  const LS_STATS_ENABLED = "wl_sports_enabled";
+  function statsEnabled() {
+    const v = localStorage.getItem(LS_STATS_ENABLED);
+    return v === null ? true : v === "true";
+  }
+  function setStatsEnabled(on) {
+    localStorage.setItem(LS_STATS_ENABLED, on ? "true" : "false");
+    fire();
+  }
+
   // ===== Teams =====
   function getAllTeams() {
     const base = window.WL_TEAMS || {};
@@ -136,6 +148,7 @@ window.WLTeams = (function () {
     getAllTeams, getTeam, saveTeam, removeTeam, isCustomTeam,
     getAllBrackets, getBracket, saveBracket, removeBracket, isCustomBracket,
     reset,
-    getFeaturedGame, getFeaturedGameRef, setFeaturedGame, clearFeaturedGame
+    getFeaturedGame, getFeaturedGameRef, setFeaturedGame, clearFeaturedGame,
+    statsEnabled, setStatsEnabled
   };
 })();

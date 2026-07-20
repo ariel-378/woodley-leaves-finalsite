@@ -89,8 +89,14 @@
 
   function render() {
     const container = document.getElementById("brackets-container");
-    const brackets = WLTeams.getAllBrackets();
     container.innerHTML = "";
+
+    if (window.WLTeams && !WLTeams.statsEnabled()) {
+      container.innerHTML = `<p class="search-empty">Playoff brackets are currently turned off.</p>`;
+      return;
+    }
+
+    const brackets = WLTeams.getAllBrackets();
 
     if (Object.keys(brackets).length === 0) {
       container.innerHTML = `<p class="search-empty">No active tournaments. Check back during playoff season.</p>`;

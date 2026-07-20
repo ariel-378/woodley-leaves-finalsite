@@ -127,9 +127,15 @@
       <a href="editor-brand.html" class="ed-tab-brand">Brand design</a>
     </div>
 
-    <p class="ed-tip" style="font-size:12px;color:var(--muted);margin-bottom:24px;">
+    <p class="ed-tip" style="font-size:12px;color:var(--muted);margin-bottom:14px;">
       Changes are saved instantly to your browser. <b>Manage Games</b> on each team lets you log results and add upcoming games.
     </p>
+
+    <label class="sports-toggle" style="display:flex;align-items:center;gap:10px;padding:12px 14px;border:1px solid var(--rule);background:#fafafa;margin-bottom:24px;cursor:pointer;font-family:'Helvetica Neue',Arial,sans-serif;font-size:14px;color:var(--ink);">
+      <input type="checkbox" id="sports-enabled-toggle" style="width:auto;margin:0;">
+      <b>Show sports stats &amp; brackets on the site</b>
+      <span id="sports-enabled-note" style="font-size:12px;color:var(--muted);font-weight:400;"></span>
+    </label>
 
     <section class="puzzle-section">
       <h3>Game of the Week</h3>
@@ -620,6 +626,18 @@
   });
 
   // ===== Add buttons =====
+  // Sitewide sports-stats on/off toggle.
+  const sportsToggle = document.getElementById("sports-enabled-toggle");
+  const sportsNote = document.getElementById("sports-enabled-note");
+  sportsToggle.addEventListener("change", () => WLTeams.setStatsEnabled(sportsToggle.checked));
+  function renderToggle() {
+    const on = WLTeams.statsEnabled();
+    sportsToggle.checked = on;
+    sportsNote.textContent = on
+      ? "Sports stats and brackets are showing on the site."
+      : "Sports stats and brackets are hidden sitewide — your teams and brackets below are kept.";
+  }
+
   document.getElementById("add-team").addEventListener("click", () => openTeamModal(null));
   document.getElementById("add-bracket").addEventListener("click", () => openBracketModal(null));
 
@@ -701,6 +719,7 @@
 
   function renderAll() {
     if (!gate()) return;
+    renderToggle();
     renderGameOfWeek();
     renderTeams();
     renderBrackets();

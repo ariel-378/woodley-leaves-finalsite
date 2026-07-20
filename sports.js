@@ -71,7 +71,22 @@
     `;
   }
 
+  function statsEnabled() { return window.WLTeams ? WLTeams.statsEnabled() : true; }
+
+  // Show/hide the whole stats block (Game of the Week + Teams/brackets rows).
+  // The Sports article list below is left untouched.
+  function applyStatsVisibility() {
+    const on = statsEnabled();
+    ["game-of-week", "teams-grid"].forEach(id => {
+      const el = document.getElementById(id);
+      const row = el && el.closest(".wl-row");
+      if (row) row.style.display = on ? "" : "none";
+    });
+  }
+
   function renderAll() {
+    applyStatsVisibility();
+    if (!statsEnabled()) return;
     renderGameOfWeek();
     renderTeams();
   }
