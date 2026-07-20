@@ -345,16 +345,37 @@ textarea:focus-visible,
   display: block;
   margin-bottom: 10px;
 }
+/* NYT-style byline: small sans in normal case (not all-caps), muted, with the
+   author name in darker ink. */
 .byline {
   font-family: "Helvetica Neue", Arial, sans-serif;
-  font-size: 11px;
+  font-size: 13px;
   color: var(--muted);
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  margin-top: 10px;
+  letter-spacing: 0;
+  margin-top: 8px;
 }
 .byline-link { color: var(--ink); font-weight: 600; }
 .byline-link:hover { color: var(--accent); }
+
+/* Author byline tags — each writer is a separate linked pill (never joined). */
+.byline-tag {
+  display: inline-block;
+  text-transform: none;
+  letter-spacing: 0;
+  font-weight: 500;
+  color: var(--ink);
+  border: 1px solid var(--rule);
+  border-radius: 999px;
+  padding: 1px 9px;
+  margin: 0 5px 4px 0;
+  font-size: 12px;
+  line-height: 1.7;
+  text-decoration: none;
+  white-space: nowrap;
+  vertical-align: middle;
+}
+a.byline-tag:hover { border-color: var(--ink); text-decoration: none; }
+.byline-tag-plain { color: var(--muted); }
 .story {
   border-bottom: 1px solid var(--rule);
   padding-bottom: 16px;
@@ -401,38 +422,88 @@ textarea:focus-visible,
 }
 
 /* ===== Section hero (big display masthead for News/Features/Style/etc.) ===== */
+/* Section page header — NYT op-ed style: left-aligned serif title with a muted
+   eyebrow over a single hairline rule. No decorative flourish or tinted panel. */
 .section-hero {
-  text-align: center;
-  padding: 40px 20px 32px;
-  border-top: 4px solid var(--ink);
-  border-bottom: 4px solid var(--ink);
-  margin-bottom: 36px;
-  background: linear-gradient(180deg, rgba(46, 125, 50, 0.05) 0%, transparent 100%);
+  text-align: left;
+  padding: 20px 0 14px;
+  border-bottom: 1px solid var(--ink);
+  margin-bottom: 28px;
 }
 .section-hero .kicker {
-  color: var(--accent);
-  letter-spacing: 2.5px;
-  font-size: 12px;
+  color: var(--muted);
+  letter-spacing: 1px;
+  font-size: 11px;
 }
 .section-hero h2 {
   font-family: "Old Standard TT", Georgia, serif;
-  font-size: clamp(44px, 8vw, 88px);
-  line-height: 0.95;
-  margin: 10px 0 14px;
-  letter-spacing: -2px;
+  font-size: clamp(34px, 5.5vw, 54px);
+  line-height: 1.04;
+  margin: 4px 0 6px;
+  letter-spacing: -0.5px;
   font-weight: 700;
 }
-.section-hero-flourish {
-  color: var(--accent);
-  opacity: 0.7;
-  margin: 8px auto 18px;
-  display: flex;
-  justify-content: center;
+.section-hero-flourish { display: none; }
+
+/* ===== Section page — NYT-style tiered grid (lead + cards + minis) ===== */
+.sec-eyebrow {
+  font-family: "Helvetica Neue", Arial, sans-serif;
+  font-size: 11px;
+  letter-spacing: 0.6px;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin: 0 0 3px;
 }
-.section-hero-flourish svg {
-  width: clamp(180px, 40%, 280px);
-  height: auto;
+.sec-deck { font-size: 15px; color: #333; line-height: 1.45; margin: 6px 0 0; }
+.sec-lead h2 a, .sec-card h3 a, .sec-mini h4 a { color: var(--ink); }
+.sec-lead-media img, .sec-card-media img, .sec-mini-media img,
+.sec-lead-media .photo, .sec-card-media .photo, .sec-mini-media .photo {
+  width: 100%;
   display: block;
+}
+
+/* Lead: text left, large image right */
+.sec-lead {
+  display: grid;
+  grid-template-columns: 1fr 1.1fr;
+  gap: 26px;
+  align-items: start;
+  padding-bottom: 26px;
+  margin-bottom: 26px;
+  border-bottom: 1px solid var(--rule);
+}
+.sec-lead h2 {
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: clamp(24px, 2.6vw, 34px);
+  line-height: 1.08;
+  margin: 2px 0 0;
+  font-weight: 700;
+}
+
+/* Secondary cards: image on top, 3 across */
+.sec-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+  gap: 26px;
+  padding-bottom: 26px;
+  margin-bottom: 26px;
+  border-bottom: 1px solid var(--rule);
+}
+.sec-card-media { display: block; margin-bottom: 10px; }
+.sec-card h3 { font-size: 20px; line-height: 1.2; margin: 2px 0 0; }
+
+/* Minis: smaller, headline only */
+.sec-more {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 22px;
+}
+.sec-mini-media { display: block; margin-bottom: 8px; }
+.sec-mini h4 { font-size: 15px; line-height: 1.25; margin: 2px 0 0; font-weight: 700; }
+
+@media (max-width: 640px) {
+  .sec-lead { grid-template-columns: 1fr; }
+  .sec-lead-media { order: -1; }   /* image above text on narrow screens */
 }
 .section-hero-deck {
   font-family: Georgia, serif;
@@ -442,20 +513,6 @@ textarea:focus-visible,
   max-width: 600px;
   margin: 0 auto;
   line-height: 1.5;
-}
-/* Drop cap on the first paragraph of every article page (newspaper classic). */
-#art-prose > p:first-of-type::first-letter {
-  font-family: "Old Standard TT", Georgia, serif;
-  font-size: 68px;
-  font-weight: 700;
-  color: var(--accent);
-  float: left;
-  line-height: 0.85;
-  margin: 6px 10px 0 0;
-  padding: 0;
-}
-@media (max-width: 520px) {
-  #art-prose > p:first-of-type::first-letter { font-size: 54px; }
 }
 
 /* ===== Masthead ornaments — decorative marks flanking the paper's name. ===== */

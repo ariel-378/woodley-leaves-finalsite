@@ -32,6 +32,40 @@
     return `<div class="photo wide"></div>`;
   }
 
+  // ── NYT-style tiers: one lead story, a row of cards, then smaller minis. ──
+  function href(a) { return `article.html?id=${encodeURIComponent(a.id)}`; }
+  function eyebrow(a) { return `<div class="sec-eyebrow">${window.WL_bylineTagsHtml ? WL_bylineTagsHtml(a) : escapeHtml(a.byline)}</div>`; }
+  function deckHtml(a) { return a.deck ? `<p class="sec-deck">${escapeHtml(a.deck)}</p>` : ""; }
+
+  function leadHtml(a) {
+    return `
+      <article class="sec-lead">
+        <div class="sec-lead-text">
+          ${eyebrow(a)}
+          <h2><a href="${href(a)}">${escapeHtml(a.title)}</a></h2>
+          ${deckHtml(a)}
+        </div>
+        <a class="sec-lead-media" href="${href(a)}">${thumbHtml(a)}</a>
+      </article>`;
+  }
+  function cardHtml(a) {
+    return `
+      <article class="sec-card">
+        <a class="sec-card-media" href="${href(a)}">${thumbHtml(a)}</a>
+        ${eyebrow(a)}
+        <h3><a href="${href(a)}">${escapeHtml(a.title)}</a></h3>
+        ${deckHtml(a)}
+      </article>`;
+  }
+  function miniHtml(a) {
+    return `
+      <article class="sec-mini">
+        <a class="sec-mini-media" href="${href(a)}">${thumbHtml(a)}</a>
+        ${eyebrow(a)}
+        <h4><a href="${href(a)}">${escapeHtml(a.title)}</a></h4>
+      </article>`;
+  }
+
   function render() {
     const list = document.getElementById("article-list");
     if (!list) return;
@@ -39,28 +73,19 @@
     if (!section) return;
 
     const articles = WLArticles.bySection(section);
-    list.innerHTML = "";
-
     if (articles.length === 0) {
-      const empty = document.createElement("div");
-      empty.className = "section-empty";
-      empty.textContent = "No articles in this section yet.";
-      list.appendChild(empty);
+      list.innerHTML = `<div class="section-empty">No articles in this section yet.</div>`;
       return;
     }
 
-    articles.forEach((a, i) => {
-      const article = document.createElement("article");
-      article.className = "story";
-      // Top story (first) gets a media slot
-      const mediaHtml = i === 0 ? thumbHtml(a) : "";
-      article.innerHTML = `
-        ${mediaHtml}
-        <h3><a href="article.html?id=${encodeURIComponent(a.id)}">${escapeHtml(a.title)}</a></h3>
-        <div class="byline">By ${escapeHtml(a.byline)} · ${escapeHtml(a.date)}</div>
-      `;
-      list.appendChild(article);
-    });
+    const lead = articles[0];
+    const secondary = articles.slice(1, 4);   // up to 3 cards
+    const more = articles.slice(4);            // the rest as minis
+
+    let html = leadHtml(lead);
+    if (secondary.length) html += `<div class="sec-grid">${secondary.map(cardHtml).join("")}</div>`;
+    if (more.length) html += `<div class="sec-more">${more.map(miniHtml).join("")}</div>`;
+    list.innerHTML = html;
   }
 
   document.addEventListener("DOMContentLoaded", render);
