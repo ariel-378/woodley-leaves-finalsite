@@ -49,19 +49,29 @@ window.WLPuzzles = (function () {
     ]
   }];
 
+  // Word search: a list of words hidden in an auto-generated grid. Each word is
+  // shown to the player exactly as typed; only its letters go into the grid.
+  const DEFAULT_WORDSEARCH = [{
+    words: ["Allergies", "April Fools Day", "Bees", "Cherry Blossoms", "Cleaning",
+            "Daylight Savings", "Flowers", "Gardening", "March", "May",
+            "Picnic", "Rain", "Spring Break", "Sunshine"]
+  }];
+
   function readPools() {
     try {
       const stored = JSON.parse(localStorage.getItem(KEY) || "{}");
       return {
         bee:         Array.isArray(stored.bee)         && stored.bee.length         ? stored.bee         : DEFAULT_BEE.slice(),
         crossword:   Array.isArray(stored.crossword)   && stored.crossword.length   ? stored.crossword   : DEFAULT_CROSSWORD.slice(),
-        connections: Array.isArray(stored.connections) && stored.connections.length ? stored.connections : DEFAULT_CONNECTIONS.slice()
+        connections: Array.isArray(stored.connections) && stored.connections.length ? stored.connections : DEFAULT_CONNECTIONS.slice(),
+        wordsearch:  Array.isArray(stored.wordsearch)  && stored.wordsearch.length  ? stored.wordsearch  : DEFAULT_WORDSEARCH.slice()
       };
     } catch {
       return {
         bee: DEFAULT_BEE.slice(),
         crossword: DEFAULT_CROSSWORD.slice(),
-        connections: DEFAULT_CONNECTIONS.slice()
+        connections: DEFAULT_CONNECTIONS.slice(),
+        wordsearch: DEFAULT_WORDSEARCH.slice()
       };
     }
   }
@@ -114,6 +124,14 @@ window.WLPuzzles = (function () {
     addConnections(entry)       { const p = readPools(); p.connections.push(entry);  writePools(p); },
     setConnectionsAt(i, entry)  { const p = readPools(); p.connections[i] = entry;   writePools(p); },
     removeConnectionsAt(i)      { const p = readPools(); p.connections.splice(i, 1); writePools(p); },
+
+    // Word Search
+    getWordsearchPool()          { return readPools().wordsearch; },
+    todayWordsearch()            { return pickToday(readPools().wordsearch); },
+    todayWordsearchIndex()       { const p = readPools().wordsearch; return p.length ? dayIndex() % p.length : -1; },
+    addWordsearch(entry)         { const p = readPools(); p.wordsearch.push(entry);  writePools(p); },
+    setWordsearchAt(i, entry)    { const p = readPools(); p.wordsearch[i] = entry;   writePools(p); },
+    removeWordsearchAt(i)        { const p = readPools(); p.wordsearch.splice(i, 1); writePools(p); },
 
     // Reset everything to defaults
     reset() { localStorage.removeItem(KEY); document.dispatchEvent(new CustomEvent("wl-puzzles-change")); },

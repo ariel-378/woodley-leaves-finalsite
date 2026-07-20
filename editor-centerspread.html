@@ -162,6 +162,13 @@
         <button class="btn-primary" id="cn-add">+ Add Connections puzzle</button>
       </div>
 
+      <div class="puzzle-section">
+        <h4>Word Search</h4>
+        <div class="today-pick">Today's puzzle: <b id="ws-today"></b></div>
+        <ul class="pool-list" id="ws-pool"></ul>
+        <button class="btn-primary" id="ws-add">+ Add Word Search puzzle</button>
+      </div>
+
       <button class="btn-ghost" id="reset-all" style="margin-top:6px;">Reset all puzzle pools to defaults</button>
     </section>
   </div>
@@ -320,6 +327,25 @@
         <div class="ed-form-actions">
           <button class="btn-ghost" data-cancel>Cancel</button>
           <button class="btn-primary" id="cn-save">Save</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Word Search modal -->
+  <div class="ed-modal-overlay" id="ws-modal" role="dialog" aria-modal="true" aria-labelledby="ws-modal-title">
+    <div class="ed-modal">
+      <button class="ed-modal-close">×</button>
+      <h2 id="ws-modal-title">Add a Word Search puzzle</h2>
+      <div class="ed-form">
+        <p class="ed-tip">One word or phrase per line — shown to the player exactly as typed. Only the letters go in the grid (spaces and punctuation are ignored). Keep each to 16 letters or fewer so it fits.</p>
+        <label>Words
+          <textarea id="ws-words" rows="14" placeholder="Cherry Blossoms&#10;April Fools Day&#10;Bees&#10;Sunshine&#10;..."></textarea>
+        </label>
+        <div class="ed-error" id="ws-error"></div>
+        <div class="ed-form-actions">
+          <button class="btn-ghost" data-cancel>Cancel</button>
+          <button class="btn-primary" id="ws-save">Save</button>
         </div>
       </div>
     </div>
@@ -811,6 +837,68 @@
     renderAll();
   });
 
+  // ===== Word Search =====
+  const wsGridForm = (w) => String(w).toUpperCase().replace(/[^A-Z0-9]/g, "");
+  function renderWordsearch() {
+    const todayEl = document.getElementById("ws-today");
+    const today = WLPuzzles.todayWordsearch();
+    const todayWords = today && Array.isArray(today.words) ? today.words.filter(w => wsGridForm(w)) : [];
+    todayEl.textContent = todayWords.length ? `${todayWords.length} words` : "—";
+    const todayIdx = WLPuzzles.todayWordsearchIndex();
+    const list = document.getElementById("ws-pool");
+    const pool = WLPuzzles.getWordsearchPool();
+    list.innerHTML = "";
+    if (pool.length === 0) {
+      list.innerHTML = `<li><em style="color: var(--muted);">No Word Search puzzles in the pool.</em></li>`;
+      return;
+    }
+    pool.forEach((entry, i) => {
+      const li = document.createElement("li");
+      if (i === todayIdx) li.classList.add("today-row");
+      const words = (entry.words || []).filter(w => wsGridForm(w));
+      const preview = words.slice(0, 4).map(escapeHtml).join(", ") + (words.length > 4 ? "…" : "");
+      li.innerHTML = `
+        <span><b>${words.length} words</b> <span style="color:var(--muted);font-weight:400;">${preview}</span>${i === todayIdx ? '<span class="badge-today">Today</span>' : ""}</span>
+        <span class="pool-actions">
+          <button class="btn-ghost" data-act="edit"   data-i="${i}">Edit</button>
+          <button class="btn-danger" data-act="delete" data-i="${i}">Delete</button>
+        </span>
+      `;
+      list.appendChild(li);
+    });
+    list.querySelectorAll('[data-act="edit"]').forEach(b => b.addEventListener("click", () => openWordsearchModal(+b.dataset.i)));
+    list.querySelectorAll('[data-act="delete"]').forEach(b => b.addEventListener("click", () => {
+      if (!confirm("Delete this Word Search puzzle?")) return;
+      WLPuzzles.removeWordsearchAt(+b.dataset.i);
+      renderAll();
+    }));
+  }
+
+  let wsEditingIndex = null;
+  function openWordsearchModal(i) {
+    wsEditingIndex = (typeof i === "number") ? i : null;
+    const entry = wsEditingIndex !== null ? WLPuzzles.getWordsearchPool()[wsEditingIndex] : null;
+    document.getElementById("ws-modal-title").textContent = wsEditingIndex === null ? "Add a Word Search puzzle" : "Edit Word Search puzzle";
+    document.getElementById("ws-error").textContent = "";
+    document.getElementById("ws-words").value = entry ? (entry.words || []).join("\n") : "";
+    document.getElementById("ws-modal").classList.add("visible");
+    setTimeout(() => document.getElementById("ws-words").focus(), 50);
+  }
+  document.getElementById("ws-add").addEventListener("click", () => openWordsearchModal());
+  document.getElementById("ws-save").addEventListener("click", () => {
+    const err = document.getElementById("ws-error"); err.textContent = "";
+    const words = document.getElementById("ws-words").value.split("\n").map(w => w.trim()).filter(Boolean);
+    const valid = words.filter(w => wsGridForm(w).length >= 2);
+    if (valid.length < 3) { err.textContent = "Add at least 3 words (each with 2 or more letters)."; return; }
+    const tooLong = valid.find(w => wsGridForm(w).length > 16);
+    if (tooLong) { err.textContent = `"${tooLong}" is too long — keep words to 16 letters or fewer.`; return; }
+    const entry = { words: valid };
+    if (wsEditingIndex === null) WLPuzzles.addWordsearch(entry);
+    else WLPuzzles.setWordsearchAt(wsEditingIndex, entry);
+    closeModals();
+    renderAll();
+  });
+
   function closeModals() {
     document.querySelectorAll(".ed-modal-overlay").forEach(m => m.classList.remove("visible"));
   }
@@ -832,6 +920,7 @@
     renderBee();
     renderCrossword();
     renderConnections();
+    renderWordsearch();
   }
 
   document.addEventListener("wl-auth-change", renderAll);
