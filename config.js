@@ -11,7 +11,7 @@ window.WL_CONFIG = {
   // ── Names ────────────────────────────────────────────────────────────────
   name: "The Woodley Leaves",     // the masthead headline (and browser tab)
   school: "Maret School",         // shown in the dateline under the masthead
-  tagline: "Student Press Since 2002",
+  tagline: "Student Press",
   splashMark: "MARET",            // the big word behind the name on the opening splash
 
   // ── Colors ───────────────────────────────────────────────────────────────
