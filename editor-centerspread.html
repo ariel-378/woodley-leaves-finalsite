@@ -338,7 +338,7 @@
       <button class="ed-modal-close">×</button>
       <h2 id="ws-modal-title">Add a Word Search puzzle</h2>
       <div class="ed-form">
-        <p class="ed-tip">One word or phrase per line — shown to the player exactly as typed. Only the letters go in the grid (spaces and punctuation are ignored). Keep each to 16 letters or fewer so it fits.</p>
+        <p class="ed-tip">One word or phrase per line (or separate them with commas) — shown to the player exactly as typed. Only the letters go in the grid (spaces and punctuation are ignored). Keep each to 16 letters or fewer so it fits.</p>
         <label>Words
           <textarea id="ws-words" rows="14" placeholder="Cherry Blossoms&#10;April Fools Day&#10;Bees&#10;Sunshine&#10;..."></textarea>
         </label>
@@ -609,12 +609,14 @@
           ${i === todayIdx ? '<span class="badge-today">Today</span>' : ""}
         </span>
         <span class="pool-actions">
+          ${i === todayIdx ? "" : '<button class="btn-ghost" data-act="pin" data-i="' + i + '">Set as today\'s</button>'}
           <button class="btn-ghost" data-act="edit" data-i="${i}">Edit</button>
           <button class="btn-danger" data-act="delete" data-i="${i}">Delete</button>
         </span>
       `;
       list.appendChild(li);
     });
+    list.querySelectorAll('[data-act="pin"]').forEach(b => b.addEventListener("click", () => { WLPuzzles.setActive("bee", +b.dataset.i); renderAll(); }));
     list.querySelectorAll('[data-act="edit"]').forEach(b => b.addEventListener("click", () => openBeeModal(+b.dataset.i)));
     list.querySelectorAll('[data-act="delete"]').forEach(b => b.addEventListener("click", () => {
       if (!confirm("Delete this Spelling Bee puzzle?")) return;
@@ -659,7 +661,7 @@
     if (bad) { err.textContent = `"${bad}" is invalid. Words must be ≥4 letters, contain the center, and only use the 7 letters.`; return; }
 
     const entry = { center, outer, words };
-    if (beeEditingIndex === null) WLPuzzles.addBee(entry);
+    if (beeEditingIndex === null) { WLPuzzles.addBee(entry); if (WLPuzzles.setActive) WLPuzzles.setActive("bee", WLPuzzles.getBeePool().length - 1); }
     else WLPuzzles.setBeeAt(beeEditingIndex, entry);
     closeModals();
     renderAll();
@@ -683,12 +685,14 @@
       li.innerHTML = `
         <span><b>${escapeHtml(p.rows.join(" / "))}</b>${i === todayIdx ? '<span class="badge-today">Today</span>' : ""}</span>
         <span class="pool-actions">
+          ${i === todayIdx ? "" : '<button class="btn-ghost" data-act="pin" data-i="' + i + '">Set as today\'s</button>'}
           <button class="btn-ghost" data-act="edit" data-i="${i}">Edit</button>
           <button class="btn-danger" data-act="delete" data-i="${i}">Delete</button>
         </span>
       `;
       list.appendChild(li);
     });
+    list.querySelectorAll('[data-act="pin"]').forEach(b => b.addEventListener("click", () => { WLPuzzles.setActive("crossword", +b.dataset.i); renderAll(); }));
     list.querySelectorAll('[data-act="edit"]').forEach(b => b.addEventListener("click", () => openCwModal(+b.dataset.i)));
     list.querySelectorAll('[data-act="delete"]').forEach(b => b.addEventListener("click", () => {
       if (!confirm("Delete this crossword?")) return;
@@ -739,7 +743,7 @@
     }
 
     const entry = { rows, across, down };
-    if (cwEditingIndex === null) WLPuzzles.addCrossword(entry);
+    if (cwEditingIndex === null) { WLPuzzles.addCrossword(entry); if (WLPuzzles.setActive) WLPuzzles.setActive("crossword", WLPuzzles.getCrosswordPool().length - 1); }
     else WLPuzzles.setCrosswordAt(cwEditingIndex, entry);
     closeModals();
     renderAll();
@@ -784,12 +788,14 @@
       li.innerHTML = `
         <span><b>${cats}</b>${i === todayIdx ? '<span class="badge-today">Today</span>' : ""}</span>
         <span class="pool-actions">
+          ${i === todayIdx ? "" : '<button class="btn-ghost" data-act="pin" data-i="' + i + '">Set as today\'s</button>'}
           <button class="btn-ghost" data-act="edit"   data-i="${i}">Edit</button>
           <button class="btn-danger" data-act="delete" data-i="${i}">Delete</button>
         </span>
       `;
       list.appendChild(li);
     });
+    list.querySelectorAll('[data-act="pin"]').forEach(b => b.addEventListener("click", () => { WLPuzzles.setActive("connections", +b.dataset.i); renderAll(); }));
     list.querySelectorAll('[data-act="edit"]').forEach(b => b.addEventListener("click", () => openConnectionsModal(+b.dataset.i)));
     list.querySelectorAll('[data-act="delete"]').forEach(b => b.addEventListener("click", () => {
       if (!confirm("Delete this Connections puzzle?")) return;
@@ -831,7 +837,7 @@
       groups.push({ difficulty: color, category: cat, words });
     }
     const entry = { groups };
-    if (cnEditingIndex === null) WLPuzzles.addConnections(entry);
+    if (cnEditingIndex === null) { WLPuzzles.addConnections(entry); if (WLPuzzles.setActive) WLPuzzles.setActive("connections", WLPuzzles.getConnectionsPool().length - 1); }
     else WLPuzzles.setConnectionsAt(cnEditingIndex, entry);
     closeModals();
     renderAll();
@@ -860,12 +866,14 @@
       li.innerHTML = `
         <span><b>${words.length} words</b> <span style="color:var(--muted);font-weight:400;">${preview}</span>${i === todayIdx ? '<span class="badge-today">Today</span>' : ""}</span>
         <span class="pool-actions">
+          ${i === todayIdx ? "" : '<button class="btn-ghost" data-act="pin" data-i="' + i + '">Set as today\'s</button>'}
           <button class="btn-ghost" data-act="edit"   data-i="${i}">Edit</button>
           <button class="btn-danger" data-act="delete" data-i="${i}">Delete</button>
         </span>
       `;
       list.appendChild(li);
     });
+    list.querySelectorAll('[data-act="pin"]').forEach(b => b.addEventListener("click", () => { WLPuzzles.setActive("wordsearch", +b.dataset.i); renderAll(); }));
     list.querySelectorAll('[data-act="edit"]').forEach(b => b.addEventListener("click", () => openWordsearchModal(+b.dataset.i)));
     list.querySelectorAll('[data-act="delete"]').forEach(b => b.addEventListener("click", () => {
       if (!confirm("Delete this Word Search puzzle?")) return;
@@ -887,13 +895,13 @@
   document.getElementById("ws-add").addEventListener("click", () => openWordsearchModal());
   document.getElementById("ws-save").addEventListener("click", () => {
     const err = document.getElementById("ws-error"); err.textContent = "";
-    const words = document.getElementById("ws-words").value.split("\n").map(w => w.trim()).filter(Boolean);
+    const words = document.getElementById("ws-words").value.split(/[\n,]+/).map(w => w.trim()).filter(Boolean);
     const valid = words.filter(w => wsGridForm(w).length >= 2);
-    if (valid.length < 3) { err.textContent = "Add at least 3 words (each with 2 or more letters)."; return; }
+    if (valid.length < 3) { err.textContent = "Enter at least 3 words \u2014 one per line, or separated by commas."; return; }
     const tooLong = valid.find(w => wsGridForm(w).length > 16);
     if (tooLong) { err.textContent = `"${tooLong}" is too long — keep words to 16 letters or fewer.`; return; }
     const entry = { words: valid };
-    if (wsEditingIndex === null) WLPuzzles.addWordsearch(entry);
+    if (wsEditingIndex === null) { WLPuzzles.addWordsearch(entry); if (WLPuzzles.setActive) WLPuzzles.setActive("wordsearch", WLPuzzles.getWordsearchPool().length - 1); }
     else WLPuzzles.setWordsearchAt(wsEditingIndex, entry);
     closeModals();
     renderAll();

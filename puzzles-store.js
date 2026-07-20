@@ -93,6 +93,28 @@ window.WLPuzzles = (function () {
     return pool[dayIndex() % pool.length];
   }
 
+  // An editor can pin a specific puzzle as "today's", overriding the daily
+  // rotation. Pins are stored per puzzle type and survive until cleared.
+  const ACTIVE_KEY = "wl_puzzles_active";
+  function readActive() { try { return JSON.parse(localStorage.getItem(ACTIVE_KEY) || "{}"); } catch { return {}; } }
+  function writeActive(a) { localStorage.setItem(ACTIVE_KEY, JSON.stringify(a)); document.dispatchEvent(new CustomEvent("wl-puzzles-change")); }
+  function activeIndexFor(type, pool) {
+    if (!pool || pool.length === 0) return -1;
+    const pinned = readActive()[type];
+    if (typeof pinned === "number" && pinned >= 0 && pinned < pool.length) return pinned;
+    return dayIndex() % pool.length;
+  }
+  function pickFor(type, pool) {
+    const i = activeIndexFor(type, pool);
+    return i < 0 ? null : pool[i];
+  }
+  function adjustActive(type, removedIndex) {
+    const a = readActive();
+    if (typeof a[type] !== "number") return;
+    if (a[type] === removedIndex) { delete a[type]; writeActive(a); }
+    else if (a[type] > removedIndex) { a[type] -= 1; writeActive(a); }
+  }
+
   // ===== Public API =====
   return {
     // Read pools
@@ -100,41 +122,46 @@ window.WLPuzzles = (function () {
     getCrosswordPool()   { return readPools().crossword; },
     getConnectionsPool() { return readPools().connections; },
 
-    // Today's pick
-    todayBee()         { return pickToday(readPools().bee); },
-    todayCrossword()   { return pickToday(readPools().crossword); },
-    todayConnections() { return pickToday(readPools().connections); },
+    // Today's pick (an editor pin overrides the daily rotation)
+    todayBee()         { return pickFor("bee", readPools().bee); },
+    todayCrossword()   { return pickFor("crossword", readPools().crossword); },
+    todayConnections() { return pickFor("connections", readPools().connections); },
 
     // Index of today's pick within each pool (for UI labeling)
-    todayBeeIndex()         { const p = readPools().bee;         return p.length ? dayIndex() % p.length : -1; },
-    todayCrosswordIndex()   { const p = readPools().crossword;   return p.length ? dayIndex() % p.length : -1; },
-    todayConnectionsIndex() { const p = readPools().connections; return p.length ? dayIndex() % p.length : -1; },
+    todayBeeIndex()         { return activeIndexFor("bee", readPools().bee); },
+    todayCrosswordIndex()   { return activeIndexFor("crossword", readPools().crossword); },
+    todayConnectionsIndex() { return activeIndexFor("connections", readPools().connections); },
 
     // CRUD — Spelling Bee
     addBee(entry)       { const p = readPools(); p.bee.push(entry);  writePools(p); },
     setBeeAt(i, entry)  { const p = readPools(); p.bee[i] = entry;   writePools(p); },
-    removeBeeAt(i)      { const p = readPools(); p.bee.splice(i, 1); writePools(p); },
+    removeBeeAt(i)      { const p = readPools(); p.bee.splice(i, 1); writePools(p); adjustActive("bee", i); },
 
     // CRUD — Crossword
     addCrossword(entry)       { const p = readPools(); p.crossword.push(entry);  writePools(p); },
     setCrosswordAt(i, entry)  { const p = readPools(); p.crossword[i] = entry;   writePools(p); },
-    removeCrosswordAt(i)      { const p = readPools(); p.crossword.splice(i, 1); writePools(p); },
+    removeCrosswordAt(i)      { const p = readPools(); p.crossword.splice(i, 1); writePools(p); adjustActive("crossword", i); },
 
     // CRUD — Connections
     addConnections(entry)       { const p = readPools(); p.connections.push(entry);  writePools(p); },
     setConnectionsAt(i, entry)  { const p = readPools(); p.connections[i] = entry;   writePools(p); },
-    removeConnectionsAt(i)      { const p = readPools(); p.connections.splice(i, 1); writePools(p); },
+    removeConnectionsAt(i)      { const p = readPools(); p.connections.splice(i, 1); writePools(p); adjustActive("connections", i); },
 
     // Word Search
     getWordsearchPool()          { return readPools().wordsearch; },
-    todayWordsearch()            { return pickToday(readPools().wordsearch); },
-    todayWordsearchIndex()       { const p = readPools().wordsearch; return p.length ? dayIndex() % p.length : -1; },
+    todayWordsearch()            { return pickFor("wordsearch", readPools().wordsearch); },
+    todayWordsearchIndex()       { return activeIndexFor("wordsearch", readPools().wordsearch); },
     addWordsearch(entry)         { const p = readPools(); p.wordsearch.push(entry);  writePools(p); },
     setWordsearchAt(i, entry)    { const p = readPools(); p.wordsearch[i] = entry;   writePools(p); },
-    removeWordsearchAt(i)        { const p = readPools(); p.wordsearch.splice(i, 1); writePools(p); },
+    removeWordsearchAt(i)        { const p = readPools(); p.wordsearch.splice(i, 1); writePools(p); adjustActive("wordsearch", i); },
+
+    // Pin / unpin which puzzle is shown (overrides the daily rotation)
+    setActive(type, i) { const a = readActive(); a[type] = i; writeActive(a); },
+    clearActive(type)  { const a = readActive(); delete a[type]; writeActive(a); },
+    getActive(type)    { const a = readActive(); return typeof a[type] === "number" ? a[type] : null; },
 
     // Reset everything to defaults
-    reset() { localStorage.removeItem(KEY); document.dispatchEvent(new CustomEvent("wl-puzzles-change")); },
+    reset() { localStorage.removeItem(KEY); localStorage.removeItem(ACTIVE_KEY); document.dispatchEvent(new CustomEvent("wl-puzzles-change")); },
 
     DEFAULTS: { bee: DEFAULT_BEE, crossword: DEFAULT_CROSSWORD, connections: DEFAULT_CONNECTIONS }
   };
