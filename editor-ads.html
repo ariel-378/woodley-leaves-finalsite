@@ -81,8 +81,14 @@
     </div>
 
     <p class="ed-tip" style="font-size:12px;color:var(--muted);margin-bottom:14px;">
-      Club ads and upcoming events show in every page's sidebar. Readers click an ad to see the full poster + details. Upload a poster URL (or paste one from Drive / Imgur) for it to appear.
+      Club ads and upcoming events show on the front page. Readers click an ad to see the full poster + details. Upload a poster URL (or paste one from Drive / Imgur) for it to appear.
     </p>
+
+    <label class="ads-toggle" style="display:flex;align-items:center;gap:10px;padding:12px 14px;border:1px solid var(--rule);background:#fafafa;margin-bottom:16px;cursor:pointer;font-family:'Helvetica Neue',Arial,sans-serif;font-size:14px;color:var(--ink);">
+      <input type="checkbox" id="ads-enabled-toggle" style="width:auto;margin:0;">
+      <b>Show ads on the site</b>
+      <span id="ads-enabled-note" style="font-size:12px;color:var(--muted);font-weight:400;"></span>
+    </label>
 
     <div style="display:flex;justify-content:flex-end;margin-bottom:14px;">
       <button class="btn-primary" id="add-ad">+ Add ad</button>
@@ -319,8 +325,21 @@
   document.getElementById("add-ad").addEventListener("click", () => openModal(null));
   document.getElementById("prompt-preview").addEventListener("click", (e) => { e.preventDefault(); WLAuth.enableEditorPreview(); });
 
+  // Sitewide ads on/off toggle.
+  const adsToggle = document.getElementById("ads-enabled-toggle");
+  const adsNote = document.getElementById("ads-enabled-note");
+  adsToggle.addEventListener("change", () => WLAds.setAdsEnabled(adsToggle.checked));
+  function renderToggle() {
+    const on = WLAds.adsEnabled();
+    adsToggle.checked = on;
+    adsNote.textContent = on
+      ? "Ads are showing on the front page."
+      : "Ads are hidden sitewide — your ad list below is kept and reappears when you turn this back on.";
+  }
+
   function renderAll() {
     if (!gate()) return;
+    renderToggle();
     renderList();
   }
 

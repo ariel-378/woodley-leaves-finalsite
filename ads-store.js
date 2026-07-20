@@ -3,6 +3,7 @@
 window.WLAds = (function () {
   const LS_CUSTOM = "wl_ads_custom";
   const LS_DELETED = "wl_ads_deleted";
+  const LS_ENABLED = "wl_ads_enabled";   // sitewide on/off toggle for the ads feature
 
   function read(key, fallback) {
     try { return JSON.parse(localStorage.getItem(key) || JSON.stringify(fallback)); }
@@ -10,6 +11,16 @@ window.WLAds = (function () {
   }
   function write(key, value) { localStorage.setItem(key, JSON.stringify(value)); }
   function fire() { document.dispatchEvent(new CustomEvent("wl-ads-change")); }
+
+  // Ads are on by default; the editor can turn the whole feature off sitewide.
+  function adsEnabled() {
+    const v = localStorage.getItem(LS_ENABLED);
+    return v === null ? true : v === "true";
+  }
+  function setAdsEnabled(on) {
+    localStorage.setItem(LS_ENABLED, on ? "true" : "false");
+    fire();   // re-render every placeholder (show them or clear them)
+  }
 
   function getAll() {
     const base = window.WL_ADS || {};
@@ -170,7 +181,10 @@ window.WLAds = (function () {
   // Fill every .sidebar-ads placeholder on the page. Placeholders can set
   // `data-ads-offset` and `data-ads-limit` to pick a slice of the ad pool.
   function renderAllPlaceholders() {
+    const on = adsEnabled();
     document.querySelectorAll(".sidebar-ads").forEach(el => {
+      if (!on) { el.innerHTML = ""; el.style.display = "none"; return; }
+      el.style.display = "";
       const offset = +(el.dataset.adsOffset || 0);
       const limit = +(el.dataset.adsLimit || 2);
       renderInto(el, { offset, limit });
@@ -186,5 +200,5 @@ window.WLAds = (function () {
   document.addEventListener("DOMContentLoaded", renderAllPlaceholders);
   document.addEventListener("wl-ads-change", renderAllPlaceholders);
 
-  return { getAll, list, getById, save, remove, isCustom, reset, openModal, closeModal, renderInto };
+  return { getAll, list, getById, save, remove, isCustom, reset, openModal, closeModal, renderInto, adsEnabled, setAdsEnabled };
 })();
