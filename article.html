@@ -147,26 +147,11 @@
   const readMin = Math.max(1, Math.round(wordCount / 200));
   // Link byline to writer profile if we have one (or could have one — we still
   // link any real-name byline so readers can see all of a writer's articles).
-  const genericBylines = new Set(["The Editorial Board", "Submitted", "School Communications"]);
+  // Each author is a separate linked tag (never joined with "and").
   const bylineEl = document.getElementById("art-byline");
-  bylineEl.innerHTML = "";
-  bylineEl.append("By ");
-  // One linked name per author, joined "A, B, and C". Generic bylines (the
-  // editorial board, etc.) render as plain text — they have no writer page.
-  const authors = window.WL_articleAuthors ? WL_articleAuthors(a) : (a.byline ? [a.byline] : []);
-  authors.forEach((name, i) => {
-    if (i > 0) bylineEl.append(i === authors.length - 1 ? (authors.length === 2 ? " and " : ", and ") : ", ");
-    if (name && !genericBylines.has(name) && window.WL_writerSlug) {
-      const link = document.createElement("a");
-      link.href = `writer.html?slug=${encodeURIComponent(WL_writerSlug(name))}`;
-      link.textContent = name;
-      link.className = "byline-link";
-      bylineEl.appendChild(link);
-    } else {
-      bylineEl.append(name || "");
-    }
-  });
-  bylineEl.append(`${roleStr} · ${a.date} · ${readMin} min read`);
+  const bylineTags = window.WL_bylineTagsHtml ? WL_bylineTagsHtml(a) : escapeHtml(a.byline || "");
+  bylineEl.innerHTML = "By " + bylineTags +
+    '<span class="byline-meta">' + escapeHtml(roleStr) + " · " + escapeHtml(a.date) + " · " + readMin + " min read</span>";
 
   // ===== Audio narration (optional) =====
   // Only shown when the editor has attached a pre-recorded `a.audio` URL.
@@ -361,7 +346,7 @@
         <div class="kicker">${escapeHtml(r.section)}</div>
         <h4>${escapeHtml(r.title)}</h4>
         <p>${escapeHtml(r.deck)}</p>
-        <div class="byline">By ${escapeHtml(r.byline)} · ${escapeHtml(r.date)}</div>
+        <div class="byline">By ${window.WL_bylineTagsHtml ? WL_bylineTagsHtml(r) : escapeHtml(r.byline)} · ${escapeHtml(r.date)}</div>
       </a>
     `).join("");
   }

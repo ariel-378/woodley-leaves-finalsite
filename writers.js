@@ -22,15 +22,36 @@ window.WL_articleAuthors = function (a) {
   if (a && Array.isArray(a.authors) && a.authors.length) {
     return a.authors.map(function (n) { return String(n).trim(); }).filter(Boolean);
   }
-  if (a && a.byline) return [String(a.byline).trim()];
+  // Otherwise split the byline string into individual authors so co-written
+  // pieces ("A and B" / "A, B, and C") are treated as separate writers.
+  if (a && a.byline) {
+    return String(a.byline)
+      .split(/\s*,\s*and\s+|\s+and\s+|\s*,\s*/i)
+      .map(function (n) { return n.trim(); })
+      .filter(Boolean);
+  }
   return [];
 };
 
-// Join names into a byline string: "A" / "A and B" / "A, B, and C".
+// Join names into a byline string. Authors are never combined with "and" — a
+// plain comma list keeps every name distinct.
 window.WL_bylineText = function (names) {
-  var n = (names || []).map(function (x) { return String(x).trim(); }).filter(Boolean);
-  if (n.length === 0) return "";
-  if (n.length === 1) return n[0];
-  if (n.length === 2) return n[0] + " and " + n[1];
-  return n.slice(0, -1).join(", ") + ", and " + n[n.length - 1];
+  return (names || []).map(function (x) { return String(x).trim(); }).filter(Boolean).join(", ");
+};
+
+// Render an article's authors as separate linked "tags" (never one combined
+// string). Generic bylines (the editorial board, etc.) render as plain text.
+window.WL_bylineTagsHtml = function (a) {
+  function esc(s) {
+    return String(s).replace(/[&<>"']/g, function (c) {
+      return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c];
+    });
+  }
+  var generic = { "The Editorial Board": 1, "Submitted": 1, "School Communications": 1 };
+  return WL_articleAuthors(a).map(function (name) {
+    if (name && !generic[name] && window.WL_writerSlug) {
+      return '<a class="byline-tag" href="writer.html?slug=' + encodeURIComponent(WL_writerSlug(name)) + '">' + esc(name) + '</a>';
+    }
+    return '<span class="byline-tag byline-tag-plain">' + esc(name) + '</span>';
+  }).join("");
 };

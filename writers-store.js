@@ -62,11 +62,15 @@ window.WLWriters = (function () {
     const seen = new Set();
     const writers = [];
     Object.values(all).forEach(a => {
-      const byline = a.byline;
-      if (!byline || seen.has(byline)) return;
-      seen.add(byline);
-      const slug = window.WL_writerSlug(byline);
-      writers.push({ slug, byline, bio: getBySlug(slug) });
+      // Split co-written bylines into individual authors so each appears as its
+      // own writer (never a single combined "A, B, and C" entry).
+      const authors = window.WL_articleAuthors ? WL_articleAuthors(a) : (a.byline ? [a.byline] : []);
+      authors.forEach(name => {
+        if (!name || seen.has(name)) return;
+        seen.add(name);
+        const slug = window.WL_writerSlug(name);
+        writers.push({ slug, byline: name, bio: getBySlug(slug) });
+      });
     });
     return writers.sort((a, b) => a.byline.localeCompare(b.byline));
   }
