@@ -94,10 +94,10 @@
       <button class="ed-modal-close" aria-label="Close">×</button>
       <h2 id="writer-modal-title">Writer</h2>
       <div class="ed-form">
-        <label>Slug (URL identifier — lowercase, dashes; e.g., "maya-chen")
-          <input type="text" id="w-slug" placeholder="maya-chen">
-        </label>
         <label>Display name <input type="text" id="w-name" placeholder="Maya Chen"></label>
+        <label>URL slug <span style="font-weight:400;text-transform:none;letter-spacing:0;color:var(--muted);">(auto-generated from the name)</span>
+          <input type="text" id="w-slug" placeholder="maya-chen" readonly style="background:#f0f0f0;color:var(--muted);">
+        </label>
         <div class="ed-error" id="w-error"></div>
         <div class="ed-form-actions">
           <button class="btn-ghost" data-cancel>Cancel</button>
@@ -190,32 +190,58 @@
     const w = slug ? WLWriters.getBySlug(slug) : null;
     const fromArticles = slug ? WLWriters.listFromArticles().find(x => x.slug === slug) : null;
 
+    const name = w ? w.name : (fromArticles ? fromArticles.byline : "");
     document.getElementById("writer-modal-title").textContent = slug ? "Edit writer" : "New writer";
-    document.getElementById("w-slug").value = slug || "";
-    document.getElementById("w-slug").disabled = !!slug;
-    document.getElementById("w-name").value = w ? w.name : (fromArticles ? fromArticles.byline : "");
+    document.getElementById("w-name").value = name;
+    document.getElementById("w-slug").value = name ? WL_writerSlug(name) : "";
     document.getElementById("w-error").textContent = "";
     modal.classList.add("visible");
-    setTimeout(() => document.getElementById(slug ? "w-name" : "w-slug").focus(), 50);
+    setTimeout(() => document.getElementById("w-name").focus(), 50);
   }
   function closeModal() { modal.classList.remove("visible"); editingSlug = null; }
 
   document.getElementById("w-name").addEventListener("input", (e) => {
-    const slugEl = document.getElementById("w-slug");
-    if (!editingSlug && !slugEl.dataset.touched) {
-      slugEl.value = WL_writerSlug(e.target.value);
-    }
+    document.getElementById("w-slug").value = WL_writerSlug(e.target.value);
   });
-  document.getElementById("w-slug").addEventListener("input", (e) => { e.target.dataset.touched = "1"; });
+
+  // Rename a writer everywhere: update the byline on every article they wrote
+  // (single or co-authored) so the byline-slug matches the new name.
+  function renameWriterInArticles(oldSlug, newName) {
+    if (!window.WLArticles) return;
+    const all = WLArticles.getAll();
+    Object.entries(all).forEach(([id, a]) => {
+      const authors = window.WL_articleAuthors ? WL_articleAuthors(a) : (a.byline ? [a.byline] : []);
+      let changed = false;
+      const next = authors.map(n => {
+        if (WL_writerSlug(n) === oldSlug) { changed = true; return newName; }
+        return n;
+      });
+      if (!changed) return;
+      const upd = { ...a };
+      if (next.length > 1) {
+        upd.authors = next;
+        upd.byline = window.WL_bylineText ? WL_bylineText(next) : next.join(", ");
+      } else {
+        upd.byline = next[0];
+        delete upd.authors;
+      }
+      WLArticles.save(id, upd);
+    });
+  }
 
   document.getElementById("w-save").addEventListener("click", () => {
     const err = document.getElementById("w-error"); err.textContent = "";
-    const slug = document.getElementById("w-slug").value.trim();
     const name = document.getElementById("w-name").value.trim();
-
-    if (!slug || !/^[a-z0-9-]+$/.test(slug)) { err.textContent = "Slug must be lowercase letters, numbers, and dashes."; return; }
     if (!name) { err.textContent = "Name is required."; return; }
+    const slug = WL_writerSlug(name);
+    if (!slug) { err.textContent = "Enter a name with at least one letter or number."; return; }
 
+    // When editing, propagate the rename to this writer's articles so the byline
+    // (and its slug) match the new name, then migrate the bio to the new slug.
+    if (editingSlug) {
+      renameWriterInArticles(editingSlug, name);
+      if (editingSlug !== slug) WLWriters.remove(editingSlug);
+    }
     WLWriters.save(slug, { name });
     closeModal();
   });
