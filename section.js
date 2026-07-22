@@ -186,7 +186,18 @@
       <iframe class="sec-puzzles-frame" src="centerspread.html?embed=puzzles" title="Puzzles" loading="lazy"></iframe>`;
   }
   // The embedded page reports its height; size the frame to match.
+  // A custom feature can tell us how tall it actually is. A sandboxed frame has
+  // no same-origin access, so we cannot measure it from out here — but it can
+  // post its own height in. Features that do this size themselves at every
+  // screen width; those that don't fall back to the Height field in the editor.
   window.addEventListener("message", function (e) {
+    const fh = e.data && e.data.wlFeatureHeight;
+    if (fh) {
+      document.querySelectorAll("iframe.sec-custom-frame").forEach(function (f) {
+        if (f.contentWindow === e.source) f.style.height = Math.ceil(fh) + "px";
+      });
+      return;
+    }
     const h = e.data && e.data.wlEmbedHeight;
     if (!h) return;
     document.querySelectorAll("iframe.sec-puzzles-frame").forEach(function (f) {

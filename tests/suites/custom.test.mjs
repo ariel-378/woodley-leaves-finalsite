@@ -128,5 +128,38 @@ export async function run() {
     check.clean("no errors during migration", ctx);
   }
 
+  // ===== A feature can report its own height =====
+  // The Height field is a single number, but a feature that stacks on a phone
+  // needs a different height there. A sandboxed frame cannot be measured from
+  // outside, so it posts its height in instead.
+  {
+    const ctx = await loadPage("editor-content.html");
+    const { window } = ctx;
+    window.WLSections.setContentTypes("Features", ["Custom feature"]);
+    window.WLFeatures.save({
+      id: "tall-feature", title: "Tall Feature", height: 460,
+      code: "<!doctype html><html><body><p>tall</p></body></html>",
+    });
+
+    const storage = {};
+    for (const k of Object.keys(window.localStorage)) storage[k] = window.localStorage.getItem(k);
+    const reader = await loadPage("features.html", { editor: false, storage });
+
+    const frame = reader.$(".sec-custom-frame");
+    check.equal("starts at the height set in the editor", frame.style.height, "460px");
+
+    reader.window.dispatchEvent(new reader.window.MessageEvent("message", {
+      data: { wlFeatureHeight: 812 }, source: frame.contentWindow,
+    }));
+    check.equal("resizes when the feature reports its real height", frame.style.height, "812px");
+
+    // A message from an unrelated window must not resize anything.
+    reader.window.dispatchEvent(new reader.window.MessageEvent("message", {
+      data: { wlFeatureHeight: 99 }, source: reader.window,
+    }));
+    check.equal("ignores heights from other windows", frame.style.height, "812px");
+    check.clean("no errors handling height messages", reader);
+  }
+
   return check;
 }
