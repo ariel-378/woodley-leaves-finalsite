@@ -81,7 +81,7 @@
     if (id.user) {
       parts.push(`<span class="topbar-user">${escapeHtml(id.user)}</span>`);
       if (id.role === "editor") {
-        parts.push(`<a href="editor.html" class="wl-account-primary">Editor Dashboard</a>`);
+        parts.push(`<a href="editor-content.html" class="wl-account-primary">Editor Dashboard</a>`);
       }
       if (!HOSTED) {
         parts.push(id.role === "editor"

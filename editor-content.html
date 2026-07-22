@@ -86,6 +86,22 @@
   #cc-code { min-height: 220px; font-family: ui-monospace, "SF Mono", Menlo, monospace; font-size: 13px; line-height: 1.5; }
   .cc-hint { font-size: 12px; color: var(--muted); margin: 8px 0 0; }
 
+  /* Per-section article list */
+  .c-art-list { border-top: 1px solid var(--rule); margin: 0 0 14px; }
+  .c-art { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; padding: 10px 0; border-bottom: 1px solid var(--rule); flex-wrap: wrap; }
+  .c-art-main { flex: 1 1 320px; min-width: 0; }
+  .c-art-main a { font-family: Georgia, serif; font-size: 16px; color: var(--ink); text-decoration: none; }
+  .c-art-main a:hover { text-decoration: underline; }
+  .c-art-deck { font-size: 12px; color: var(--muted); margin-top: 3px; line-height: 1.4; }
+  .c-art-meta { font-family: "Helvetica Neue", Arial, sans-serif; font-size: 12px; color: var(--muted); margin-top: 4px; }
+  .c-art-tools { display: flex; gap: 6px; flex-shrink: 0; }
+  .c-art-tools button { padding: 4px 9px; font-size: 11px; }
+  .c-art-empty { font-size: 13px; color: var(--muted); font-style: italic; padding: 10px 0 14px; border-top: 1px solid var(--rule); }
+  .c-badge { display: inline-block; color: #fff; font-family: "Helvetica Neue", Arial, sans-serif; font-size: 10px; padding: 2px 6px; margin-left: 6px; letter-spacing: 0.5px; text-transform: uppercase; font-weight: 700; vertical-align: middle; }
+  .c-badge-custom { background: var(--accent); }
+  .c-badge-featured { background: #c9b458; }
+  .c-badge-scheduled { background: #8a6d00; }
+
   .acm-list { display: flex; flex-direction: column; gap: 8px; margin-top: 6px; }
   .acm-list button { text-align: left; padding: 12px 14px; font-size: 15px; font-weight: 600; }
 </style>
@@ -126,7 +142,11 @@
 
     <p class="c-intro">Everything readers see, organized by section. Each section holds one or more kinds of content — articles, sports stats, puzzles, poems, art, videos, reveal-answer games, or your own custom code. Give a section its content types, then use <b>Add new content</b> to fill it.</p>
 
-    <div class="c-toolbar">
+    <div class="c-toolbar" style="justify-content:space-between;">
+      <div style="display:flex;gap:6px;">
+        <button class="btn-ghost" id="btn-reset">Reset all article changes</button>
+        <button class="btn-ghost" id="btn-reset-demo">Reset all demo data</button>
+      </div>
       <button class="btn-primary" id="add-section">+ Add section</button>
     </div>
 
@@ -393,12 +413,94 @@
           </div>
           <div class="c-sec-body">
             <div class="c-types">${chips}</div>
+            ${types.includes("Articles") ? articlesBlock(s.name) : ""}
             <button class="btn-primary" data-c="add" data-name="${esc(s.name)}">+ Add new content</button>
           </div>
         </div>`;
     }).join("");
 
+    // Articles whose section was renamed or removed would otherwise vanish from
+    // the dashboard, so they get a trailing card of their own.
+    const orphans = articlesBySection().orphans;
+    if (orphans.length) {
+      wrap.insertAdjacentHTML("beforeend", `
+        <div class="c-sec">
+          <div class="c-sec-head">
+            <div><span class="c-sec-name">Unfiled</span><span class="c-sec-tag">No matching section</span></div>
+          </div>
+          <div class="c-sec-body">
+            <p class="c-types-empty" style="margin:0 0 10px;">These articles point at a section that no longer exists. Edit one to move it into a current section.</p>
+            ${articleRows(orphans, null)}
+          </div>
+        </div>`);
+    }
+
     wrap.querySelectorAll("[data-c]").forEach(btn => btn.addEventListener("click", () => onSectionAction(btn.dataset.c, btn.dataset.name)));
+    wrap.querySelectorAll("[data-a]").forEach(btn => btn.addEventListener("click", () => onArticleAction(btn.dataset.a, btn.dataset.id)));
+  }
+
+  // ===== Articles inside a section card =====
+  function articlesBySection() {
+    const names = WLSections.articleNames();
+    const bySec = {};
+    names.forEach(n => { bySec[n] = []; });
+    const orphans = [];
+    Object.entries(WLArticles.getAll())
+      .map(([id, a]) => Object.assign({ id }, a))
+      .sort((x, y) => (Date.parse(y.date) || 0) - (Date.parse(x.date) || 0))
+      .forEach(a => { (bySec[a.section] ? bySec[a.section] : orphans).push(a); });
+    return { bySec, orphans };
+  }
+
+  function fmtSchedule(s) {
+    const d = new Date(s);
+    return isNaN(d) ? String(s) : d.toLocaleString(undefined, { month: "short", day: "numeric", hour: "numeric", minute: "2-digit" });
+  }
+
+  function articleRows(entries, featuredId) {
+    return `<div class="c-art-list">` + entries.map(a => {
+      const scheduled = a.publishAt && Date.parse(a.publishAt) > Date.now();
+      const badges =
+        (WLArticles.isCustom(a.id) ? `<span class="c-badge c-badge-custom">Edited</span>` : "") +
+        (a.id === featuredId ? `<span class="c-badge c-badge-featured">★ Top story</span>` : "") +
+        (scheduled ? `<span class="c-badge c-badge-scheduled">⏳ ${esc(fmtSchedule(a.publishAt))}</span>` : "");
+      return `
+        <div class="c-art">
+          <div class="c-art-main">
+            <a href="article.html?id=${encodeURIComponent(a.id)}" target="_blank">${esc(a.title)}</a>${badges}
+            <div class="c-art-deck">${esc(a.deck || "")}</div>
+            <div class="c-art-meta">${esc(a.byline || "")} · ${esc(a.date || "")}</div>
+          </div>
+          <div class="c-art-tools">
+            <button class="btn-ghost" data-a="feature" data-id="${esc(a.id)}" title="Show this story at the top of its section page and on the front page">${a.id === featuredId ? "Unfeature" : "Feature"}</button>
+            <button class="btn-ghost" data-a="edit" data-id="${esc(a.id)}">Edit</button>
+            <button class="btn-danger" data-a="delete" data-id="${esc(a.id)}">Delete</button>
+          </div>
+        </div>`;
+    }).join("") + `</div>`;
+  }
+
+  function articlesBlock(name) {
+    const entries = articlesBySection().bySec[name] || [];
+    if (!entries.length) return `<div class="c-art-empty">No articles in this section yet.</div>`;
+    return articleRows(entries, WLArticles.getFeaturedId(name) || null);
+  }
+
+  function onArticleAction(act, id) {
+    const a = WLArticles.getById(id);
+    if (!a) return;
+    if (act === "edit") { WLArticleEditor.open(id, { onSave: renderSections }); return; }
+    if (act === "feature") {
+      const current = WLArticles.getFeaturedId(a.section);
+      WLArticles.setFeatured(a.section, current === id ? null : id);
+      renderSections();
+      return;
+    }
+    if (act === "delete") {
+      if (!confirm(`Delete "${a.title}"? This can be undone with "Reset all article changes."`)) return;
+      WLArticles.remove(id);
+      renderSections();
+    }
   }
 
   function run(fn) { try { fn(); } catch (e) { alert(e.message || String(e)); } }
@@ -660,6 +762,22 @@
 
   // ===== Modals =====
   function closeModals() { document.querySelectorAll(".ed-modal-overlay").forEach(m => m.classList.remove("visible")); }
+  document.getElementById("btn-reset").addEventListener("click", () => {
+    if (!confirm("Discard ALL article changes (new articles, edits, deletions) and restore the original article set? This cannot be undone.")) return;
+    WLArticles.reset();
+    renderSections();
+  });
+
+  // Wipes every saved change across the site so the demo shows shipped content.
+  // Keeps the editor-preview session so the reviewer stays in the dashboard.
+  document.getElementById("btn-reset-demo").addEventListener("click", () => {
+    if (!confirm("Reset ALL demo data in this browser? This clears every saved change across the whole site (articles, sections, brand design, layout, videos, sports, etc.) and restores the site's shipped content. This cannot be undone.")) return;
+    Object.keys(localStorage)
+      .filter(k => k.startsWith("wl_") && k !== "wl_preview_role")
+      .forEach(k => localStorage.removeItem(k));
+    location.reload();
+  });
+
   document.getElementById("pc-save").addEventListener("click", savePiece);
   document.getElementById("vd-save").addEventListener("click", saveVideo);
   document.querySelectorAll(".ed-modal-close, [data-cancel]").forEach(b => b.addEventListener("click", closeModals));
@@ -668,6 +786,7 @@
 
   document.getElementById("prompt-preview").addEventListener("click", (e) => { e.preventDefault(); WLAuth.enableEditorPreview(); });
 
+  document.addEventListener("wl-articles-change", renderSections);
   document.addEventListener("wl-auth-change", renderSections);
   document.addEventListener("wl-sections-change", renderSections);
   renderSections();

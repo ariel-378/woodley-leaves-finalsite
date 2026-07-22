@@ -83,7 +83,7 @@ window.WLArticles = (function () {
   function reset() {
     localStorage.removeItem(LS_CUSTOM);
     localStorage.removeItem(LS_DELETED);
-    localStorage.removeItem(LS_FEATURED);
+    localStorage.removeItem(LS_FEATURED_MAP);
     document.dispatchEvent(new CustomEvent("wl-articles-change"));
   }
 
