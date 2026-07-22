@@ -21,16 +21,20 @@ window.WLSections = (function () {
     { name: "Breaking",     page: "index.html",        nav: false, locked: true,  contentTypes: ["Articles"] },
     { name: "News",         page: "news.html",         nav: true,  locked: false, contentTypes: ["Articles"] },
     { name: "Features",     page: "features.html",     nav: true,  locked: false, contentTypes: ["Articles"] },
-    { name: "Centerspread", page: "centerspread.html", nav: true,  locked: false, fixedPage: true, contentTypes: ["Puzzle games", "Poems", "Art/photos", "Reveal-answer games", "Custom"] },
+    { name: "Centerspread", page: "centerspread.html", nav: true,  locked: false, fixedPage: true, contentTypes: ["Puzzle games", "Poems", "Art/photos", "Reveal-answer games", "Custom feature"] },
     { name: "Op-Ed",        page: "opinion.html",      nav: true,  locked: false, contentTypes: ["Articles"] },
     { name: "Style",        page: "style.html",        nav: true,  locked: false, contentTypes: ["Articles"] },
     { name: "Sports",       page: "sports.html",       nav: true,  locked: false, contentTypes: ["Articles", "Sports stats"] },
     { name: "Video",        page: "videos.html",       nav: true,  locked: false, fixedPage: true, alt: ["video.html"], contentTypes: ["Videos"] },
   ];
   const LS_MIGRATED = "wl_sections_pages_migrated";
+  const LS_CUSTOM_MIGRATED = "wl_sections_custom_migrated";
 
   // The kinds of content a section can hold. "Custom" is editor-written code.
-  const CONTENT_TYPES = ["Articles", "Sports stats", "Puzzle games", "Poems", "Art/photos", "Videos", "Reveal-answer games", "Custom"];
+  // "Custom feature" is editor-written code that is not a game — a comic strip,
+  // a photo essay, an embedded map. Custom *games* are a separate thing entirely
+  // and are added alongside the puzzles; see code-editor.js.
+  const CONTENT_TYPES = ["Articles", "Sports stats", "Puzzle games", "Poems", "Art/photos", "Videos", "Reveal-answer games", "Custom feature"];
 
   // The home page has six fixed slots, each showing one section's featured
   // story. The mapping is stored so renaming a section carries its slot along.
@@ -60,6 +64,49 @@ window.WLSections = (function () {
       DEFAULTS.filter(d => d.fixedPage).forEach(d => {
         if (!raw.some(s => s.page === d.page)) { raw.push({ ...d }); changed = true; }
       });
+      if (changed) localStorage.setItem(LS, JSON.stringify(raw));
+    } catch { /* ignore */ }
+  })();
+
+  // The old model kept a single code blob on the section itself, which meant a
+  // section could hold exactly one custom thing and "adding" a second silently
+  // replaced the first. Those blobs become ordinary Custom feature pieces, and
+  // the type is renamed to match. Runs once.
+  (function migrateCustomOnce() {
+    try {
+      if (localStorage.getItem(LS_CUSTOM_MIGRATED)) return;
+      localStorage.setItem(LS_CUSTOM_MIGRATED, "1");
+      const raw = JSON.parse(localStorage.getItem(LS) || "null");
+      if (!Array.isArray(raw) || !raw.length) return;
+
+      let changed = false;
+      const carried = [];
+      raw.forEach(sec => {
+        if (Array.isArray(sec.contentTypes) && sec.contentTypes.includes("Custom")) {
+          sec.contentTypes = sec.contentTypes.map(t => (t === "Custom" ? "Custom feature" : t));
+          changed = true;
+        }
+        if (sec.customCode && String(sec.customCode).trim()) {
+          carried.push({
+            id: "custom-" + String(sec.name || "section").toLowerCase().replace(/[^a-z0-9]+/g, "-"),
+            title: (sec.name || "Section") + " custom feature",
+            code: sec.customCode,
+            height: 500,
+          });
+          delete sec.customCode;
+          changed = true;
+        }
+      });
+
+      if (carried.length) {
+        const key = "wl_custom_features";
+        let existing = [];
+        try { existing = JSON.parse(localStorage.getItem(key) || "[]"); } catch { existing = []; }
+        if (!Array.isArray(existing)) existing = [];
+        const ids = new Set(existing.map(f => f && f.id));
+        carried.forEach(f => { if (!ids.has(f.id)) existing.push(f); });
+        localStorage.setItem(key, JSON.stringify(existing));
+      }
       if (changed) localStorage.setItem(LS, JSON.stringify(raw));
     } catch { /* ignore */ }
   })();
@@ -112,14 +159,6 @@ window.WLSections = (function () {
     s.contentTypes = Array.isArray(arr) ? arr.filter(t => CONTENT_TYPES.includes(t)) : [];
     write(l);
   }
-  function getCustomCode(name) { const s = find(name); return (s && s.customCode) || ""; }
-  function setCustomCode(name, code) {
-    const l = read();
-    const s = l.find(x => x.name === name);
-    if (!s) return;
-    if (code && code.trim()) s.customCode = code; else delete s.customCode;
-    write(l);
-  }
   function navSections() { return read().filter(s => s.nav && !s.hidden); }
   function find(name) { return read().find(s => s.name === name) || null; }
   function isHidden(name) { const s = find(name); return !!(s && s.hidden); }
@@ -147,7 +186,6 @@ window.WLSections = (function () {
       name, page: genericPage(name), nav: true, locked: false,
       contentTypes: (opts && Array.isArray(opts.contentTypes)) ? opts.contentTypes.filter(t => CONTENT_TYPES.includes(t)) : []
     };
-    if (opts && opts.customCode && opts.customCode.trim()) s.customCode = opts.customCode;
     l.push(s);
     write(l);
   }
@@ -227,7 +265,7 @@ window.WLSections = (function () {
   return {
     list, names, articleNames, navSections, find, pageFor, articleCount,
     isHidden, setHidden,
-    CONTENT_TYPES, contentTypes, setContentTypes, getCustomCode, setCustomCode,
+    CONTENT_TYPES, contentTypes, setContentTypes,
     add, rename, remove, move, reset,
     homeSlots, setHomeSlot,
   };

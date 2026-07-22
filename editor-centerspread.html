@@ -78,8 +78,6 @@
   .games-editor-h3 { font-family: Georgia, serif; font-size: 22px; margin: 0 0 8px; }
   .pool-list .game-name { font-weight: 600; }
   .pool-list .game-meta { color: var(--muted); font-weight: 400; font-size: 12px; }
-  #g-code { font-family: ui-monospace, "SF Mono", Menlo, monospace; font-size: 13px; line-height: 1.5; min-height: 220px; }
-  .g-preview-frame { display: block; width: 100%; height: 460px; border: 0; background: #fff; }
 </style>
 <link rel="stylesheet" href="responsive.css" />
 </head>
@@ -249,42 +247,6 @@
   </div>
   <!-- Spelling Bee modal -->
   <!-- Add / edit game modal -->
-  <div class="ed-modal-overlay" id="game-modal" role="dialog" aria-modal="true" aria-labelledby="game-modal-title">
-    <div class="ed-modal">
-      <button class="ed-modal-close" aria-label="Close">×</button>
-      <h2 id="game-modal-title">Add a game</h2>
-      <p style="font-size:12px;color:var(--muted);margin:0 0 16px;">Fill in a name and paste the game's code. Use <b>Preview</b> to test it before saving.</p>
-      <div class="ed-form">
-        <div class="row-2">
-          <label>Game title
-            <input id="g-title" type="text" placeholder="Memory Match" maxlength="80">
-          </label>
-          <label>Small label (optional)
-            <input id="g-kicker" type="text" placeholder="Centerspread · Games" maxlength="60">
-          </label>
-        </div>
-        <label>One-line description (optional)
-          <input id="g-desc" type="text" placeholder="Flip the cards to find matching pairs." maxlength="140">
-        </label>
-        <label>Height on the page, in pixels
-          <input id="g-height" type="number" min="120" max="2000" value="500">
-        </label>
-        <label>Game code (HTML, CSS &amp; JavaScript in one block)
-          <textarea id="g-code" rows="16" spellcheck="false"></textarea>
-        </label>
-        <div class="ed-error" id="g-error" role="alert"></div>
-        <div style="display:flex;gap:8px;align-items:center;margin:2px 0 10px;">
-          <button class="btn-ghost" id="g-preview-btn" type="button">▶ Preview</button>
-          <span style="font-size:12px;color:var(--muted);">Runs the code below in a sandbox. Nothing is saved yet.</span>
-        </div>
-        <div id="g-preview-wrap" style="display:none;border:1px solid var(--rule);margin-bottom:14px;"></div>
-        <div class="ed-form-actions">
-          <button class="btn-ghost" data-cancel type="button">Cancel</button>
-          <button class="btn-primary" id="g-save" type="button">Save game</button>
-        </div>
-      </div>
-    </div>
-  </div>
 </main>
 
 <footer></footer>
@@ -292,6 +254,7 @@
 <script src="centerspread.js"></script>
 <script src="centerspread-store.js"></script>
 <script src="puzzles-store.js"></script>
+<script src="code-editor.js"></script>
 <script src="puzzle-editor.js"></script>
 <script src="games-store.js"></script>
 <script src="submissions.js"></script>
@@ -741,7 +704,7 @@
         '</span>';
       list.appendChild(li);
     });
-    list.querySelectorAll('[data-gact="edit"]').forEach(b => b.addEventListener("click", () => openGameModal(b.dataset.id)));
+    list.querySelectorAll('[data-gact="edit"]').forEach(b => b.addEventListener("click", () => WLCodeEditor.open({ kind: "game", id: b.dataset.id, onSave: renderGames })));
     list.querySelectorAll('[data-gact="delete"]').forEach(b => b.addEventListener("click", () => {
       if (!confirm("Delete this game?")) return;
       WLGamesStore.remove(b.dataset.id);
@@ -749,63 +712,9 @@
     }));
   }
 
-  let gEditingId = null;
-  function openGameModal(id) {
-    gEditingId = id || null;
-    const g = gEditingId ? WLGamesStore.get(gEditingId) : null;
-    document.getElementById("game-modal-title").textContent = g ? "Edit game" : "Add a game";
-    document.getElementById("g-error").textContent = "";
-    document.getElementById("g-title").value = g ? (g.title || "") : "";
-    document.getElementById("g-kicker").value = g ? (g.kicker || "") : "";
-    document.getElementById("g-desc").value = g ? (g.description || "") : "";
-    document.getElementById("g-height").value = g ? (g.height || 500) : 500;
-    document.getElementById("g-code").value = g ? (g.code || "") : GAME_STARTER;
-    const wrap = document.getElementById("g-preview-wrap");
-    wrap.style.display = "none"; wrap.innerHTML = "";
-    document.getElementById("game-modal").classList.add("visible");
-  }
 
-  function renderGamePreview() {
-    const wrap = document.getElementById("g-preview-wrap");
-    wrap.innerHTML = "";
-    const frame = document.createElement("iframe");
-    frame.className = "g-preview-frame";
-    frame.setAttribute("sandbox", "allow-scripts");
-    frame.setAttribute("title", "Game preview");
-    const h = parseInt(document.getElementById("g-height").value, 10);
-    frame.style.height = (h && h >= 120 ? h : 460) + "px";
-    frame.srcdoc = document.getElementById("g-code").value;
-    wrap.appendChild(frame);
-    wrap.style.display = "block";
-  }
 
-  document.getElementById("game-add").addEventListener("click", () => openGameModal());
-  document.getElementById("g-preview-btn").addEventListener("click", renderGamePreview);
-  document.getElementById("g-save").addEventListener("click", () => {
-    const err = document.getElementById("g-error"); err.textContent = "";
-    const title = document.getElementById("g-title").value.trim();
-    const code = document.getElementById("g-code").value.trim();
-    if (!title) { err.textContent = "Give the game a title."; return; }
-    if (code.length < 10) { err.textContent = "Paste the game's code into the box first."; return; }
-    let h = parseInt(document.getElementById("g-height").value, 10);
-    if (!h || h < 120) h = 500; if (h > 2000) h = 2000;
-    let id = gEditingId;
-    if (!id) {
-      const baseId = gSlugify(title) || "game";
-      id = baseId;
-      const existing = WLGamesStore.getAll().map(x => x.id);
-      let n = 2;
-      while (existing.includes(id)) { id = baseId + "-" + n; n++; }
-    }
-    WLGamesStore.save({
-      id, title,
-      kicker: document.getElementById("g-kicker").value.trim(),
-      description: document.getElementById("g-desc").value.trim(),
-      height: h, code
-    });
-    closeModals();
-    renderGames();
-  });
+  document.getElementById("game-add").addEventListener("click", () => WLCodeEditor.open({ kind: "game", onSave: renderGames }));
 
   function closeModals() {
     document.querySelectorAll(".ed-modal-overlay").forEach(m => m.classList.remove("visible"));

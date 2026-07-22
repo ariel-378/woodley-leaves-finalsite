@@ -36,8 +36,8 @@ export async function run() {
     const ctx = await loadPage("editor-content.html");
     const { window } = ctx;
     const hostile = `<script>parent.document.body.innerHTML = "pwned";<\/script>`;
-    window.WLSections.setContentTypes("Features", ["Custom"]);
-    window.WLSections.setCustomCode("Features", hostile);
+    window.WLSections.setContentTypes("Features", ["Custom feature"]);
+    window.WLFeatures.save({ id: "hostile", title: "Hostile", code: hostile, height: 200 });
 
     const storage = {};
     for (const k of Object.keys(window.localStorage)) storage[k] = window.localStorage.getItem(k);

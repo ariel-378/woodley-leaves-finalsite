@@ -82,8 +82,6 @@
   .ct-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 4px 18px; margin: 6px 0 4px; }
   .ct-opt { display: flex; align-items: center; gap: 9px; padding: 6px 0; font-family: "Helvetica Neue", Arial, sans-serif; font-size: 14px; text-transform: none; letter-spacing: 0; color: var(--ink); cursor: pointer; }
   .ct-opt input { width: auto; margin: 0; }
-  #cc-wrap { display: none; margin-top: 8px; }
-  #cc-code { min-height: 220px; font-family: ui-monospace, "SF Mono", Menlo, monospace; font-size: 13px; line-height: 1.5; }
   .cc-hint { font-size: 12px; color: var(--muted); margin: 8px 0 0; }
 
   /* Per-section article list */
@@ -171,12 +169,8 @@
       <label style="margin-bottom:4px;">What will this section hold? <span style="font-weight:400;text-transform:none;letter-spacing:0;color:var(--muted);">(choose one or more)</span></label>
       <div class="ct-grid" id="ct-grid"></div>
 
-      <div id="cc-wrap">
-        <label style="margin-top:14px;">Custom code — HTML, CSS &amp; JavaScript
-          <textarea id="cc-code" spellcheck="false"></textarea>
-        </label>
-        <p class="cc-hint">This runs in a secure sandbox on the section's page, so it can't break the rest of the site.</p>
-      </div>
+      <p class="cc-hint" id="cf-note" style="display:none;">Custom features are added one at a time — pick
+        <b>Custom feature</b> from <b>Add new content</b> once this section is saved.</p>
 
       <div class="ed-error" id="sec-error" role="alert"></div>
       <div class="ed-form-actions">
@@ -295,6 +289,9 @@
 <script src="sports-editor.js"></script>
 <script src="puzzles-store.js"></script>
 <script src="puzzle-editor.js"></script>
+<script src="games-store.js"></script>
+<script src="features-store.js"></script>
+<script src="code-editor.js"></script>
 <script src="centerspread.js"></script>
 <script src="centerspread-store.js"></script>
 <script src="videos.js"></script>
@@ -314,7 +311,8 @@
     { label: "Spelling Bee", hint: "Seven letters, one in the center", open: () => WLPuzzleEditor.openBee({ onSave: renderSections }) },
     { label: "Mini Crossword", hint: "A small grid with across and down clues", open: () => WLPuzzleEditor.openCrossword({ onSave: renderSections }) },
     { label: "Connections", hint: "Sixteen words in four hidden groups", open: () => WLPuzzleEditor.openConnections({ onSave: renderSections }) },
-    { label: "Word Search", hint: "A list of words hidden in a letter grid", open: () => WLPuzzleEditor.openWordsearch({ onSave: renderSections }) }
+    { label: "Word Search", hint: "A list of words hidden in a letter grid", open: () => WLPuzzleEditor.openWordsearch({ onSave: renderSections }) },
+    { label: "Custom game", hint: "Your own game, written as a self-contained web page", open: () => WLCodeEditor.open({ kind: "game", onSave: renderSections }) }
   ];
 
   // Sports stats covers three different records, so it asks which one.
@@ -331,28 +329,6 @@
     "Reveal-answer games": "prose"
   };
 
-  const CUSTOM_EXAMPLE = [
-    '<!doctype html>',
-    '<html>',
-    '<head><meta charset="utf-8"><style>',
-    '  body { font-family: system-ui, sans-serif; text-align: center; padding: 28px; margin: 0; }',
-    '  button { font-size: 18px; padding: 10px 22px; cursor: pointer; }',
-    '  #out { font-size: 22px; margin-top: 14px; font-weight: 700; }',
-    '</style></head>',
-    '<body>',
-    '  <h3>My custom feature</h3>',
-    '  <button id="go">Surprise me</button>',
-    '  <div id="out"></div>',
-    '  <scr' + 'ipt>',
-    '    const lines = ["Nice!", "You did it!", "Encore!"];',
-    '    let i = 0;',
-    '    document.getElementById("go").addEventListener("click", function () {',
-    '      document.getElementById("out").textContent = lines[i++ % lines.length];',
-    '    });',
-    '  </scr' + 'ipt>',
-    '</body>',
-    '</html>'
-  ].join("\n");
 
   const view = document.getElementById("editor-view");
   const noAccess = document.getElementById("no-access");
@@ -376,12 +352,9 @@
       `<label class="ct-opt"><input type="checkbox" value="${esc(t)}"> ${esc(t)}</label>`
     ).join("");
     grid.addEventListener("change", () => {
-      const custom = grid.querySelector('input[value="Custom"]');
-      const wrap = document.getElementById("cc-wrap");
-      wrap.style.display = custom && custom.checked ? "block" : "none";
-      if (custom && custom.checked && !document.getElementById("cc-code").value.trim()) {
-        document.getElementById("cc-code").value = CUSTOM_EXAMPLE;
-      }
+      const custom = grid.querySelector('input[value="Custom feature"]');
+      const note = document.getElementById("cf-note");
+      if (note) note.style.display = custom && custom.checked ? "block" : "none";
     });
   })();
 
@@ -392,7 +365,7 @@
     wrap.innerHTML = list.map((s, i) => {
       const types = Array.isArray(s.contentTypes) ? s.contentTypes : [];
       const chips = types.length
-        ? types.map(t => `<span class="c-chip${t === "Custom" ? " c-chip-custom" : ""}">${esc(t)}</span>`).join("")
+        ? types.map(t => `<span class="c-chip${t === "Custom feature" ? " c-chip-custom" : ""}">${esc(t)}</span>`).join("")
         : `<span class="c-types-empty">No content types yet — click Edit to choose some.</span>`;
       const tags =
         (s.hidden ? `<span class="c-sec-tag c-tag-hidden">Hidden</span>` : "") +
@@ -532,10 +505,8 @@
     nameEl.disabled = !!(s && s.locked); // locked sections keep their name
     const types = (s && Array.isArray(s.contentTypes)) ? s.contentTypes : [];
     document.querySelectorAll("#ct-grid input").forEach(cb => { cb.checked = types.includes(cb.value); });
-    const hasCustom = types.includes("Custom");
-    document.getElementById("cc-wrap").style.display = hasCustom ? "block" : "none";
-    document.getElementById("cc-code").value = s ? WLSections.getCustomCode(s.name) : "";
-    if (hasCustom && !document.getElementById("cc-code").value.trim()) document.getElementById("cc-code").value = CUSTOM_EXAMPLE;
+    const note = document.getElementById("cf-note");
+    if (note) note.style.display = types.includes("Custom feature") ? "block" : "none";
     document.getElementById("section-modal").classList.add("visible");
   }
 
@@ -544,7 +515,6 @@
     const err = document.getElementById("sec-error"); err.textContent = "";
     const name = document.getElementById("sec-name").value.trim();
     const types = Array.from(document.querySelectorAll("#ct-grid input:checked")).map(cb => cb.value);
-    const customCode = types.includes("Custom") ? document.getElementById("cc-code").value : "";
     if (!editingName && !name) { err.textContent = "Enter a section name."; return; }
 
     run(() => {
@@ -554,9 +524,8 @@
         if (!s.locked && name && name !== editingName) WLSections.rename(editingName, name);
         const target = (!s.locked && name) ? name : editingName;
         WLSections.setContentTypes(target, types);
-        WLSections.setCustomCode(target, customCode);
       } else {
-        WLSections.add(name, { contentTypes: types, customCode });
+        WLSections.add(name, { contentTypes: types });
       }
       closeModals();
     });
@@ -590,7 +559,7 @@
   }
 
   function goAddContent(name, type) {
-    if (type === "Custom") { openSectionModal(name); return; }
+    if (type === "Custom feature") { WLCodeEditor.open({ kind: "feature", onSave: renderSections }); return; }
     if (PIECE_TYPES[type]) { openPieceModal(type); return; }
     if (type === "Videos") { openVideoModal(); return; }
     if (type === "Articles") { WLArticleEditor.open(null, { section: name, onSave: renderSections }); return; }

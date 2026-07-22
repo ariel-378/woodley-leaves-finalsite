@@ -217,21 +217,51 @@
     if (types.includes("Art/photos")) list.insertAdjacentHTML("beforeend", piecesBlock("Art & photos", p => p.type === "image", shownPieces));
     if (types.includes("Reveal-answer games")) list.insertAdjacentHTML("beforeend", piecesBlock("Reveal & answer", p => !!(p.reveal && (p.reveal.answer || "").trim()), shownPieces));
 
-    // Custom content: editor-written code, run in a sandbox so it can't touch
-    // the rest of the page.
-    if (types.includes("Custom") && window.WLSections) {
-      const code = WLSections.getCustomCode(section);
-      if (code && code.trim()) {
-        const wrap = document.createElement("div");
-        wrap.className = "sec-custom";
-        const frame = document.createElement("iframe");
-        frame.className = "sec-custom-frame";
-        frame.setAttribute("sandbox", "allow-scripts");
-        frame.setAttribute("title", section + " feature");
-        frame.setAttribute("loading", "lazy");
-        frame.srcdoc = code;
-        wrap.appendChild(frame);
-        list.appendChild(wrap);
+    // Custom features: editor-written content that is not a game — a comic
+    // strip, a photo essay, an embedded map. Each is its own piece, so a
+    // section can hold several. Every one runs in a sandbox with no
+    // same-origin access, so it cannot touch the page around it.
+    if (types.includes("Custom feature") && window.WLFeatures) {
+      const features = WLFeatures.getAll().filter(f => f && (f.code || "").trim());
+      if (features.length) {
+        const heading = document.createElement("h3");
+        heading.className = "sec-block-title";
+        heading.textContent = features.length === 1 ? "Feature" : "Features";
+        list.appendChild(heading);
+
+        features.forEach(f => {
+          const wrap = document.createElement("div");
+          wrap.className = "sec-custom";
+
+          if (f.kicker) {
+            const k = document.createElement("div");
+            k.className = "kicker";
+            k.textContent = f.kicker;
+            wrap.appendChild(k);
+          }
+          if (f.title) {
+            const h = document.createElement("h4");
+            h.className = "sec-custom-title";
+            h.textContent = f.title;
+            wrap.appendChild(h);
+          }
+          if (f.description) {
+            const d = document.createElement("p");
+            d.className = "sec-custom-desc";
+            d.textContent = f.description;
+            wrap.appendChild(d);
+          }
+
+          const frame = document.createElement("iframe");
+          frame.className = "sec-custom-frame";
+          frame.setAttribute("sandbox", "allow-scripts");
+          frame.setAttribute("title", f.title || (section + " feature"));
+          frame.setAttribute("loading", "lazy");
+          frame.style.height = (parseInt(f.height, 10) || 500) + "px";
+          frame.srcdoc = f.code;
+          wrap.appendChild(frame);
+          list.appendChild(wrap);
+        });
       }
     }
 
@@ -243,6 +273,7 @@
   document.addEventListener("DOMContentLoaded", render);
   document.addEventListener("wl-articles-change", render);
   document.addEventListener("wl-sections-change", render);
+  document.addEventListener("wl-features-change", render);
   document.addEventListener("wl-videos-change", render);
   document.addEventListener("wl-teams-change", render);
   document.addEventListener("wl-centerspread-change", render);

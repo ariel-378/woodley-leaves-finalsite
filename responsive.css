@@ -162,3 +162,17 @@
 @media (pointer: coarse) {
   .wl-mc-btn { min-height: 44px; min-width: 44px; }
 }
+
+/* ── Shared code editor (code-editor.js) ────────────────────────────────── */
+#code-code {
+  font-family: ui-monospace, "SF Mono", Menlo, monospace;
+  font-size: 13px;
+  line-height: 1.5;
+  min-height: 260px;
+}
+
+/* Custom features on a section page */
+.sec-custom { margin: 0 0 28px; }
+.sec-custom-title { font-family: Georgia, serif; font-size: 22px; margin: 0 0 4px; }
+.sec-custom-desc { font-size: 14px; color: var(--muted); margin: 0 0 10px; line-height: 1.5; }
+.sec-custom-frame { width: 100%; border: 1px solid var(--rule); display: block; }
