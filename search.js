@@ -29,6 +29,7 @@
     const all = WLArticles.getAll();
     const results = [];
     Object.entries(all).forEach(([id, a]) => {
+      if (!WLArticles.isVisible(a)) return;
       if (sectionFilter && a.section !== sectionFilter) return;
       const s = scoreMatch(a, q);
       if (s > 0) results.push({ id, relevance: s, ...a });
@@ -44,7 +45,7 @@
     const sel = document.getElementById("section-filter");
     if (!sel || !window.WLSections) return;
     const opts = ['<option value="">All sections</option>']
-      .concat(WLSections.names().map(n => `<option>${escapeHtml(n)}</option>`));
+      .concat(WLSections.articleNames().map(n => `<option>${escapeHtml(n)}</option>`));
     sel.innerHTML = opts.join("");
     sel.value = selected || "";
   }

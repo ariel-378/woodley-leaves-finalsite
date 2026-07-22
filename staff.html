@@ -53,7 +53,9 @@
     margin-bottom: 12px;
     border-radius: 50%;
     max-width: 140px;
+    width: 100%;
   }
+  img.staff-photo { object-fit: cover; }
   .staff-card h4 {
     font-family: Georgia, serif;
     font-size: 18px;
@@ -121,63 +123,57 @@
     </div>
   </header>
 
-  <section class="staff-section">
-    <h3 data-wl-text="staff-leadership-heading">Leadership</h3>
-    <div class="staff-grid">
-      <div class="staff-card">
-        <div class="staff-photo"></div>
-        <h4><a href="writer.html?slug=jordan-marsh">Jordan Marsh</a></h4>
-        <p class="staff-role">Online Editor-in-Chief</p>
-        <p class="staff-year">Class of 2027</p>
-        <a href="mailto:arielp2027@maret.org">arielp2027@maret.org</a>
-      </div>
-      <div class="staff-card">
-        <div class="staff-photo"></div>
-        <h4><a href="writer.html?slug=harper-l">Harper L.</a></h4>
-        <p class="staff-role">Online Managing Editor</p>
-        <p class="staff-year">Class of 2027</p>
-        <a href="mailto:farrynb2027@maret.org">farrynb2027@maret.org</a>
-      </div>
-      <!-- Add more leadership here using the same pattern. -->
-    </div>
-  </section>
-
-  <section class="staff-section">
-    <h3 data-wl-text="staff-section-editors-heading">Section Editors</h3>
-    <!-- Replace this with staff-cards for each section editor (News, Features, Op-Ed, Style, Sports) -->
-    <p class="staff-empty" data-wl-text="staff-section-editors-empty">Section editors will be listed here. Follow the card pattern above to add them.</p>
-  </section>
-
-  <section class="staff-section">
-    <h3 data-wl-text="staff-writers-heading">Writers &amp; Contributors</h3>
-    <p class="staff-empty" data-wl-text="staff-writers-empty">Staff writers and contributors will be listed here.</p>
-  </section>
-
-  <section class="staff-section">
-    <h3 data-wl-text="staff-photo-heading">Photography &amp; Design</h3>
-    <p class="staff-empty" data-wl-text="staff-photo-empty">Photo editors and designers will be listed here.</p>
-  </section>
-
-  <section class="staff-section">
-    <h3 data-wl-text="staff-adviser-heading">Faculty Adviser</h3>
-    <p class="staff-empty" data-wl-text="staff-adviser-empty">The faculty adviser's name and email will appear here.</p>
-  </section>
-
-  <div class="page-flourish flourish-large" aria-hidden="true">
-    <svg viewBox="0 0 160 80" xmlns="http://www.w3.org/2000/svg">
-      <path d="M 10 48 C 30 28, 55 28, 70 48 M 70 48 C 82 64, 68 74, 60 66 C 54 59, 64 52, 70 57" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"/>
-      <path d="M 90 48 C 105 28, 130 28, 148 48 M 148 48 C 152 58, 140 66, 136 58" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"/>
-      <circle cx="78" cy="48" r="2" fill="currentColor"/>
-    </svg>
-    <span class="page-flourish-caption">More staff profiles coming soon.</span>
-  </div>
+  <div id="staff-root"></div>
 </main>
 
 <footer>© 2026 The Student Times · Your School Student Publication · <a href="staff.html">Staff</a> · <a href="tip.html">Pitch a story</a><br>Online Editor-in-Chief: <a href="mailto:editor@example.org">editor@example.org</a> · Online Managing Editor: <a href="mailto:managing@example.org">managing@example.org</a></footer>
 
+<script src="staff-data.js"></script>
+<script src="staff-store.js"></script>
 <script src="submissions.js"></script>
 <script src="auth.js"></script>
 <script src="script.js"></script>
 <script src="text-editor.js"></script>
+<script>
+(function () {
+  function esc(s) {
+    return String(s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+  }
+  function cardHtml(m) {
+    const photo = m.photo
+      ? `<img class="staff-photo" src="${esc(m.photo)}" alt="${esc(m.name)}">`
+      : `<div class="staff-photo"></div>`;
+    const name = m.slug
+      ? `<a href="writer.html?slug=${encodeURIComponent(m.slug)}">${esc(m.name)}</a>`
+      : esc(m.name);
+    return `<div class="staff-card">
+      ${photo}
+      <h4>${name}</h4>
+      ${m.role ? `<p class="staff-role">${esc(m.role)}</p>` : ""}
+      ${m.year ? `<p class="staff-year">${esc(m.year)}</p>` : ""}
+      ${m.email ? `<a href="mailto:${esc(m.email)}">${esc(m.email)}</a>` : ""}
+    </div>`;
+  }
+  function render() {
+    const root = document.getElementById("staff-root");
+    if (!root || !window.WLStaff) return;
+    const all = WLStaff.getAll();
+    if (all.length === 0) {
+      root.innerHTML = `<p class="staff-empty">No staff listed yet.</p>`;
+      return;
+    }
+    root.innerHTML = WLStaff.orderedGroups().map(g => {
+      const members = all.filter(m => m.group === g);
+      if (!members.length) return "";
+      return `<section class="staff-section">
+        <h3>${esc(g)}</h3>
+        <div class="staff-grid">${members.map(cardHtml).join("")}</div>
+      </section>`;
+    }).join("");
+  }
+  document.addEventListener("DOMContentLoaded", render);
+  document.addEventListener("wl-staff-change", render);
+})();
+</script>
 </body>
 </html>

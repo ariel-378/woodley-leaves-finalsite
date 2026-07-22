@@ -78,7 +78,7 @@
   const tag = (params.get("tag") || "").toLowerCase().trim();
 
   const all = WLArticles.getAll();
-  const entries = Object.entries(all).map(([id, a]) => ({ id, ...a }));
+  const entries = Object.entries(all).map(([id, a]) => ({ id, ...a })).filter(a => WLArticles.isVisible(a));
 
   // Collect all tags for the cloud
   const tagCounts = {};

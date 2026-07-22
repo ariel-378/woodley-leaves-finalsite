@@ -25,10 +25,26 @@ window.WLArticles = (function () {
 
   function getById(id) { return getAll()[id]; }
 
+  // An article with a future publishAt stays hidden from the public site until
+  // that moment arrives. No publishAt (or a past one) means it is live.
+  function isPublished(a) {
+    if (!a || !a.publishAt) return true;
+    const t = Date.parse(a.publishAt);
+    return isNaN(t) || t <= Date.now();
+  }
+
+  // A section can be hidden from readers (editor toggle). Its articles then drop
+  // out of every public view but stay in the editor.
+  function sectionHidden(section) {
+    return !!(window.WLSections && WLSections.isHidden && WLSections.isHidden(section));
+  }
+  // Publicly visible = published AND its section isn't hidden.
+  function isVisible(a) { return isPublished(a) && !(a && sectionHidden(a.section)); }
+
   function bySection(section) {
     const all = getAll();
     return Object.entries(all)
-      .filter(([_, a]) => a.section === section)
+      .filter(([_, a]) => a.section === section && isVisible(a))
       .map(([id, a]) => ({ id, ...a }))
       .sort((a, b) => {
         // newest first using parsed date
@@ -102,8 +118,9 @@ window.WLArticles = (function () {
     const id = readFeaturedMap()[section];
     if (!id) return null;
     const a = getById(id);
-    return a ? { id, ...a } : null;
+    if (!a || !isVisible(a)) return null;   // don't surface hidden/unpublished picks
+    return { id, ...a };
   }
 
-  return { getAll, getById, bySection, save, remove, isCustom, reset, getFeatured, getFeaturedId, setFeatured };
+  return { getAll, getById, bySection, save, remove, isCustom, reset, getFeatured, getFeaturedId, setFeatured, isPublished, isVisible };
 })();

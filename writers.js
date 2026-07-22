@@ -1,6 +1,5 @@
-// Writer directory. Maps a byline slug to a display name. Everything else
-// (bio, role, year, photo, email) has been cut — writer profile pages now
-// just list every article by that byline.
+// Writer directory. Maps a byline slug to a display name — nothing else.
+// A writer's profile page simply lists every article under that byline.
 // Blank template: no writers yet. Bylines you add via the editor populate
 // writer pages automatically; add fixed display-name overrides here if needed.
 window.WL_WRITERS = {};

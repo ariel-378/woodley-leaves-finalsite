@@ -57,14 +57,142 @@
         ${deckHtml(a)}
       </article>`;
   }
+  // Overflow items (past the top 4) render as a clean text list — no media.
   function miniHtml(a) {
     return `
-      <article class="sec-mini">
-        <a class="sec-mini-media" href="${href(a)}">${thumbHtml(a)}</a>
-        ${eyebrow(a)}
+      <li class="sec-mini">
         <h4><a href="${href(a)}">${escapeHtml(a.title)}</a></h4>
-      </article>`;
+        ${eyebrow(a)}
+      </li>`;
   }
+
+  // Render the section's article grid into an HTML string (empty if none).
+  function articlesHtml(section) {
+    let articles = WLArticles.bySection(section);
+    if (articles.length === 0) return "";
+
+    // Editors can pin a lead story via "Feature" in the dashboard — it moves to
+    // the top spot. Otherwise the newest article leads. The rest stay
+    // newest-first, and anything past the top 4 lists below.
+    const featuredId = WLArticles.getFeaturedId ? WLArticles.getFeaturedId(section) : null;
+    if (featuredId) {
+      const idx = articles.findIndex(a => a.id === featuredId);
+      if (idx > 0) articles = [articles[idx], ...articles.slice(0, idx), ...articles.slice(idx + 1)];
+    }
+
+    const lead = articles[0];
+    const secondary = articles.slice(1, 4);   // up to 3 cards
+    const more = articles.slice(4);            // everything past the top 4
+
+    let html = leadHtml(lead);
+    if (secondary.length) html += `<div class="sec-grid">${secondary.map(cardHtml).join("")}</div>`;
+    if (more.length) {
+      html += `<div class="sec-more-wrap">
+        <h3 class="sec-more-title">More in ${escapeHtml(section)}</h3>
+        <ul class="sec-more">${more.map(miniHtml).join("")}</ul>
+      </div>`;
+    }
+    return html;
+  }
+
+  // Video grid for a section that holds "Videos". Reuses the Video page's card.
+  function videoCardHtml(v) {
+    const info = WLVideos.parseVideo(v.url);
+    const thumb = (info && info.type === "youtube")
+      ? `<img src="https://img.youtube.com/vi/${info.id}/hqdefault.jpg" alt="${escapeHtml(v.title)}" loading="lazy">`
+      : `<div class="video-placeholder"></div>`;
+    return `
+      <a class="video-card" href="video.html?id=${encodeURIComponent(v.id)}">
+        <div class="video-thumb">
+          ${thumb}
+          <span class="video-play" aria-hidden="true">▶</span>
+          ${v.duration ? `<span class="video-duration">${escapeHtml(v.duration)}</span>` : ""}
+        </div>
+        <div class="video-body">
+          <h4>${escapeHtml(v.title)}</h4>
+          <div class="byline">By ${escapeHtml(v.byline)} · ${escapeHtml(v.date)}</div>
+        </div>
+      </a>`;
+  }
+  function videosHtml() {
+    if (!window.WLVideos) return "";
+    const videos = Object.entries(WLVideos.getAll())
+      .map(([id, v]) => ({ id, ...v }))
+      .sort((a, b) => (Date.parse(b.date) || 0) - (Date.parse(a.date) || 0));
+    if (!videos.length) return "";
+    return `<h3 class="sec-block-title">Video</h3>
+      <div class="video-grid wide">${videos.map(videoCardHtml).join("")}</div>`;
+  }
+
+  // Team-records grid for a section that holds "Sports stats".
+  function sportsHtml() {
+    if (!window.WLTeams) return "";
+    const teams = WLTeams.getAllTeams();
+    const slugs = Object.keys(teams);
+    if (!slugs.length) return "";
+    const cards = slugs.map(slug => {
+      const t = teams[slug];
+      const r = t.record || { w: 0, l: 0, t: 0 };
+      const rec = r.t ? `${r.w}–${r.l}–${r.t}` : `${r.w}–${r.l}`;
+      const total = r.w + r.l + (r.t || 0);
+      const pct = total > 0 ? Math.round(100 * r.w / total) : 0;
+      return `
+        <a class="team-card" href="team.html?team=${encodeURIComponent(slug)}">
+          <div class="team-sport">${escapeHtml(t.sport)}</div>
+          <h4>${escapeHtml(t.name)}</h4>
+          <div class="team-record"><span class="record-big">${rec}</span><span class="record-pct">${pct}%</span></div>
+          <div class="team-record-label">W–L${r.t ? "–T" : ""}</div>
+        </a>`;
+    }).join("");
+    return `<h3 class="sec-block-title">Team records</h3><div class="teams-grid">${cards}</div>`;
+  }
+
+  // Centerspread pieces (poems, art/photos, reveal-answer) reused on a section.
+  function csBlocks(body) {
+    return String(body || "").replace(/\r\n/g, "\n").split(/\n\s*\n/)
+      .map(b => b.split("\n").filter(l => l.trim() !== "")).filter(b => b.length);
+  }
+  function csHead(p) {
+    return `<div class="print-piece-head">${p.kicker ? `<div class="kicker">${escapeHtml(p.kicker)}</div>` : ""}<h3>${escapeHtml(p.title || "")}</h3>${p.byline ? `<div class="byline">${escapeHtml(p.byline)}</div>` : ""}</div>`;
+  }
+  function csBody(p) {
+    if (p.type === "image") return p.image ? `<figure class="print-piece-figure"><img src="${escapeHtml(p.image)}" alt="${escapeHtml(p.alt || "")}"></figure>` : "";
+    if (p.type === "poem") {
+      const stanzas = csBlocks(p.body).map(st => `<div class="poem-stanza">${st.map(l => `<p>${escapeHtml(l)}</p>`).join("")}</div>`).join("");
+      return `<div class="poem-body">${stanzas}</div>`;
+    }
+    return `<div class="teacher-body">${csBlocks(p.body).map(par => `<p>${escapeHtml(par.join(" "))}</p>`).join("")}</div>`;
+  }
+  function csReveal(p) {
+    if (!p.reveal || !(p.reveal.answer || "").trim()) return "";
+    return `<details class="reveal"><summary>${escapeHtml(p.reveal.summary || "Reveal the answer")}</summary><div class="reveal-body">${escapeHtml(p.reveal.answer)}</div></details>`;
+  }
+  function csPiece(p) {
+    return `<article class="print-piece${p.type === "poem" ? " poem-piece" : ""}">${csHead(p)}${csBody(p)}${csReveal(p)}</article>`;
+  }
+  function piecesBlock(title, predicate, shown) {
+    if (!window.WLCenterspread) return "";
+    const pieces = WLCenterspread.list().filter(p => p && predicate(p) && !shown.has(p.id));
+    if (!pieces.length) return "";
+    pieces.forEach(p => shown.add(p.id));
+    return `<h3 class="sec-block-title">${escapeHtml(title)}</h3><div class="sec-pieces">${pieces.map(csPiece).join("")}</div>`;
+  }
+
+  // Interactive puzzles: embed the Centerspread's puzzles-only view so the real
+  // crossword / spelling bee / connections / word search run here too. Same
+  // origin, so their saved progress works exactly as on the Centerspread.
+  function puzzlesHtml() {
+    return `<h3 class="sec-block-title">Puzzles</h3>
+      <iframe class="sec-puzzles-frame" src="centerspread.html?embed=puzzles" title="Puzzles" loading="lazy"></iframe>`;
+  }
+  // The embedded page reports its height; size the frame to match.
+  window.addEventListener("message", function (e) {
+    const h = e.data && e.data.wlEmbedHeight;
+    if (!h) return;
+    document.querySelectorAll("iframe.sec-puzzles-frame").forEach(function (f) {
+      if (f.contentWindow === e.source) f.style.height = h + "px";
+    });
+  });
 
   function render() {
     const list = document.getElementById("article-list");
@@ -72,22 +200,50 @@
     const section = list.dataset.section;
     if (!section) return;
 
-    const articles = WLArticles.bySection(section);
-    if (articles.length === 0) {
-      list.innerHTML = `<div class="section-empty">No articles in this section yet.</div>`;
-      return;
+    // A section renders each of the content types the editor gave it. Sections
+    // with no declared types fall back to Articles (covers the static pages).
+    const types = window.WLSections && WLSections.contentTypes ? WLSections.contentTypes(section) : [];
+    const wantsArticles = types.length === 0 || types.includes("Articles");
+
+    list.innerHTML = "";
+    if (wantsArticles) list.insertAdjacentHTML("beforeend", articlesHtml(section));
+    if (types.includes("Sports stats") && window.WLTeams) list.insertAdjacentHTML("beforeend", sportsHtml());
+    if (types.includes("Videos") && window.WLVideos) list.insertAdjacentHTML("beforeend", videosHtml());
+
+    if (types.includes("Puzzle games")) list.insertAdjacentHTML("beforeend", puzzlesHtml());
+
+    const shownPieces = new Set();
+    if (types.includes("Poems")) list.insertAdjacentHTML("beforeend", piecesBlock("Poems", p => p.type === "poem", shownPieces));
+    if (types.includes("Art/photos")) list.insertAdjacentHTML("beforeend", piecesBlock("Art & photos", p => p.type === "image", shownPieces));
+    if (types.includes("Reveal-answer games")) list.insertAdjacentHTML("beforeend", piecesBlock("Reveal & answer", p => !!(p.reveal && (p.reveal.answer || "").trim()), shownPieces));
+
+    // Custom content: editor-written code, run in a sandbox so it can't touch
+    // the rest of the page.
+    if (types.includes("Custom") && window.WLSections) {
+      const code = WLSections.getCustomCode(section);
+      if (code && code.trim()) {
+        const wrap = document.createElement("div");
+        wrap.className = "sec-custom";
+        const frame = document.createElement("iframe");
+        frame.className = "sec-custom-frame";
+        frame.setAttribute("sandbox", "allow-scripts");
+        frame.setAttribute("title", section + " feature");
+        frame.setAttribute("loading", "lazy");
+        frame.srcdoc = code;
+        wrap.appendChild(frame);
+        list.appendChild(wrap);
+      }
     }
 
-    const lead = articles[0];
-    const secondary = articles.slice(1, 4);   // up to 3 cards
-    const more = articles.slice(4);            // the rest as minis
-
-    let html = leadHtml(lead);
-    if (secondary.length) html += `<div class="sec-grid">${secondary.map(cardHtml).join("")}</div>`;
-    if (more.length) html += `<div class="sec-more">${more.map(miniHtml).join("")}</div>`;
-    list.innerHTML = html;
+    if (!list.firstChild) {
+      list.innerHTML = `<div class="section-empty">No content in this section yet.</div>`;
+    }
   }
 
   document.addEventListener("DOMContentLoaded", render);
   document.addEventListener("wl-articles-change", render);
+  document.addEventListener("wl-sections-change", render);
+  document.addEventListener("wl-videos-change", render);
+  document.addEventListener("wl-teams-change", render);
+  document.addEventListener("wl-centerspread-change", render);
 })();

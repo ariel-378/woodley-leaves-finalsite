@@ -71,24 +71,26 @@
     `;
   }
 
-  function statsEnabled() { return window.WLTeams ? WLTeams.statsEnabled() : true; }
+  function blockOn(key) { return window.WLTeams ? WLTeams.blockEnabled(key) : true; }
 
-  // Show/hide the whole stats block (Game of the Week + Teams/brackets rows).
-  // The Sports article list below is left untouched.
+  // Show/hide each stats block individually. We toggle the movable
+  // [data-move-key] elements themselves — not their .wl-row wrappers, which
+  // layout-editor.js rebuilds and would wipe an inline style from.
   function applyStatsVisibility() {
-    const on = statsEnabled();
-    ["game-of-week", "teams-grid"].forEach(id => {
-      const el = document.getElementById(id);
-      const row = el && el.closest(".wl-row");
-      if (row) row.style.display = on ? "" : "none";
+    const map = { "game-of-week": "games", "teams": "teams" };
+    Object.entries(map).forEach(([key, block]) => {
+      const el = document.querySelector(`[data-move-key="${key}"]`);
+      if (el) el.style.display = blockOn(block) ? "" : "none";
     });
+    // The "View playoff brackets" link follows the brackets block.
+    const link = document.querySelector(".sports-more-link");
+    if (link) link.style.display = blockOn("brackets") ? "" : "none";
   }
 
   function renderAll() {
-    applyStatsVisibility();
-    if (!statsEnabled()) return;
     renderGameOfWeek();
     renderTeams();
+    applyStatsVisibility();
   }
   document.addEventListener("DOMContentLoaded", renderAll);
   document.addEventListener("wl-teams-change", renderAll);

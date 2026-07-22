@@ -1,6 +1,7 @@
 // Builds the section nav on every page from WLSections, so adding, renaming,
 // removing, or reordering a section in the editor updates the nav site-wide.
-// The nav is: Home · [editor-managed sections] · Centerspread · Video · Search.
+// The nav is: Home · [editor-managed sections, including the built-in
+// Centerspread and Video pages] · Search.
 window.WLNav = (function () {
   let activeSection = null; // article pages set this via setActive()
 
@@ -32,14 +33,13 @@ window.WLNav = (function () {
       } else if (file === "section.html") {
         active = qsName === s.name;
       } else {
-        // A section still on its original static page (e.g. news.html).
-        active = !s.page.startsWith("section.html") && file === s.page;
+        // A section on its original static page (e.g. news.html), or a built-in
+        // page's alternate file (e.g. video.html for Video).
+        active = (!s.page.startsWith("section.html") && file === s.page) ||
+                 (Array.isArray(s.alt) && s.alt.includes(file));
       }
       items.push({ label: s.name, href: s.page, section: s.name, active });
     });
-
-    items.push({ label: "Centerspread", href: "centerspread.html", section: null, active: file === "centerspread.html" });
-    items.push({ label: "Video", href: "videos.html", section: null, active: file === "videos.html" || file === "video.html" });
 
     let html = items.map(it =>
       `<a href="${esc(it.href)}"` +

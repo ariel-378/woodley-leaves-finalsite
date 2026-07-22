@@ -15,13 +15,18 @@ window.WLTeams = (function () {
 
   // Sitewide on/off toggle for the sports-stats feature (Game of the Week,
   // team records, and playoff brackets). On by default.
-  const LS_STATS_ENABLED = "wl_sports_enabled";
-  function statsEnabled() {
-    const v = localStorage.getItem(LS_STATS_ENABLED);
+  // Per-block visibility on the public Sports page. Each block is on by default
+  // and can be turned off individually without losing its data. Blocks:
+  //   games    — the Game of the Week
+  //   teams    — the teams / records grid
+  //   brackets — the playoff brackets page and its link
+  const SPORTS_BLOCKS = ["games", "teams", "brackets"];
+  function blockEnabled(key) {
+    const v = localStorage.getItem("wl_sports_" + key);
     return v === null ? true : v === "true";
   }
-  function setStatsEnabled(on) {
-    localStorage.setItem(LS_STATS_ENABLED, on ? "true" : "false");
+  function setBlockEnabled(key, on) {
+    localStorage.setItem("wl_sports_" + key, on ? "true" : "false");
     fire();
   }
 
@@ -100,6 +105,7 @@ window.WLTeams = (function () {
 
   function reset() {
     [LS_TEAMS_CUSTOM, LS_TEAMS_DELETED, LS_BRACKETS_CUSTOM, LS_BRACKETS_DELETED, LS_FEATURED_GAME].forEach(k => localStorage.removeItem(k));
+    SPORTS_BLOCKS.forEach(k => localStorage.removeItem("wl_sports_" + k));
     fire();
   }
 
@@ -149,6 +155,6 @@ window.WLTeams = (function () {
     getAllBrackets, getBracket, saveBracket, removeBracket, isCustomBracket,
     reset,
     getFeaturedGame, getFeaturedGameRef, setFeaturedGame, clearFeaturedGame,
-    statsEnabled, setStatsEnabled
+    blockEnabled, setBlockEnabled, SPORTS_BLOCKS
   };
 })();

@@ -115,6 +115,8 @@
     font-weight: 400; font-size: 11px; color: var(--muted);
     letter-spacing: 1px; text-transform: uppercase; margin-left: 8px;
   }
+  .sm-name .sm-tag-hidden { color: #b8002a; font-weight: 700; }
+  .sm-row.sm-hidden .sm-name { opacity: 0.55; }
   .sm-count {
     font-size: 12px; color: var(--muted); white-space: nowrap;
   }
@@ -127,23 +129,6 @@
     border: 1px solid var(--rule); font-family: inherit; font-size: 14px; background: #fff;
   }
   .sm-error { color: #b8002a; font-size: 13px; min-height: 18px; margin: 6px 0 0; }
-  /* Home page layout picker */
-  .hl-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-    gap: 12px;
-    margin-top: 14px;
-  }
-  .hl-row { display: flex; flex-direction: column; gap: 4px; margin: 0; }
-  .hl-label {
-    font-family: "Helvetica Neue", Arial, sans-serif;
-    font-size: 11px; text-transform: uppercase; letter-spacing: 1px;
-    color: var(--muted); font-weight: 600;
-  }
-  .hl-select {
-    padding: 8px 10px; border: 1px solid var(--rule); background: #fff;
-    font-family: inherit; font-size: 14px;
-  }
   .ed-section-head {
     display: flex;
     justify-content: space-between;
@@ -204,6 +189,7 @@
     font-weight: 700;
     vertical-align: middle;
   }
+  .editor-table .badge-scheduled { display: inline-block; background: #8a6d00; color: #fff; font-size: 10px; padding: 2px 6px; margin-left: 6px; letter-spacing: 0.3px; text-transform: uppercase; font-weight: 700; vertical-align: middle; }
   .editor-table .badge-featured {
     display: inline-block;
     background: #c9b458;
@@ -329,11 +315,8 @@
 
   <div id="editor-view" style="display:none;">
     <div class="ed-tabs">
-      <a href="editor.html" class="active">Articles</a>
-      <a href="editor-centerspread.html">Centerspread</a>
-      <a href="editor-sports.html">Sports stats</a>
-      <a href="editor-videos.html">Video</a>
-      <a href="editor-writers.html">Writers</a>
+      <a href="editor-content.html" class="active">Content</a>
+      <a href="editor-staff.html">Staff &amp; Writers</a>
       <a href="editor-ads.html">Ads</a>
       <a href="editor-brand.html" class="ed-tab-brand">Brand design</a>
     </div>
@@ -352,12 +335,6 @@
         <button class="btn-primary" type="submit">+ Add section</button>
       </form>
       <p class="sm-error" id="sm-error"></p>
-    </div>
-
-    <div class="sections-manager" id="home-layout">
-      <h3>Home page layout</h3>
-      <p class="ed-tip" style="margin:0;">Choose which section fills each spot on the front page. Each spot shows that section's featured story, or its newest article if none is featured.</p>
-      <div class="hl-grid" id="hl-grid"></div>
     </div>
 
     <div id="editor-sections"></div>
@@ -385,6 +362,10 @@
             <input type="text" id="ed-date">
           </label>
         </div>
+
+        <label>Publish date &amp; time <span style="font-weight:400;text-transform:none;letter-spacing:0;color:var(--muted);">(leave blank to publish now; set a future time to schedule)</span>
+          <input type="datetime-local" id="ed-publish">
+        </label>
 
         <label>ID / URL slug (lowercase, dashes-only) <input type="text" id="ed-id" placeholder="e.g., new-art-show-opens"></label>
         <p class="ed-tip">The article will live at <code>article.html?id=<span id="ed-id-preview">…</span></code></p>
@@ -425,15 +406,10 @@
             <input type="text" id="ed-video" placeholder="https://youtube.com/watch?v=… or https://vimeo.com/…">
           </label>
 
-          <label>Audio narration URL (MP3/WAV, optional)
-            <input type="text" id="ed-audio" placeholder="https://example.com/narration.mp3">
-          </label>
-          <p class="ed-tip">If left blank, readers will hear the article read via their browser's built-in voice.</p>
-
           <div id="ed-photo-preview" style="margin-top:8px;"></div>
 
           <hr style="margin:16px 0; border:none; border-top:1px solid var(--rule);">
-          <p class="ed-tip" style="margin-top:0;">Photo gallery (optional) — extra photos displayed below the article.</p>
+          <p class="ed-tip" style="margin-top:0;">Photo gallery (optional). Extra photos displayed below the article.</p>
           <div id="ed-gallery-rows"></div>
           <button type="button" class="btn-ghost" id="ed-gallery-add" style="margin-top:6px;">+ Add photo to gallery</button>
         </fieldset>
@@ -478,7 +454,7 @@
   const sectionsWrap = document.getElementById("editor-sections");
 
   // Section list + order come from the editor-managed sections store.
-  function sectionNames() { return WLSections.names(); }
+  function sectionNames() { return WLSections.articleNames(); }
 
   function gateAccess() {
     const user = WLAuth.currentUser();
@@ -513,15 +489,19 @@
       const count = WLSections.articleCount(s.name);
       const navTag = s.nav ? "" : `<span class="sm-tag">Home / banner</span>`;
       const lockTag = s.locked ? `<span class="sm-tag">Locked</span>` : "";
+      const pageTag = s.fixedPage ? `<span class="sm-tag">Page</span>` : "";
+      const hiddenTag = s.hidden ? `<span class="sm-tag sm-tag-hidden">Hidden</span>` : "";
       const up = `<button class="btn-ghost" data-sm="up" data-name="${escapeHtml(s.name)}" title="Move up"${i === 0 ? " disabled" : ""}>↑</button>`;
       const down = `<button class="btn-ghost" data-sm="down" data-name="${escapeHtml(s.name)}" title="Move down"${i === list.length - 1 ? " disabled" : ""}>↓</button>`;
+      const vis = `<button class="btn-ghost" data-sm="togglehide" data-name="${escapeHtml(s.name)}" title="${s.hidden ? "Show to readers" : "Hide from readers"}">${s.hidden ? "Show" : "Hide"}</button>`;
       const rename = s.locked ? "" : `<button class="btn-ghost" data-sm="rename" data-name="${escapeHtml(s.name)}">Rename</button>`;
       const remove = s.locked ? "" : `<button class="btn-danger" data-sm="remove" data-name="${escapeHtml(s.name)}">Remove</button>`;
+      const countHtml = s.fixedPage ? "" : `${count} article${count === 1 ? "" : "s"}`;
       return `
-        <li class="sm-row">
-          <span class="sm-name">${escapeHtml(s.name)}${navTag}${lockTag}</span>
-          <span class="sm-count">${count} article${count === 1 ? "" : "s"}</span>
-          <span class="sm-actions">${up}${down}${rename}${remove}</span>
+        <li class="sm-row${s.hidden ? " sm-hidden" : ""}">
+          <span class="sm-name">${escapeHtml(s.name)}${navTag}${lockTag}${pageTag}${hiddenTag}</span>
+          <span class="sm-count">${countHtml}</span>
+          <span class="sm-actions">${vis}${up}${down}${rename}${remove}</span>
         </li>`;
     }).join("");
   }
@@ -546,6 +526,10 @@
     switch (btn.dataset.sm) {
       case "up":   return smRun(() => WLSections.move(name, -1));
       case "down": return smRun(() => WLSections.move(name, +1));
+      case "togglehide": {
+        const s = WLSections.find(name);
+        return smRun(() => WLSections.setHidden(name, !(s && s.hidden)));
+      }
       case "remove":
         return smRun(() => {
           if (!confirm(`Remove the "${name}" section?`)) return;
@@ -559,46 +543,10 @@
     }
   });
 
-  // ===== Home page layout =====
-  const hlGrid = document.getElementById("hl-grid");
-  const HOME_SLOTS = [
-    ["lede", "Lede — top story"],
-    ["middle1", "Middle column 1"],
-    ["middle2", "Middle column 2"],
-    ["middle3", "Middle column 3"],
-    ["right1", "Right rail 1"],
-    ["right2", "Right rail 2"],
-  ];
-
-  function renderHomeLayout() {
-    const slots = WLSections.homeSlots();
-    const names = sectionNames();
-    hlGrid.innerHTML = HOME_SLOTS.map(([key, label]) => {
-      const cur = slots[key] || "";
-      const opts = ['<option value="">— None —</option>']
-        .concat(names.map(n => `<option${n === cur ? " selected" : ""}>${escapeHtml(n)}</option>`));
-      // Surface a stale value (section since renamed away or removed) so it's visible.
-      if (cur && !names.includes(cur)) opts.push(`<option selected>${escapeHtml(cur)}</option>`);
-      return `
-        <label class="hl-row">
-          <span class="hl-label">${escapeHtml(label)}</span>
-          <select class="hl-select" data-slot="${key}">${opts.join("")}</select>
-        </label>`;
-    }).join("");
-  }
-
-  hlGrid.addEventListener("change", (e) => {
-    const sel = e.target.closest("[data-slot]");
-    if (!sel) return;
-    try { WLSections.setHomeSlot(sel.dataset.slot, sel.value); }
-    catch (err) { alert(err.message || String(err)); }
-  });
-
   function renderTable() {
     if (!gateAccess()) return;
     populateSectionSelect();
     renderSectionsManager();
-    renderHomeLayout();
     const all = WLArticles.getAll();
     // Per-section featured map: { "News": "article-id", "Features": "...", ... }
     const featuredMap = WLArticles.getFeaturedId();
@@ -635,18 +583,20 @@
                ${entries.map(a => {
                  const customBadge = WLArticles.isCustom(a.id) ? `<span class="badge-custom">Edited</span>` : "";
                  const isFeatured = a.id === sectionFeaturedId;
-                 const featuredBadge = isFeatured ? `<span class="badge-featured">★ Homepage</span>` : "";
+                 const featuredBadge = isFeatured ? `<span class="badge-featured">★ Top story</span>` : "";
+                 const isScheduled = a.publishAt && Date.parse(a.publishAt) > Date.now();
+                 const scheduledBadge = isScheduled ? `<span class="badge-scheduled">⏳ ${escapeHtml(fmtSchedule(a.publishAt))}</span>` : "";
                  const featureBtnLabel = isFeatured ? "Unfeature" : "Feature";
                  return `
                    <tr>
                      <td class="col-title">
-                       <a href="article.html?id=${encodeURIComponent(a.id)}" target="_blank">${escapeHtml(a.title)}</a>${customBadge}${featuredBadge}
+                       <a href="article.html?id=${encodeURIComponent(a.id)}" target="_blank">${escapeHtml(a.title)}</a>${customBadge}${featuredBadge}${scheduledBadge}
                        <div style="color: var(--muted); font-size: 12px; margin-top: 4px;">${escapeHtml(a.deck || "")}</div>
                      </td>
                      <td>${escapeHtml(a.byline)}</td>
                      <td>${escapeHtml(a.date)}</td>
                      <td class="col-actions">
-                       <button class="btn-ghost" data-act="feature" data-id="${escapeHtml(a.id)}">${featureBtnLabel}</button>
+                       <button class="btn-ghost" data-act="feature" data-id="${escapeHtml(a.id)}" title="Show this story at the top of its section page and on the front page">${featureBtnLabel}</button>
                        <button class="btn-ghost" data-act="edit" data-id="${escapeHtml(a.id)}">Edit</button>
                        <button class="btn-danger" data-act="delete" data-id="${escapeHtml(a.id)}">Delete</button>
                      </td>
@@ -688,6 +638,11 @@
   }
 
   // ===== Edit/Create modal =====
+  function fmtSchedule(s) {
+    const d = new Date(s);
+    return isNaN(d) ? String(s) : d.toLocaleString(undefined, { month: "short", day: "numeric", hour: "numeric", minute: "2-digit" });
+  }
+
   const modal = document.getElementById("ed-modal");
   const idEl = document.getElementById("ed-id");
   const idPreview = document.getElementById("ed-id-preview");
@@ -805,7 +760,7 @@
     editingId = id || null;
     errEl.textContent = "";
     populateSectionSelect();
-    const defaultSection = (WLSections.navSections()[0] || WLSections.list()[0] || {}).name || "";
+    const defaultSection = (WLSections.navSections().find(s => !s.fixedPage) || WLSections.list()[0] || {}).name || "";
     if (id) {
       const a = WLArticles.getById(id);
       document.getElementById("ed-modal-title").textContent = "Edit Article";
@@ -818,6 +773,7 @@
       }
       sectionEl.value = a.section || defaultSection;
       dateEl.value = a.date || "";
+      document.getElementById("ed-publish").value = a.publishAt || "";
       setAuthors(WL_articleAuthors(a));
       roleEl.value = a.role || "";
       deckEl.value = a.deck || "";
@@ -825,7 +781,6 @@
       photoEl.value = a.photo || "";
       captionEl.value = a.photoCaption || "";
       videoEl.value = a.video || "";
-      document.getElementById("ed-audio").value = a.audio || "";
       workingGallery = (a.gallery || []).map(g => ({ ...g }));
       document.getElementById("ed-tags").value = (a.tags || []).join(", ");
     } else {
@@ -835,6 +790,7 @@
       titleEl.value = "";
       sectionEl.value = defaultSection;
       dateEl.value = todayString();
+      document.getElementById("ed-publish").value = "";
       setAuthors([WLAuth.currentUser() || ""]);
       roleEl.value = "";
       deckEl.value = "";
@@ -842,7 +798,6 @@
       photoEl.value = "";
       captionEl.value = "";
       videoEl.value = "";
-      document.getElementById("ed-audio").value = "";
       workingGallery = [];
       document.getElementById("ed-tags").value = "";
     }
@@ -871,6 +826,13 @@
     idPreview.textContent = idEl.value || "…";
   });
 
+  document.getElementById("ed-publish").addEventListener("change", (e) => {
+    if (!dateEl.value.trim() && e.target.value) {
+      const d = new Date(e.target.value);
+      if (!isNaN(d)) dateEl.value = d.toLocaleDateString(undefined, { year: "numeric", month: "long", day: "numeric" });
+    }
+  });
+
   document.getElementById("ed-save").addEventListener("click", () => {
     errEl.textContent = "";
     const id = (idEl.value || "").trim();
@@ -879,6 +841,7 @@
     const authors = workingAuthors.map(x => x.trim()).filter(Boolean);
     const byline = WL_bylineText(authors);
     const date = dateEl.value.trim();
+    const publishAt = document.getElementById("ed-publish").value.trim();
     const section = sectionEl.value;
     const role = roleEl.value.trim();
     const bodyParas = bodyEl.value.split(/\n\s*\n/).map(p => p.trim()).filter(Boolean);
@@ -907,8 +870,7 @@
     if (photoVal) data.photo = photoVal;
     if (captionVal) data.photoCaption = captionVal;
     if (videoVal) data.video = videoVal;
-    const audioVal = document.getElementById("ed-audio").value.trim();
-    if (audioVal) data.audio = audioVal;
+    if (publishAt) data.publishAt = publishAt;
     // Strip empty gallery rows
     const cleanGallery = workingGallery.filter(g => g.url && g.url.trim());
     cleanGallery.forEach(g => { g.url = g.url.trim(); g.caption = (g.caption || "").trim(); if (!g.caption) delete g.caption; });
@@ -922,7 +884,7 @@
     try {
       WLArticles.save(id, data);
     } catch (err) {
-      errEl.textContent = "Couldn't save — your browser storage is full. Try a smaller photo file or paste an image URL instead.";
+      errEl.textContent = "Couldn't save. Your browser storage is full. Try a smaller photo file, or paste an image URL instead.";
       return;
     }
     closeEditor();

@@ -1,4 +1,4 @@
-// Merges static writer bios with editor-edited ones in localStorage.
+// Merges static writer names with editor-edited ones in localStorage.
 window.WLWriters = (function () {
   const LS_CUSTOM = "wl_writers_custom";
   const LS_DELETED = "wl_writers_deleted";
@@ -55,7 +55,7 @@ window.WLWriters = (function () {
   }
 
   // Utility — finds every unique byline used in articles, even if the writer
-  // doesn't have a bio yet. Useful for "writers who still need a bio" lists.
+  // doesn't have a saved name override yet.
   function listFromArticles() {
     if (!window.WLArticles) return [];
     const all = WLArticles.getAll();
@@ -69,7 +69,7 @@ window.WLWriters = (function () {
         if (!name || seen.has(name)) return;
         seen.add(name);
         const slug = window.WL_writerSlug(name);
-        writers.push({ slug, byline: name, bio: getBySlug(slug) });
+        writers.push({ slug, byline: name, entry: getBySlug(slug) });
       });
     });
     return writers.sort((a, b) => a.byline.localeCompare(b.byline));

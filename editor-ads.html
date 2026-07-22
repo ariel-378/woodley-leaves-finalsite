@@ -60,7 +60,7 @@
 
 <main class="container">
   <div class="section-header">
-    <h2>Ads Editor</h2>
+    <h2>Editor Dashboard</h2>
     <span class="see-all" id="welcome"></span>
   </div>
 
@@ -71,11 +71,8 @@
 
   <div id="editor-view" style="display:none;">
     <div class="ed-tabs">
-      <a href="editor.html">Articles</a>
-      <a href="editor-centerspread.html">Centerspread</a>
-      <a href="editor-sports.html">Sports stats</a>
-      <a href="editor-videos.html">Video</a>
-      <a href="editor-writers.html">Writers</a>
+      <a href="editor-content.html">Content</a>
+      <a href="editor-staff.html">Staff &amp; Writers</a>
       <a href="editor-ads.html" class="active">Ads</a>
       <a href="editor-brand.html" class="ed-tab-brand">Brand design</a>
     </div>
@@ -102,7 +99,7 @@
       <button class="ed-modal-close" aria-label="Close">×</button>
       <h2 id="ad-modal-title">Ad</h2>
       <div class="ed-form">
-        <label>ID (URL slug — lowercase, dashes) <input type="text" id="a-id" placeholder="e.g., spring-formal"></label>
+        <label>ID (URL slug, lowercase, dashes) <input type="text" id="a-id" placeholder="e.g., spring-formal"></label>
         <div class="row-2">
           <label>Kind
             <select id="a-kind">
@@ -129,7 +126,7 @@
           </label>
         </div>
 
-        <label>Link (optional — external URL for "Learn more") <input type="text" id="a-link" placeholder="https://…"></label>
+        <label>Link (optional, external URL for "Learn more") <input type="text" id="a-link" placeholder="https://…"></label>
         <div class="ed-error" id="a-error"></div>
         <div class="ed-form-actions">
           <button class="btn-ghost" data-cancel>Cancel</button>
@@ -304,7 +301,7 @@
     try {
       WLAds.save(id, data);
     } catch (e) {
-      errEl.textContent = "Couldn't save — browser storage may be full. Try a smaller poster file or paste an image URL instead.";
+      errEl.textContent = "Couldn't save. Browser storage may be full. Try a smaller poster file, or paste an image URL instead.";
       return;
     }
     closeModal();
@@ -334,7 +331,7 @@
     adsToggle.checked = on;
     adsNote.textContent = on
       ? "Ads are showing on the front page."
-      : "Ads are hidden sitewide — your ad list below is kept and reappears when you turn this back on.";
+      : "Ads are hidden sitewide. Your ad list below is kept, and reappears when you turn this back on.";
   }
 
   function renderAll() {

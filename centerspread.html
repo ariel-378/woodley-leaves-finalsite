@@ -827,9 +827,37 @@
   .cn-result.win  { border-left: 4px solid var(--accent); }
   .cn-result.loss { border-left: 4px solid #b8002a; }
 
+  .cs-custom-game { margin-top: 44px; }
+  .cs-custom-game-body { margin-top: 10px; }
+  .cs-custom-game-frame { display: block; width: 100%; background: #fff; }
+  /* Puzzles-only embed view (used when a section renders "Puzzle games") */
+  html.wl-embed-puzzles .topbar,
+  html.wl-embed-puzzles .masthead,
+  html.wl-embed-puzzles .sectionnav,
+  html.wl-embed-puzzles footer,
+  html.wl-embed-puzzles .section-hero,
+  html.wl-embed-puzzles .print-edition,
+  html.wl-embed-puzzles .play-hero,
+  html.wl-embed-puzzles #cs-custom-games { display: none !important; }
+  html.wl-embed-puzzles .container { padding: 0 20px 24px; }
 </style>
 </head>
 <body>
+<script>
+// When loaded as ?embed=puzzles (inside a section page), show only the puzzles
+// and report our height so the parent iframe can size itself.
+(function () {
+  if (new URLSearchParams(location.search).get("embed") !== "puzzles") return;
+  document.documentElement.classList.add("wl-embed-puzzles");
+  function post() {
+    try { parent.postMessage({ wlEmbedHeight: document.body.scrollHeight }, "*"); } catch (e) {}
+  }
+  window.addEventListener("load", function () {
+    post();
+    if (window.ResizeObserver) new ResizeObserver(post).observe(document.body);
+  });
+})();
+</script>
 
 <div class="topbar"><div class="topbar-inner"><div><a href="#" class="topbar-cta">Subscribe</a></div><div></div></div></div>
 
@@ -981,6 +1009,11 @@
   </section>
 
 
+  <!-- ===================================================================
+       MORE GAMES — extension point. Any game registered in custom-games.js
+       renders here automatically. See custom-games.js to add a new one.
+       =================================================================== -->
+  <div id="cs-custom-games"></div>
 </main>
 
 <footer>© 2026 The Student Times · Your School Student Publication · <a href="staff.html">Staff</a> · <a href="tip.html">Pitch a story</a><br>Online Editor-in-Chief: <a href="mailto:editor@example.org">editor@example.org</a> · Online Managing Editor: <a href="mailto:managing@example.org">managing@example.org</a></footer>
@@ -988,6 +1021,8 @@
 <script src="centerspread.js"></script>
 <script src="centerspread-store.js"></script>
 <script src="puzzles-store.js"></script>
+<script src="games-store.js"></script>
+<script src="custom-games.js"></script>
 <script src="submissions.js"></script>
 <script src="auth.js"></script>
 <script src="script.js"></script>

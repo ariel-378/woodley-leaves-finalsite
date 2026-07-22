@@ -87,6 +87,11 @@
   .game-table-edit td .btn-ghost { padding: 4px 8px; font-size: 11px; }
   .games-subheader { display: flex; justify-content: space-between; align-items: baseline; margin: 18px 0 6px; }
   .games-subheader h4 { font-family: Georgia, serif; font-size: 17px; margin: 0; }
+  .sports-visibility { border: 1px solid var(--rule); background: #fafafa; padding: 14px 18px; margin-bottom: 24px; }
+  .sports-visibility > h3 { font-family: Georgia, serif; font-size: 17px; margin: 0 0 2px; }
+  .sports-visibility .sv-note { font-size: 12px; color: var(--muted); margin: 0 0 10px; }
+  .sv-row { display: flex; align-items: center; gap: 10px; padding: 7px 0; font-family: "Helvetica Neue", Arial, sans-serif; font-size: 14px; color: var(--ink); cursor: pointer; }
+  .sv-row input { width: auto; margin: 0; }
   .badge-custom { display: inline-block; background: var(--accent); color: #fff; font-size: 10px; padding: 2px 6px; margin-left: 6px; letter-spacing: 0.5px; text-transform: uppercase; font-weight: 700; vertical-align: middle; }
 </style>
 </head>
@@ -107,7 +112,7 @@
 
 <main class="container">
   <div class="section-header">
-    <h2>Sports stats</h2>
+    <h2>Editor Dashboard</h2>
     <span class="see-all" id="sports-welcome"></span>
   </div>
 
@@ -118,11 +123,8 @@
 
   <div id="editor-view" style="display:none;">
     <div class="ed-tabs">
-      <a href="editor.html">Articles</a>
-      <a href="editor-centerspread.html">Centerspread</a>
-      <a href="editor-sports.html" class="active">Sports stats</a>
-      <a href="editor-videos.html">Video</a>
-      <a href="editor-writers.html">Writers</a>
+      <a href="editor-content.html" class="active">Content</a>
+      <a href="editor-staff.html">Staff &amp; Writers</a>
       <a href="editor-ads.html">Ads</a>
       <a href="editor-brand.html" class="ed-tab-brand">Brand design</a>
     </div>
@@ -131,11 +133,13 @@
       Changes are saved instantly to your browser. <b>Manage Games</b> on each team lets you log results and add upcoming games.
     </p>
 
-    <label class="sports-toggle" style="display:flex;align-items:center;gap:10px;padding:12px 14px;border:1px solid var(--rule);background:#fafafa;margin-bottom:24px;cursor:pointer;font-family:'Helvetica Neue',Arial,sans-serif;font-size:14px;color:var(--ink);">
-      <input type="checkbox" id="sports-enabled-toggle" style="width:auto;margin:0;">
-      <b>Show sports stats &amp; brackets on the site</b>
-      <span id="sports-enabled-note" style="font-size:12px;color:var(--muted);font-weight:400;"></span>
-    </label>
+    <div class="sports-visibility">
+      <h3>What readers see</h3>
+      <p class="sv-note">Turn each block on or off for the public Sports page. Hidden blocks keep all their data — flip them back on anytime.</p>
+      <label class="sv-row"><input type="checkbox" data-block="games"> <b>Game of the Week</b></label>
+      <label class="sv-row"><input type="checkbox" data-block="teams"> <b>Teams &amp; records</b></label>
+      <label class="sv-row"><input type="checkbox" data-block="brackets"> <b>Playoff brackets</b></label>
+    </div>
 
     <section class="puzzle-section">
       <h3>Game of the Week</h3>
@@ -148,6 +152,18 @@
         <button class="btn-primary" id="gotw-save">Set as Game of the Week</button>
         <button class="btn-ghost" id="gotw-clear">Clear (use auto)</button>
       </div>
+    </section>
+
+    <section class="puzzle-section">
+      <div style="display:flex;justify-content:space-between;align-items:baseline;">
+        <h3>Game schedule</h3>
+        <button class="btn-primary" id="sched-add">+ Add a game</button>
+      </div>
+      <p style="font-size:12px;color:var(--muted);margin:-4px 0 10px;">Every upcoming game across all teams, in date order. This is what fills the “This Week” schedule and the Game of the Week on the Sports page.</p>
+      <table class="game-table-edit" id="schedule-table">
+        <thead><tr><th>Date</th><th>Time</th><th>Team</th><th></th><th>Opponent</th><th></th></tr></thead>
+        <tbody id="schedule-rows"></tbody>
+      </table>
     </section>
 
     <section class="puzzle-section">
@@ -225,7 +241,7 @@
       <h2 id="bracket-modal-title">Playoff Bracket</h2>
       <div class="ed-form">
         <label>Bracket slug (lowercase, dashes only) <input type="text" id="b-slug" placeholder="e.g., tennis-spring-2026"></label>
-        <label>Title <input type="text" id="b-title" placeholder="e.g., Boys' Tennis — Conference Playoffs"></label>
+        <label>Title <input type="text" id="b-title" placeholder="e.g., Boys' Tennis: Conference Playoffs"></label>
         <div class="row-2">
           <label>Sport <input type="text" id="b-sport"></label>
           <label>Season <input type="text" id="b-season" placeholder="Spring 2026"></label>
@@ -238,6 +254,47 @@
         <div class="ed-form-actions">
           <button class="btn-ghost" data-cancel>Cancel</button>
           <button class="btn-primary" id="b-save">Save bracket</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- Schedule game modal -->
+  <div class="ed-modal-overlay" id="sched-modal" role="dialog" aria-modal="true" aria-labelledby="sched-modal-title">
+    <div class="ed-modal">
+      <button class="ed-modal-close" aria-label="Close">×</button>
+      <h2 id="sched-modal-title">Add a game</h2>
+      <div class="ed-form">
+        <div class="row-2">
+          <label>Team
+            <select id="sg-team"></select>
+          </label>
+          <label>Home or away
+            <select id="sg-home"><option value="true">Home</option><option value="false">Away</option></select>
+          </label>
+        </div>
+        <label>Opponent
+          <input id="sg-opp" type="text" placeholder="Sidwell Friends" maxlength="80">
+        </label>
+        <div class="row-2">
+          <label>Date
+            <input id="sg-date" type="text" placeholder="May 1, 2026" maxlength="40">
+          </label>
+          <label>Time (optional)
+            <input id="sg-time" type="text" placeholder="4:00 PM" maxlength="30">
+          </label>
+        </div>
+        <div class="row-2">
+          <label>Theme (optional)
+            <input id="sg-theme" type="text" placeholder="Whiteout" maxlength="60">
+          </label>
+          <label>Note (optional)
+            <input id="sg-note" type="text" maxlength="120">
+          </label>
+        </div>
+        <div class="ed-error" id="sg-error"></div>
+        <div class="ed-form-actions">
+          <button class="btn-ghost" data-cancel type="button">Cancel</button>
+          <button class="btn-primary" id="sg-save" type="button">Save game</button>
         </div>
       </div>
     </div>
@@ -626,16 +683,11 @@
   });
 
   // ===== Add buttons =====
-  // Sitewide sports-stats on/off toggle.
-  const sportsToggle = document.getElementById("sports-enabled-toggle");
-  const sportsNote = document.getElementById("sports-enabled-note");
-  sportsToggle.addEventListener("change", () => WLTeams.setStatsEnabled(sportsToggle.checked));
+  // Per-block on/off toggles for the public Sports page.
+  const svChecks = Array.from(document.querySelectorAll(".sports-visibility [data-block]"));
+  svChecks.forEach(cb => cb.addEventListener("change", () => WLTeams.setBlockEnabled(cb.dataset.block, cb.checked)));
   function renderToggle() {
-    const on = WLTeams.statsEnabled();
-    sportsToggle.checked = on;
-    sportsNote.textContent = on
-      ? "Sports stats and brackets are showing on the site."
-      : "Sports stats and brackets are hidden sitewide — your teams and brackets below are kept.";
+    svChecks.forEach(cb => { cb.checked = WLTeams.blockEnabled(cb.dataset.block); });
   }
 
   document.getElementById("add-team").addEventListener("click", () => openTeamModal(null));
@@ -701,7 +753,7 @@
       const label = resolved.manual ? "Currently featured (manual)" : "Currently showing (auto-pick)";
       current.innerHTML = `<b>${label}:</b> ${escapeHtml(resolved.teamName)} ${resolved.home ? "vs." : "@"} ${escapeHtml(resolved.opponent)} — ${escapeHtml(resolved.date)}`;
     } else {
-      current.innerHTML = `<span style="color:var(--muted);">No upcoming games — nothing to feature.</span>`;
+      current.innerHTML = `<span style="color:var(--muted);">No upcoming games to feature.</span>`;
     }
   }
 
@@ -717,10 +769,98 @@
     renderAll();
   });
 
+  // ===== Game schedule (every team's upcoming games in one place) =====
+  function allUpcoming() {
+    const teams = WLTeams.getAllTeams();
+    const list = [];
+    Object.entries(teams).forEach(([slug, t]) => {
+      (t.upcoming || []).forEach((g, idx) => list.push({ teamSlug: slug, teamName: t.name, idx, ...g }));
+    });
+    list.sort((a, b) => (Date.parse(a.date) || Infinity) - (Date.parse(b.date) || Infinity));
+    return list;
+  }
+
+  function renderSchedule() {
+    const tbody = document.getElementById("schedule-rows");
+    if (!tbody) return;
+    const list = allUpcoming();
+    if (!list.length) {
+      tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;color:var(--muted);padding:12px;">No upcoming games yet. Click “+ Add a game”.</td></tr>`;
+      return;
+    }
+    tbody.innerHTML = list.map(g => `
+      <tr>
+        <td>${escapeHtml(g.date)}</td>
+        <td>${escapeHtml(g.time || "")}</td>
+        <td>${escapeHtml(g.teamName)}</td>
+        <td style="color:var(--muted);">${g.home ? "vs." : "@"}</td>
+        <td>${escapeHtml(g.opponent)}</td>
+        <td style="white-space:nowrap;">
+          <button class="btn-ghost" data-sg="edit" data-team="${escapeHtml(g.teamSlug)}" data-idx="${g.idx}">Edit</button>
+          <button class="btn-danger" data-sg="del" data-team="${escapeHtml(g.teamSlug)}" data-idx="${g.idx}">Remove</button>
+        </td>
+      </tr>`).join("");
+    tbody.querySelectorAll('[data-sg="edit"]').forEach(b => b.addEventListener("click", () => openScheduleModal(b.dataset.team, +b.dataset.idx)));
+    tbody.querySelectorAll('[data-sg="del"]').forEach(b => b.addEventListener("click", () => {
+      if (!confirm("Remove this game from the schedule?")) return;
+      const t = WLTeams.getTeam(b.dataset.team);
+      const upcoming = (t.upcoming || []).filter((_, i) => i !== +b.dataset.idx);
+      WLTeams.saveTeam(b.dataset.team, { ...t, upcoming });
+    }));
+  }
+
+  let sgEditing = null; // { team, idx } while editing an existing game
+  function openScheduleModal(team, idx) {
+    const teams = WLTeams.getAllTeams();
+    const slugs = Object.keys(teams);
+    if (slugs.length === 0) { alert("Add a team first, then you can schedule its games."); return; }
+    const sel = document.getElementById("sg-team");
+    sel.innerHTML = slugs.map(s => `<option value="${escapeHtml(s)}">${escapeHtml(teams[s].name)}</option>`).join("");
+
+    sgEditing = (team != null && idx != null) ? { team, idx } : null;
+    const g = sgEditing ? (teams[team].upcoming || [])[idx] : null;
+    document.getElementById("sched-modal-title").textContent = g ? "Edit game" : "Add a game";
+    document.getElementById("sg-error").textContent = "";
+    sel.value = g ? team : slugs[0];
+    sel.disabled = !!g; // team is fixed when editing an existing game
+    document.getElementById("sg-home").value = g ? String(!!g.home) : "true";
+    document.getElementById("sg-opp").value = g ? (g.opponent || "") : "";
+    document.getElementById("sg-date").value = g ? (g.date || "") : "";
+    document.getElementById("sg-time").value = g ? (g.time || "") : "";
+    document.getElementById("sg-theme").value = g ? (g.theme || "") : "";
+    document.getElementById("sg-note").value = g ? (g.note || "") : "";
+    document.getElementById("sched-modal").classList.add("visible");
+  }
+
+  document.getElementById("sched-add").addEventListener("click", () => openScheduleModal());
+  document.getElementById("sg-save").addEventListener("click", () => {
+    const err = document.getElementById("sg-error"); err.textContent = "";
+    const team = document.getElementById("sg-team").value;
+    const opponent = document.getElementById("sg-opp").value.trim();
+    const date = document.getElementById("sg-date").value.trim();
+    if (!team) { err.textContent = "Pick a team."; return; }
+    if (!opponent) { err.textContent = "Opponent is required."; return; }
+    if (!date) { err.textContent = "Date is required."; return; }
+    const game = { date, opponent, home: document.getElementById("sg-home").value === "true" };
+    const time = document.getElementById("sg-time").value.trim();
+    const theme = document.getElementById("sg-theme").value.trim();
+    const note = document.getElementById("sg-note").value.trim();
+    if (time) game.time = time;
+    if (theme) game.theme = theme;
+    if (note) game.note = note;
+
+    const t = WLTeams.getTeam(team);
+    const upcoming = (t.upcoming || []).slice();
+    if (sgEditing) upcoming[sgEditing.idx] = game; else upcoming.push(game);
+    WLTeams.saveTeam(team, { ...t, upcoming });
+    closeModals();
+  });
+
   function renderAll() {
     if (!gate()) return;
     renderToggle();
     renderGameOfWeek();
+    renderSchedule();
     renderTeams();
     renderBrackets();
   }

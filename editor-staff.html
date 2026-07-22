@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Editor Dashboard — The Student Times</title>
+<meta name="description" content="Manage the masthead, staff list, and writers for The Student Times.">
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Old+Standard+TT:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css" />
+<script src="config.js"></script>
+<script src="brand-store.js"></script>
+<script src="brand.js"></script>
+<script src="sections-store.js"></script>
+<script src="nav.js"></script>
+<style>
+  .ed-tabs { display: flex; gap: 4px; margin-bottom: 18px; border-bottom: 1px solid var(--rule); flex-wrap: wrap; }
+  .ed-tabs a { font-family: "Helvetica Neue", Arial, sans-serif; font-size: 13px; font-weight: 600; padding: 10px 16px; color: var(--muted); text-decoration: none; border-bottom: 3px solid transparent; }
+  .ed-tabs a.active { color: var(--ink); border-bottom-color: var(--accent); }
+
+  .combined-header { font-family: Georgia, serif; font-size: 24px; margin: 40px 0 4px; padding-top: 20px; border-top: 2px solid var(--ink); }
+  .combined-header:first-of-type { margin-top: 8px; border-top: none; padding-top: 0; }
+  .combined-sub { font-size: 12px; color: var(--muted); margin: 0 0 16px; }
+
+  /* Hierarchy (groups) manager */
+  .groups-manager { border: 1px solid var(--rule); background: #fafafa; padding: 16px 18px; margin-bottom: 28px; }
+  .groups-manager > h3 { font-family: Georgia, serif; font-size: 18px; margin: 0 0 2px; }
+  .gm-hint { font-size: 12px; color: var(--muted); margin: 0 0 12px; }
+  .grp-list { list-style: none; margin: 0 0 12px; padding: 0; border: 1px solid var(--rule); background: #fff; }
+  .grp-row { display: flex; align-items: center; gap: 10px; padding: 8px 12px; border-bottom: 1px solid var(--rule); font-family: "Helvetica Neue", Arial, sans-serif; font-size: 14px; }
+  .grp-row:last-child { border-bottom: none; }
+  .grp-name { flex: 1; min-width: 0; font-weight: 600; }
+  .grp-count { font-size: 12px; color: var(--muted); white-space: nowrap; }
+  .grp-actions { display: flex; gap: 6px; flex-shrink: 0; }
+  .grp-actions .btn-ghost, .grp-actions .btn-danger { padding: 4px 8px; font-size: 12px; }
+  .grp-actions .btn-ghost:disabled, .grp-actions .btn-danger:disabled { opacity: 0.35; cursor: default; }
+  .grp-add { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+  .grp-add input { flex: 1; min-width: 200px; padding: 8px 10px; border: 1px solid var(--rule); font-family: inherit; font-size: 14px; background: #fff; }
+
+  .staff-group-head { display: flex; justify-content: space-between; align-items: baseline; border-bottom: 2px solid var(--ink); padding-bottom: 4px; margin: 26px 0 8px; }
+  .staff-group-head h3 { font-family: Georgia, serif; font-size: 19px; margin: 0; }
+  .staff-group-count { font-family: "Helvetica Neue", Arial, sans-serif; font-size: 11px; color: var(--muted); letter-spacing: 1px; text-transform: uppercase; }
+
+  .pool-list { list-style: none; padding: 0; margin: 0 0 12px; border: 1px solid var(--rule); }
+  .pool-list li { display: flex; align-items: center; justify-content: space-between; padding: 10px 14px; border-bottom: 1px solid var(--rule); font-family: "Helvetica Neue", Arial, sans-serif; font-size: 14px; gap: 10px; flex-wrap: wrap; }
+  .pool-list li:last-child { border-bottom: none; }
+  .pool-list .pool-actions { display: flex; gap: 6px; }
+  .pool-list .pool-actions .btn-ghost:disabled { opacity: 0.35; cursor: default; }
+  .staff-row-main { display: flex; align-items: center; gap: 12px; min-width: 0; }
+  .staff-avatar { width: 34px; height: 34px; border-radius: 50%; background: #ece8df; object-fit: cover; flex-shrink: 0; display: inline-block; }
+  .staff-name { font-weight: 600; }
+  .staff-meta { color: var(--muted); font-weight: 400; font-size: 12px; }
+
+  .badge-custom { display: inline-block; background: var(--accent); color: #fff; font-size: 10px; padding: 2px 6px; margin-left: 6px; letter-spacing: 0.5px; text-transform: uppercase; font-weight: 700; }
+
+  .btn-primary { background: var(--accent); color: #fff; border: none; padding: 9px 15px; font-family: "Helvetica Neue", Arial, sans-serif; font-weight: 600; font-size: 14px; cursor: pointer; }
+  .btn-primary:hover { filter: brightness(0.92); }
+  .btn-ghost { background: #fff; color: var(--ink); border: 1px solid var(--ink); padding: 6px 10px; font-family: "Helvetica Neue", Arial, sans-serif; font-weight: 600; font-size: 12px; cursor: pointer; }
+  .btn-ghost:hover { background: var(--cream); }
+  .btn-danger { background: none; color: #b8002a; border: 1px solid #b8002a; padding: 6px 10px; font-family: "Helvetica Neue", Arial, sans-serif; font-weight: 600; font-size: 12px; cursor: pointer; }
+
+  .ed-modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); display: none; align-items: flex-start; justify-content: center; z-index: 200; padding: 30px 20px; overflow-y: auto; }
+  .ed-modal-overlay.visible { display: flex; }
+  .ed-modal { background: #fff; width: 100%; max-width: 640px; padding: 28px; border-top: 4px solid var(--accent); position: relative; font-family: "Helvetica Neue", Arial, sans-serif; }
+  .ed-modal h2 { font-family: Georgia, serif; font-size: 24px; margin: 0 0 14px; }
+  .ed-modal-close { position: absolute; top: 8px; right: 14px; background: none; border: none; font-size: 24px; color: var(--muted); cursor: pointer; }
+
+  .ed-form label { display: block; font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: var(--muted); margin-bottom: 12px; }
+  .ed-form input, .ed-form select, .ed-form textarea { display: block; width: 100%; padding: 8px 10px; margin-top: 4px; border: 1px solid var(--rule); font-family: inherit; font-size: 14px; background: #fafafa; box-sizing: border-box; }
+  .ed-form textarea { resize: vertical; min-height: 100px; }
+  .ed-form .row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .ed-form .ed-error { color: #b8002a; font-size: 13px; min-height: 18px; margin: 6px 0 10px; }
+  .ed-form-actions { display: flex; justify-content: space-between; align-items: center; margin-top: 12px; }
+  #st-photo-preview { display: none; width: 96px; height: 96px; border-radius: 50%; object-fit: cover; margin-top: 8px; border: 1px solid var(--rule); }
+  .st-hint { font-size: 12px; color: var(--muted); margin: 14px 0 18px; }
+</style>
+</head>
+<body>
+
+<div class="topbar"><div class="topbar-inner"><div><a href="#" class="topbar-cta">Subscribe</a></div><div></div></div></div>
+
+<div class="masthead">
+  <div class="masthead-ornament left" aria-hidden="true"><img src="media/leaf.svg" alt="" width="60" height="30"></div>
+  <div class="masthead-ornament right" aria-hidden="true"><img src="media/leaf.svg" alt="" width="60" height="30"></div>
+  <h1><a href="index.html">The Student Times</a></h1>
+  <div class="dateline">YOUR SCHOOL</div>
+</div>
+
+<nav class="sectionnav">
+  <div class="sectionnav-inner"></div>
+</nav>
+
+<main class="container">
+  <div class="section-header">
+    <h2>Editor Dashboard</h2>
+    <span class="see-all" id="staff-welcome"></span>
+  </div>
+
+  <div id="no-access" class="account-prompt" style="display:none;">
+    You need <strong>editor</strong> access to manage staff and writers.
+    <a href="#" id="prompt-preview">Enter editor preview.</a>
+  </div>
+
+  <div id="editor-view" style="display:none;">
+    <div class="ed-tabs">
+      <a href="editor-content.html">Content</a>
+      <a href="editor-staff.html" class="active">Staff &amp; Writers</a>
+      <a href="editor-ads.html">Ads</a>
+      <a href="editor-brand.html" class="ed-tab-brand">Brand design</a>
+    </div>
+
+    <!-- ============ STAFF (masthead / staff page) ============ -->
+    <h3 class="combined-header">Staff &amp; masthead</h3>
+    <p class="combined-sub">The people and tiers shown on the public <b>Staff</b> page.</p>
+
+    <section class="groups-manager">
+      <h3>Staff hierarchy</h3>
+      <p class="gm-hint">These are the tiers on the public staff page, top to bottom. The order here is the order readers see. Reorder, rename, add, or remove them. A tier must be empty before you can delete it.</p>
+      <ul class="grp-list" id="grp-list"></ul>
+      <div class="grp-add">
+        <input id="grp-new" type="text" placeholder="Add a tier, e.g. Copy Editors" maxlength="60">
+        <button class="btn-ghost" id="grp-add-btn" type="button">+ Add tier</button>
+      </div>
+      <div class="ed-error" id="grp-error"></div>
+    </section>
+
+    <div style="display:flex; gap:8px; flex-wrap:wrap; margin-bottom:8px; align-items:center;">
+      <button class="btn-primary" id="staff-add">+ Add staff member</button>
+      <button class="btn-ghost" id="staff-reset">Reset staff to defaults</button>
+    </div>
+
+    <div id="staff-list"></div>
+
+    <!-- ============ WRITERS (bylines) ============ -->
+    <h3 class="combined-header">Writers</h3>
+    <p class="combined-sub">Every byline used in an article links to that writer's profile page, a running list of everything they've written. Add a writer or correct a name here.</p>
+
+    <div style="display:flex;justify-content:flex-end;margin-bottom:14px;">
+      <button class="btn-primary" id="add-writer">+ Add writer</button>
+    </div>
+
+    <ul class="pool-list" id="writers-list"></ul>
+  </div>
+</main>
+
+<footer></footer>
+
+<!-- Add / edit staff modal -->
+<div class="ed-modal-overlay" id="staff-modal" role="dialog" aria-modal="true" aria-labelledby="staff-modal-title">
+  <div class="ed-modal">
+    <button class="ed-modal-close" aria-label="Close">×</button>
+    <h2 id="staff-modal-title">Add staff member</h2>
+    <div class="ed-form">
+      <div class="row-2">
+        <label>Name
+          <input id="st-name" type="text" placeholder="Jordan Marsh" maxlength="80">
+        </label>
+        <label>Tier / group
+          <select id="st-group"></select>
+        </label>
+      </div>
+      <div class="row-2">
+        <label>Role / title
+          <input id="st-role" type="text" placeholder="Online Editor-in-Chief" maxlength="80">
+        </label>
+        <label>Class year
+          <input id="st-year" type="text" placeholder="Class of 2027" maxlength="40">
+        </label>
+      </div>
+      <div class="row-2">
+        <label>Email (optional)
+          <input id="st-email" type="text" placeholder="name@school.org" maxlength="120">
+        </label>
+        <label>Writer profile slug (optional)
+          <input id="st-slug" type="text" placeholder="jordan-marsh" maxlength="80">
+        </label>
+      </div>
+      <label>Photo URL (optional)
+        <input id="st-photo" type="text" placeholder="https://… or upload below">
+      </label>
+      <label>Or upload a photo
+        <input id="st-photo-file" type="file" accept="image/*">
+      </label>
+      <img id="st-photo-preview" alt="Photo preview">
+      <div class="ed-error" id="st-error"></div>
+      <div class="ed-form-actions">
+        <button class="btn-ghost" data-cancel type="button">Cancel</button>
+        <button class="btn-primary" id="st-save" type="button">Save member</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Add / edit writer modal -->
+<div class="ed-modal-overlay" id="writer-modal" role="dialog" aria-modal="true" aria-labelledby="writer-modal-title">
+  <div class="ed-modal" role="document">
+    <button class="ed-modal-close" aria-label="Close">×</button>
+    <h2 id="writer-modal-title">Writer</h2>
+    <div class="ed-form">
+      <label>Display name <input type="text" id="w-name" placeholder="Maya Chen"></label>
+      <label>URL slug <span style="font-weight:400;text-transform:none;letter-spacing:0;color:var(--muted);">(auto-generated from the name)</span>
+        <input type="text" id="w-slug" placeholder="maya-chen" readonly style="background:#f0f0f0;color:var(--muted);">
+      </label>
+      <div class="ed-error" id="w-error"></div>
+      <div class="ed-form-actions">
+        <button class="btn-ghost" data-cancel>Cancel</button>
+        <button class="btn-primary" id="w-save">Save</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="articles.js"></script>
+<script src="articles-store.js"></script>
+<script src="writers.js"></script>
+<script src="writers-store.js"></script>
+<script src="staff-data.js"></script>
+<script src="staff-store.js"></script>
+<script src="submissions.js"></script>
+<script src="auth.js"></script>
+<script src="script.js"></script>
+
+<!-- ===== Staff editor (owns the auth gate) ===== -->
+<script>
+(function () {
+  function esc(s) {
+    return String(s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+  }
+  function slugify(s) {
+    return String(s).toLowerCase().trim().replace(/[^\w\s-]/g, "").replace(/\s+/g, "-").replace(/-+/g, "-").slice(0, 60);
+  }
+
+  const view = document.getElementById("editor-view");
+  const noAccess = document.getElementById("no-access");
+  const welcome = document.getElementById("staff-welcome");
+
+  function gate() {
+    const user = WLAuth.currentUser();
+    if (!user || !WLAuth.isEditor()) {
+      view.style.display = "none"; noAccess.style.display = "block"; welcome.textContent = "";
+      return false;
+    }
+    noAccess.style.display = "none"; view.style.display = "block";
+    welcome.textContent = "Signed in as " + user;
+    return true;
+  }
+  window.__staffGate = gate; // shared with the writers module below
+
+  // ===== Hierarchy (groups) =====
+  function renderGroups() {
+    const wrap = document.getElementById("grp-list");
+    const groups = WLStaff.getGroups();
+    wrap.innerHTML = "";
+    if (!groups.length) {
+      wrap.innerHTML = '<li class="grp-row"><span class="grp-name" style="font-weight:400;color:var(--muted);font-style:italic;">No tiers yet. Add one below.</span></li>';
+      return;
+    }
+    groups.forEach((g, i) => {
+      const count = WLStaff.countIn(g);
+      const li = document.createElement("li");
+      li.className = "grp-row";
+      li.innerHTML =
+        `<span class="grp-name">${esc(g)}</span>` +
+        `<span class="grp-count">${count} ${count === 1 ? "person" : "people"}</span>` +
+        `<span class="grp-actions">` +
+        `<button class="btn-ghost" data-gact="up" data-g="${esc(g)}" ${i === 0 ? "disabled" : ""} aria-label="Move up">↑</button>` +
+        `<button class="btn-ghost" data-gact="down" data-g="${esc(g)}" ${i === groups.length - 1 ? "disabled" : ""} aria-label="Move down">↓</button>` +
+        `<button class="btn-ghost" data-gact="rename" data-g="${esc(g)}">Rename</button>` +
+        `<button class="btn-danger" data-gact="del" data-g="${esc(g)}" ${count > 0 ? "disabled" : ""} title="${count > 0 ? "Move its members out first" : "Delete tier"}">Delete</button>` +
+        `</span>`;
+      wrap.appendChild(li);
+    });
+    wrap.querySelectorAll('[data-gact="up"]').forEach(b => b.addEventListener("click", () => WLStaff.moveGroup(b.dataset.g, -1)));
+    wrap.querySelectorAll('[data-gact="down"]').forEach(b => b.addEventListener("click", () => WLStaff.moveGroup(b.dataset.g, 1)));
+    wrap.querySelectorAll('[data-gact="rename"]').forEach(b => b.addEventListener("click", () => {
+      const cur = b.dataset.g;
+      const nn = prompt("Rename “" + cur + "” to:", cur);
+      if (nn == null) return;
+      if (!WLStaff.renameGroup(cur, nn)) alert("Couldn't rename. The name is blank or already in use.");
+    }));
+    wrap.querySelectorAll('[data-gact="del"]').forEach(b => b.addEventListener("click", () => {
+      if (!confirm("Delete the “" + b.dataset.g + "” tier?")) return;
+      WLStaff.removeGroup(b.dataset.g);
+    }));
+  }
+
+  document.getElementById("grp-add-btn").addEventListener("click", () => {
+    const inp = document.getElementById("grp-new");
+    const err = document.getElementById("grp-error"); err.textContent = "";
+    const name = inp.value.trim();
+    if (!name) { err.textContent = "Enter a tier name."; return; }
+    if (!WLStaff.addGroup(name)) { err.textContent = "That tier already exists."; return; }
+    inp.value = "";
+  });
+  document.getElementById("grp-new").addEventListener("keydown", e => {
+    if (e.key === "Enter") { e.preventDefault(); document.getElementById("grp-add-btn").click(); }
+  });
+
+  // ===== Members =====
+  function renderList() {
+    const wrap = document.getElementById("staff-list");
+    const all = WLStaff.getAll();
+    wrap.innerHTML = "";
+    if (all.length === 0) {
+      wrap.innerHTML = '<p class="st-hint">No staff yet. Click “+ Add staff member”.</p>';
+      return;
+    }
+    WLStaff.orderedGroups().forEach(group => {
+      const members = all.filter(m => m.group === group);
+      if (!members.length) return;
+      const head = document.createElement("div");
+      head.className = "staff-group-head";
+      head.innerHTML = `<h3>${esc(group)}</h3><span class="staff-group-count">${members.length} ${members.length === 1 ? "person" : "people"}</span>`;
+      wrap.appendChild(head);
+      const ul = document.createElement("ul");
+      ul.className = "pool-list";
+      members.forEach((m, gi) => {
+        const li = document.createElement("li");
+        const avatar = m.photo ? `<img class="staff-avatar" src="${esc(m.photo)}" alt="">` : `<span class="staff-avatar"></span>`;
+        const meta = [m.role, m.year].filter(Boolean).join(" · ");
+        li.innerHTML =
+          `<span class="staff-row-main">${avatar}<span><span class="staff-name">${esc(m.name)}</span>` +
+          (meta ? ` <span class="staff-meta">${esc(meta)}</span>` : "") + `</span></span>` +
+          `<span class="pool-actions">` +
+          `<button class="btn-ghost" data-act="up" data-id="${esc(m.id)}" ${gi === 0 ? "disabled" : ""} aria-label="Move up">↑</button>` +
+          `<button class="btn-ghost" data-act="down" data-id="${esc(m.id)}" ${gi === members.length - 1 ? "disabled" : ""} aria-label="Move down">↓</button>` +
+          `<button class="btn-ghost" data-act="edit" data-id="${esc(m.id)}">Edit</button>` +
+          `<button class="btn-danger" data-act="delete" data-id="${esc(m.id)}">Delete</button>` +
+          `</span>`;
+        ul.appendChild(li);
+      });
+      wrap.appendChild(ul);
+    });
+    wrap.querySelectorAll('[data-act="up"]').forEach(b => b.addEventListener("click", () => WLStaff.move(b.dataset.id, -1)));
+    wrap.querySelectorAll('[data-act="down"]').forEach(b => b.addEventListener("click", () => WLStaff.move(b.dataset.id, 1)));
+    wrap.querySelectorAll('[data-act="edit"]').forEach(b => b.addEventListener("click", () => openModal(b.dataset.id)));
+    wrap.querySelectorAll('[data-act="delete"]').forEach(b => b.addEventListener("click", () => {
+      if (!confirm("Remove this person from the staff page?")) return;
+      WLStaff.remove(b.dataset.id);
+    }));
+  }
+
+  let editingId = null;
+  function openModal(id) {
+    editingId = id || null;
+    const m = editingId ? WLStaff.get(editingId) : null;
+    const groups = WLStaff.getGroups().slice();
+    if (m && m.group && !groups.includes(m.group)) groups.push(m.group);
+    const sel = document.getElementById("st-group");
+    sel.innerHTML = groups.map(g => `<option>${esc(g)}</option>`).join("");
+    document.getElementById("staff-modal-title").textContent = m ? "Edit staff member" : "Add staff member";
+    document.getElementById("st-error").textContent = "";
+    document.getElementById("st-name").value = m ? (m.name || "") : "";
+    sel.value = m && m.group ? m.group : (groups[0] || "");
+    document.getElementById("st-role").value = m ? (m.role || "") : "";
+    document.getElementById("st-year").value = m ? (m.year || "") : "";
+    document.getElementById("st-email").value = m ? (m.email || "") : "";
+    document.getElementById("st-slug").value = m ? (m.slug || "") : "";
+    document.getElementById("st-photo").value = m ? (m.photo || "") : "";
+    document.getElementById("st-photo-file").value = "";
+    refreshPhotoPreview();
+    document.getElementById("staff-modal").classList.add("visible");
+  }
+
+  function refreshPhotoPreview() {
+    const url = document.getElementById("st-photo").value.trim();
+    const img = document.getElementById("st-photo-preview");
+    if (url) { img.src = url; img.style.display = "block"; }
+    else { img.style.display = "none"; img.removeAttribute("src"); }
+  }
+  document.getElementById("st-photo").addEventListener("input", refreshPhotoPreview);
+  document.getElementById("st-photo-file").addEventListener("change", (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = () => { document.getElementById("st-photo").value = reader.result; refreshPhotoPreview(); };
+    reader.readAsDataURL(file);
+  });
+
+  document.getElementById("staff-add").addEventListener("click", () => openModal());
+  document.getElementById("staff-reset").addEventListener("click", () => {
+    if (!confirm("Reset the staff list and tiers to the site's defaults? Your changes will be lost.")) return;
+    WLStaff.reset();
+  });
+
+  document.getElementById("st-save").addEventListener("click", () => {
+    const err = document.getElementById("st-error"); err.textContent = "";
+    const name = document.getElementById("st-name").value.trim();
+    if (!name) { err.textContent = "A name is required."; return; }
+    let id = editingId;
+    if (!id) {
+      const base = slugify(name) || "member";
+      id = base;
+      const existing = WLStaff.getAll().map(m => m.id);
+      let n = 2;
+      while (existing.includes(id)) { id = base + "-" + n; n++; }
+    }
+    WLStaff.save({
+      id, name,
+      role: document.getElementById("st-role").value.trim(),
+      year: document.getElementById("st-year").value.trim(),
+      group: document.getElementById("st-group").value,
+      email: document.getElementById("st-email").value.trim(),
+      slug: document.getElementById("st-slug").value.trim(),
+      photo: document.getElementById("st-photo").value.trim()
+    });
+    closeModals();
+  });
+
+  function closeModals() {
+    document.querySelectorAll(".ed-modal-overlay").forEach(m => m.classList.remove("visible"));
+  }
+  document.querySelectorAll("#staff-modal .ed-modal-close, #staff-modal [data-cancel]").forEach(b => b.addEventListener("click", closeModals));
+  document.getElementById("staff-modal").addEventListener("click", e => { if (e.target === document.getElementById("staff-modal")) closeModals(); });
+  document.addEventListener("keydown", e => {
+    if (e.key === "Escape" && document.querySelector(".ed-modal-overlay.visible")) closeModals();
+  });
+
+  document.getElementById("prompt-preview").addEventListener("click", (e) => { e.preventDefault(); WLAuth.enableEditorPreview(); });
+
+  function renderStaff() {
+    if (!gate()) return;
+    renderGroups();
+    renderList();
+  }
+  document.addEventListener("wl-auth-change", renderStaff);
+  document.addEventListener("wl-staff-change", renderStaff);
+  renderStaff();
+})();
+</script>
+
+<!-- ===== Writers editor (renders inside the gated view) ===== -->
+<script>
+(function () {
+  function escapeHtml(s) {
+    return String(s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+  }
+
+  function renderList() {
+    const list = document.getElementById("writers-list");
+    const fromArticles = WLWriters.listFromArticles();
+    const known = WLWriters.getAll();
+    const rows = {};
+    fromArticles.forEach(({ slug, byline, entry }) => {
+      rows[slug] = { slug, name: entry ? entry.name : byline, hasEntry: !!entry };
+    });
+    Object.entries(known).forEach(([slug, rec]) => {
+      if (!rows[slug]) rows[slug] = { slug, name: rec.name, hasEntry: true };
+    });
+
+    list.innerHTML = "";
+    const arr = Object.values(rows).sort((a, b) => a.name.localeCompare(b.name));
+    if (arr.length === 0) {
+      list.innerHTML = `<li><em style="color:var(--muted);">No writers yet.</em></li>`;
+      return;
+    }
+    arr.forEach(w => {
+      const li = document.createElement("li");
+      const customBadge = WLWriters.isCustom(w.slug) ? `<span class="badge-custom">Edited</span>` : "";
+      li.innerHTML = `
+        <span><b>${escapeHtml(w.name)}</b>${customBadge}</span>
+        <span style="display:flex;gap:6px;">
+          <a class="btn-ghost" href="writer.html?slug=${encodeURIComponent(w.slug)}" target="_blank" style="text-decoration:none;">Preview</a>
+          <button class="btn-ghost" data-wact="edit" data-slug="${escapeHtml(w.slug)}">Edit</button>
+          ${w.hasEntry ? `<button class="btn-danger" data-wact="delete" data-slug="${escapeHtml(w.slug)}">Remove</button>` : ""}
+        </span>
+      `;
+      list.appendChild(li);
+    });
+    list.querySelectorAll('[data-wact="edit"]').forEach(b => b.addEventListener("click", () => openModal(b.dataset.slug)));
+    list.querySelectorAll('[data-wact="delete"]').forEach(b => b.addEventListener("click", () => {
+      if (!confirm("Remove this writer entry?")) return;
+      WLWriters.remove(b.dataset.slug);
+    }));
+  }
+
+  const modal = document.getElementById("writer-modal");
+  let editingSlug = null;
+
+  function openModal(slug) {
+    editingSlug = slug || null;
+    const w = slug ? WLWriters.getBySlug(slug) : null;
+    const fromArticles = slug ? WLWriters.listFromArticles().find(x => x.slug === slug) : null;
+    const name = w ? w.name : (fromArticles ? fromArticles.byline : "");
+    document.getElementById("writer-modal-title").textContent = slug ? "Edit writer" : "New writer";
+    document.getElementById("w-name").value = name;
+    document.getElementById("w-slug").value = name ? WL_writerSlug(name) : "";
+    document.getElementById("w-error").textContent = "";
+    modal.classList.add("visible");
+    setTimeout(() => document.getElementById("w-name").focus(), 50);
+  }
+  function closeModal() { modal.classList.remove("visible"); editingSlug = null; }
+
+  document.getElementById("w-name").addEventListener("input", (e) => {
+    document.getElementById("w-slug").value = WL_writerSlug(e.target.value);
+  });
+
+  function renameWriterInArticles(oldSlug, newName) {
+    if (!window.WLArticles) return;
+    const all = WLArticles.getAll();
+    Object.entries(all).forEach(([id, a]) => {
+      const authors = window.WL_articleAuthors ? WL_articleAuthors(a) : (a.byline ? [a.byline] : []);
+      let changed = false;
+      const next = authors.map(n => {
+        if (WL_writerSlug(n) === oldSlug) { changed = true; return newName; }
+        return n;
+      });
+      if (!changed) return;
+      const upd = { ...a };
+      if (next.length > 1) { upd.authors = next; upd.byline = window.WL_bylineText ? WL_bylineText(next) : next.join(", "); }
+      else { upd.byline = next[0]; delete upd.authors; }
+      WLArticles.save(id, upd);
+    });
+  }
+
+  document.getElementById("w-save").addEventListener("click", () => {
+    const err = document.getElementById("w-error"); err.textContent = "";
+    const name = document.getElementById("w-name").value.trim();
+    if (!name) { err.textContent = "Name is required."; return; }
+    const slug = WL_writerSlug(name);
+    if (!slug) { err.textContent = "Enter a name with at least one letter or number."; return; }
+    if (editingSlug) {
+      renameWriterInArticles(editingSlug, name);
+      if (editingSlug !== slug) WLWriters.remove(editingSlug);
+    }
+    WLWriters.save(slug, { name });
+    closeModal();
+  });
+
+  document.querySelectorAll("#writer-modal .ed-modal-close, #writer-modal [data-cancel]").forEach(b => b.addEventListener("click", closeModal));
+  modal.addEventListener("click", (e) => { if (e.target === modal) closeModal(); });
+
+  document.getElementById("add-writer").addEventListener("click", () => openModal(null));
+
+  document.addEventListener("wl-writers-change", renderList);
+  document.addEventListener("wl-articles-change", renderList);
+  document.addEventListener("wl-auth-change", renderList);
+  renderList();
+})();
+</script>
+</body>
+</html>

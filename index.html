@@ -64,25 +64,15 @@
 
 <!-- Main content -->
 <main class="container">
- <div class="home-layout">
-  <div class="home-main">
+  <!-- Three-column front page: left rail, centered hero, right rail -->
+  <div class="home-atlantic">
+    <div class="ha-left" id="home-left"></div>
+    <article class="ha-hero" id="home-hero"></article>
+    <div class="ha-right" id="home-right"></div>
+  </div>
 
-    <div class="home-grid">
-      <!-- Lede story (editor-featured article) -->
-      <section class="lede" id="home-lede"></section>
-
-      <!-- Middle column (auto-filled with latest) -->
-      <section id="home-middle"></section>
-
-      <!-- Right column zone — editor-configurable via layout dashboard -->
-      <aside data-zone="right-sidebar"></aside>
-    </div>
-
-    <!-- Full-width zone below the main grid (editor-configurable) -->
-    <div data-zone="below-main"></div>
-
-  </div> <!-- /.home-main -->
- </div> <!-- /.home-layout -->
+  <!-- Video + more stories below the fold -->
+  <div class="home-below" id="home-below"></div>
 </main>
 
 <footer>
@@ -99,6 +89,7 @@
 <script src="ads.js"></script>
 <script src="ads-store.js"></script>
 <script src="layout-store.js"></script>
+<script src="home-order-store.js"></script>
 <script src="home.js"></script>
 <script src="submissions.js"></script>
 <script src="auth.js"></script>

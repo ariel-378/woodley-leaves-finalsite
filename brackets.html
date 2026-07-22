@@ -91,7 +91,7 @@
     const container = document.getElementById("brackets-container");
     container.innerHTML = "";
 
-    if (window.WLTeams && !WLTeams.statsEnabled()) {
+    if (window.WLTeams && !WLTeams.blockEnabled("brackets")) {
       container.innerHTML = `<p class="search-empty">Playoff brackets are currently turned off.</p>`;
       return;
     }

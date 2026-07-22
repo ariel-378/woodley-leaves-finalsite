@@ -1,0 +1,620 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Editor Dashboard — The Student Times</title>
+<meta name="description" content="Manage all site content, organized by section.">
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Old+Standard+TT:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css" />
+<script src="config.js"></script>
+<script src="brand-store.js"></script>
+<script src="brand.js"></script>
+<script src="sections-store.js"></script>
+<script src="nav.js"></script>
+<style>
+  .ed-tabs { display: flex; gap: 4px; margin-bottom: 18px; border-bottom: 1px solid var(--rule); flex-wrap: wrap; }
+  .ed-tabs a { font-family: "Helvetica Neue", Arial, sans-serif; font-size: 13px; font-weight: 600; padding: 10px 16px; color: var(--muted); text-decoration: none; border-bottom: 3px solid transparent; }
+  .ed-tabs a.active { color: var(--ink); border-bottom-color: var(--accent); }
+
+  .c-intro { font-size: 13px; color: var(--muted); line-height: 1.5; margin: 0 0 18px; max-width: 640px; }
+  .c-toolbar { display: flex; justify-content: flex-end; margin-bottom: 16px; }
+
+  .c-sec { border: 1px solid var(--rule); margin-bottom: 16px; }
+  .c-sec.c-hidden { opacity: 0.6; }
+  .c-sec-head { display: flex; justify-content: space-between; align-items: center; gap: 10px; padding: 12px 16px; border-bottom: 1px solid var(--rule); background: #fafafa; flex-wrap: wrap; }
+  .c-sec-name { font-family: Georgia, serif; font-size: 20px; font-weight: 700; }
+  .c-sec-tag { font-family: "Helvetica Neue", Arial, sans-serif; font-size: 10px; text-transform: uppercase; letter-spacing: 1px; color: var(--muted); margin-left: 8px; }
+  .c-sec-tag.c-tag-hidden { color: #b8002a; font-weight: 700; }
+  .c-sec-tools { display: flex; gap: 6px; flex-shrink: 0; }
+  .c-sec-tools .btn-ghost, .c-sec-tools .btn-danger { padding: 5px 9px; font-size: 12px; }
+  .c-sec-tools .btn-ghost:disabled { opacity: 0.35; cursor: default; }
+  .c-sec-body { padding: 14px 16px; }
+  .c-types { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 14px; }
+  .c-chip { font-family: "Helvetica Neue", Arial, sans-serif; font-size: 12px; font-weight: 600; color: var(--ink); background: var(--cream); border: 1px solid var(--rule); border-radius: 999px; padding: 3px 11px; }
+  .c-chip.c-chip-custom { background: #2e2e2e; color: #fff; border-color: #2e2e2e; }
+  .c-types-empty { font-size: 13px; color: var(--muted); font-style: italic; }
+
+  .btn-primary { background: var(--accent); color: #fff; border: none; padding: 9px 15px; font-family: "Helvetica Neue", Arial, sans-serif; font-weight: 600; font-size: 14px; cursor: pointer; }
+  .btn-primary:hover { filter: brightness(0.92); }
+  .btn-ghost { background: #fff; color: var(--ink); border: 1px solid var(--ink); padding: 6px 10px; font-family: "Helvetica Neue", Arial, sans-serif; font-weight: 600; font-size: 12px; cursor: pointer; }
+  .btn-ghost:hover { background: var(--cream); }
+  .btn-danger { background: none; color: #b8002a; border: 1px solid #b8002a; padding: 6px 10px; font-family: "Helvetica Neue", Arial, sans-serif; font-weight: 600; font-size: 12px; cursor: pointer; }
+
+  .ed-modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); display: none; align-items: flex-start; justify-content: center; z-index: 200; padding: 30px 20px; overflow-y: auto; }
+  .ed-modal-overlay.visible { display: flex; }
+  .ed-modal { background: #fff; width: 100%; max-width: 680px; padding: 28px; border-top: 4px solid var(--accent); position: relative; font-family: "Helvetica Neue", Arial, sans-serif; }
+  .ed-modal h2 { font-family: Georgia, serif; font-size: 24px; margin: 0 0 14px; }
+  .ed-modal-close { position: absolute; top: 8px; right: 14px; background: none; border: none; font-size: 24px; color: var(--muted); cursor: pointer; }
+
+  .ed-form label { display: block; font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: var(--muted); margin-bottom: 12px; }
+  .ed-form input[type="text"], .ed-form textarea { display: block; width: 100%; padding: 8px 10px; margin-top: 4px; border: 1px solid var(--rule); font-family: inherit; font-size: 14px; background: #fafafa; box-sizing: border-box; }
+  .ed-form .ed-error { color: #b8002a; font-size: 13px; min-height: 18px; margin: 6px 0 10px; }
+  .ed-form-actions { display: flex; justify-content: space-between; align-items: center; margin-top: 12px; }
+
+  .ct-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 4px 18px; margin: 6px 0 4px; }
+  .ct-opt { display: flex; align-items: center; gap: 9px; padding: 6px 0; font-family: "Helvetica Neue", Arial, sans-serif; font-size: 14px; text-transform: none; letter-spacing: 0; color: var(--ink); cursor: pointer; }
+  .ct-opt input { width: auto; margin: 0; }
+  #cc-wrap { display: none; margin-top: 8px; }
+  #cc-code { min-height: 220px; font-family: ui-monospace, "SF Mono", Menlo, monospace; font-size: 13px; line-height: 1.5; }
+  .cc-hint { font-size: 12px; color: var(--muted); margin: 8px 0 0; }
+
+  .acm-list { display: flex; flex-direction: column; gap: 8px; margin-top: 6px; }
+  .acm-list button { text-align: left; padding: 12px 14px; font-size: 15px; font-weight: 600; }
+</style>
+</head>
+<body>
+
+<div class="topbar"><div class="topbar-inner"><div><a href="#" class="topbar-cta">Subscribe</a></div><div></div></div></div>
+
+<div class="masthead">
+  <div class="masthead-ornament left" aria-hidden="true"><img src="media/leaf.svg" alt="" width="60" height="30"></div>
+  <div class="masthead-ornament right" aria-hidden="true"><img src="media/leaf.svg" alt="" width="60" height="30"></div>
+  <h1><a href="index.html">The Student Times</a></h1>
+  <div class="dateline">YOUR SCHOOL</div>
+</div>
+
+<nav class="sectionnav">
+  <div class="sectionnav-inner"></div>
+</nav>
+
+<main class="container">
+  <div class="section-header">
+    <h2>Editor Dashboard</h2>
+    <span class="see-all" id="content-welcome"></span>
+  </div>
+
+  <div id="no-access" class="account-prompt" style="display:none;">
+    You need <strong>editor</strong> access to manage content.
+    <a href="#" id="prompt-preview">Enter editor preview.</a>
+  </div>
+
+  <div id="editor-view" style="display:none;">
+    <div class="ed-tabs">
+      <a href="editor-content.html" class="active">Content</a>
+      <a href="editor-staff.html">Staff &amp; Writers</a>
+      <a href="editor-ads.html">Ads</a>
+      <a href="editor-brand.html" class="ed-tab-brand">Brand design</a>
+    </div>
+
+    <p class="c-intro">Everything readers see, organized by section. Each section holds one or more kinds of content — articles, sports stats, puzzles, poems, art, videos, reveal-answer games, or your own custom code. Give a section its content types, then use <b>Add new content</b> to fill it.</p>
+
+    <div class="c-toolbar">
+      <button class="btn-primary" id="add-section">+ Add section</button>
+    </div>
+
+    <div id="content-sections"></div>
+  </div>
+</main>
+
+<footer></footer>
+
+<!-- Add / edit section modal -->
+<div class="ed-modal-overlay" id="section-modal" role="dialog" aria-modal="true" aria-labelledby="section-modal-title">
+  <div class="ed-modal">
+    <button class="ed-modal-close" aria-label="Close">×</button>
+    <h2 id="section-modal-title">Add section</h2>
+    <div class="ed-form">
+      <label>Section name
+        <input id="sec-name" type="text" placeholder="e.g., Arts" maxlength="60">
+      </label>
+      <label style="margin-bottom:4px;">What will this section hold? <span style="font-weight:400;text-transform:none;letter-spacing:0;color:var(--muted);">(choose one or more)</span></label>
+      <div class="ct-grid" id="ct-grid"></div>
+
+      <div id="cc-wrap">
+        <label style="margin-top:14px;">Custom code — HTML, CSS &amp; JavaScript
+          <textarea id="cc-code" spellcheck="false"></textarea>
+        </label>
+        <p class="cc-hint">This runs in a secure sandbox on the section's page, so it can't break the rest of the site.</p>
+      </div>
+
+      <div class="ed-error" id="sec-error"></div>
+      <div class="ed-form-actions">
+        <button class="btn-ghost" data-cancel type="button">Cancel</button>
+        <button class="btn-primary" id="sec-save" type="button">Save section</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Add-new-content chooser modal -->
+<div class="ed-modal-overlay" id="addcontent-modal" role="dialog" aria-modal="true" aria-labelledby="addcontent-title">
+  <div class="ed-modal" style="max-width:460px;">
+    <button class="ed-modal-close" aria-label="Close">×</button>
+    <h2 id="addcontent-title">Add new content</h2>
+    <p style="font-size:13px;color:var(--muted);margin:0 0 6px;">Pick what to add to <b id="acm-section"></b>:</p>
+    <div class="acm-list" id="acm-list"></div>
+  </div>
+</div>
+
+<!-- Add a piece: poem, art/photo, or reveal-answer item (edited in-page) -->
+<div class="ed-modal-overlay" id="piece-modal" role="dialog" aria-modal="true" aria-labelledby="piece-modal-title">
+  <div class="ed-modal">
+    <button class="ed-modal-close" aria-label="Close">×</button>
+    <h2 id="piece-modal-title">Add a poem</h2>
+    <p id="pc-sub" style="font-size:13px;color:var(--muted);margin:0 0 16px;"></p>
+    <div class="ed-form">
+      <label>Title
+        <input id="pc-title" type="text" maxlength="120" placeholder="Spring at Maret">
+      </label>
+      <div class="ct-grid" style="grid-template-columns:1fr 1fr;gap:0 18px;">
+        <label>Kicker (optional)
+          <input id="pc-kicker" type="text" maxlength="60" placeholder="Student voices">
+        </label>
+        <label>Byline (optional)
+          <input id="pc-byline" type="text" maxlength="80" placeholder="By a student writer">
+        </label>
+      </div>
+
+      <div id="pc-text-wrap">
+        <label><span id="pc-body-label">Body</span>
+          <textarea id="pc-body" rows="10"></textarea>
+        </label>
+        <p class="cc-hint" id="pc-body-hint"></p>
+      </div>
+
+      <div id="pc-image-wrap" style="display:none;">
+        <label>Image URL
+          <input id="pc-image" type="text" placeholder="media/artwork.jpg or https://…">
+        </label>
+        <label>Alt text (describes the image for screen readers)
+          <input id="pc-alt" type="text" maxlength="140">
+        </label>
+      </div>
+
+      <div id="pc-reveal-wrap">
+        <label><span id="pc-reveal-label">Reveal prompt (optional)</span>
+          <input id="pc-reveal-summary" type="text" maxlength="80" placeholder="Reveal the answer">
+        </label>
+        <label><span id="pc-answer-label">Answer (optional)</span>
+          <input id="pc-reveal-answer" type="text" maxlength="200">
+        </label>
+      </div>
+
+      <div class="ed-error" id="pc-error"></div>
+      <div class="ed-form-actions">
+        <button class="btn-ghost" data-cancel type="button">Cancel</button>
+        <button class="btn-primary" id="pc-save" type="button">Save</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Add a video (edited in-page) -->
+<div class="ed-modal-overlay" id="video-modal" role="dialog" aria-modal="true" aria-labelledby="video-modal-title">
+  <div class="ed-modal">
+    <button class="ed-modal-close" aria-label="Close">×</button>
+    <h2 id="video-modal-title">Add a video</h2>
+    <p style="font-size:13px;color:var(--muted);margin:0 0 16px;">Paste a YouTube or Vimeo link. The player is embedded on the page, so the video stays where it is hosted.</p>
+    <div class="ed-form">
+      <label>Title
+        <input id="vd-title" type="text" maxlength="140" placeholder="Behind the scenes at the spring musical">
+      </label>
+      <label>Video link
+        <input id="vd-url" type="text" placeholder="https://www.youtube.com/watch?v=…">
+      </label>
+      <div class="ct-grid" style="grid-template-columns:1.2fr 1fr 0.8fr;gap:0 18px;">
+        <label>Byline (optional)
+          <input id="vd-byline" type="text" maxlength="80">
+        </label>
+        <label>Date (optional)
+          <input id="vd-date" type="date">
+        </label>
+        <label>Length (optional)
+          <input id="vd-duration" type="text" maxlength="10" placeholder="9:12">
+        </label>
+      </div>
+      <label>Description (optional)
+        <textarea id="vd-desc" rows="4"></textarea>
+      </label>
+      <div class="ed-error" id="vd-error"></div>
+      <div class="ed-form-actions">
+        <button class="btn-ghost" data-cancel type="button">Cancel</button>
+        <button class="btn-primary" id="vd-save" type="button">Save</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="articles.js"></script>
+<script src="articles-store.js"></script>
+<script src="centerspread.js"></script>
+<script src="centerspread-store.js"></script>
+<script src="videos.js"></script>
+<script src="videos-store.js"></script>
+<script src="submissions.js"></script>
+<script src="auth.js"></script>
+<script src="script.js"></script>
+<script>
+(function () {
+  function esc(s) {
+    return String(s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+  }
+
+  // Types that open their own editor page. Everything else is edited in-page:
+  // "Custom" in the section modal, and the piece types below in the piece modal.
+  const ROUTE = {
+    "Articles": "editor.html",
+    "Sports stats": "editor-sports.html",
+    "Puzzle games": "editor-centerspread.html"
+  };
+
+  // Content type -> the kind of centerspread piece it creates.
+  const PIECE_TYPES = {
+    "Poems": "poem",
+    "Art/photos": "image",
+    "Reveal-answer games": "prose"
+  };
+
+  const CUSTOM_EXAMPLE = [
+    '<!doctype html>',
+    '<html>',
+    '<head><meta charset="utf-8"><style>',
+    '  body { font-family: system-ui, sans-serif; text-align: center; padding: 28px; margin: 0; }',
+    '  button { font-size: 18px; padding: 10px 22px; cursor: pointer; }',
+    '  #out { font-size: 22px; margin-top: 14px; font-weight: 700; }',
+    '</style></head>',
+    '<body>',
+    '  <h3>My custom feature</h3>',
+    '  <button id="go">Surprise me</button>',
+    '  <div id="out"></div>',
+    '  <scr' + 'ipt>',
+    '    const lines = ["Nice!", "You did it!", "Encore!"];',
+    '    let i = 0;',
+    '    document.getElementById("go").addEventListener("click", function () {',
+    '      document.getElementById("out").textContent = lines[i++ % lines.length];',
+    '    });',
+    '  </scr' + 'ipt>',
+    '</body>',
+    '</html>'
+  ].join("\n");
+
+  const view = document.getElementById("editor-view");
+  const noAccess = document.getElementById("no-access");
+  const welcome = document.getElementById("content-welcome");
+
+  function gate() {
+    const user = WLAuth.currentUser();
+    if (!user || !WLAuth.isEditor()) {
+      view.style.display = "none"; noAccess.style.display = "block"; welcome.textContent = "";
+      return false;
+    }
+    noAccess.style.display = "none"; view.style.display = "block";
+    welcome.textContent = "Signed in as " + user;
+    return true;
+  }
+
+  // Build the content-type checkbox grid once.
+  (function fillTypeGrid() {
+    const grid = document.getElementById("ct-grid");
+    grid.innerHTML = WLSections.CONTENT_TYPES.map(t =>
+      `<label class="ct-opt"><input type="checkbox" value="${esc(t)}"> ${esc(t)}</label>`
+    ).join("");
+    grid.addEventListener("change", () => {
+      const custom = grid.querySelector('input[value="Custom"]');
+      const wrap = document.getElementById("cc-wrap");
+      wrap.style.display = custom && custom.checked ? "block" : "none";
+      if (custom && custom.checked && !document.getElementById("cc-code").value.trim()) {
+        document.getElementById("cc-code").value = CUSTOM_EXAMPLE;
+      }
+    });
+  })();
+
+  function renderSections() {
+    if (!gate()) return;
+    const wrap = document.getElementById("content-sections");
+    const list = WLSections.list();
+    wrap.innerHTML = list.map((s, i) => {
+      const types = Array.isArray(s.contentTypes) ? s.contentTypes : [];
+      const chips = types.length
+        ? types.map(t => `<span class="c-chip${t === "Custom" ? " c-chip-custom" : ""}">${esc(t)}</span>`).join("")
+        : `<span class="c-types-empty">No content types yet — click Edit to choose some.</span>`;
+      const tags =
+        (s.hidden ? `<span class="c-sec-tag c-tag-hidden">Hidden</span>` : "") +
+        (s.locked ? `<span class="c-sec-tag">Locked</span>` : "");
+      const remove = s.locked ? "" : `<button class="btn-danger" data-c="remove" data-name="${esc(s.name)}">Remove</button>`;
+      return `
+        <div class="c-sec${s.hidden ? " c-hidden" : ""}">
+          <div class="c-sec-head">
+            <div><span class="c-sec-name">${esc(s.name)}</span>${tags}</div>
+            <div class="c-sec-tools">
+              <button class="btn-ghost" data-c="up" data-name="${esc(s.name)}" ${i === 0 ? "disabled" : ""} aria-label="Move up">↑</button>
+              <button class="btn-ghost" data-c="down" data-name="${esc(s.name)}" ${i === list.length - 1 ? "disabled" : ""} aria-label="Move down">↓</button>
+              <button class="btn-ghost" data-c="edit" data-name="${esc(s.name)}">Edit</button>
+              <button class="btn-ghost" data-c="hide" data-name="${esc(s.name)}">${s.hidden ? "Show" : "Hide"}</button>
+              ${remove}
+            </div>
+          </div>
+          <div class="c-sec-body">
+            <div class="c-types">${chips}</div>
+            <button class="btn-primary" data-c="add" data-name="${esc(s.name)}">+ Add new content</button>
+          </div>
+        </div>`;
+    }).join("");
+
+    wrap.querySelectorAll("[data-c]").forEach(btn => btn.addEventListener("click", () => onSectionAction(btn.dataset.c, btn.dataset.name)));
+  }
+
+  function run(fn) { try { fn(); } catch (e) { alert(e.message || String(e)); } }
+
+  function onSectionAction(action, name) {
+    switch (action) {
+      case "up":   return run(() => WLSections.move(name, -1));
+      case "down": return run(() => WLSections.move(name, 1));
+      case "hide": {
+        const s = WLSections.find(name);
+        return run(() => WLSections.setHidden(name, !(s && s.hidden)));
+      }
+      case "remove":
+        if (!confirm(`Remove the "${name}" section?`)) return;
+        return run(() => WLSections.remove(name));
+      case "edit": return openSectionModal(name);
+      case "add":  return openAddContent(name);
+    }
+  }
+
+  // ===== Add / edit section =====
+  let editingName = null;
+  function openSectionModal(name) {
+    editingName = name || null;
+    const s = editingName ? WLSections.find(editingName) : null;
+    document.getElementById("section-modal-title").textContent = s ? "Edit section" : "Add section";
+    document.getElementById("sec-error").textContent = "";
+    const nameEl = document.getElementById("sec-name");
+    nameEl.value = s ? s.name : "";
+    nameEl.disabled = !!(s && s.locked); // locked sections keep their name
+    const types = (s && Array.isArray(s.contentTypes)) ? s.contentTypes : [];
+    document.querySelectorAll("#ct-grid input").forEach(cb => { cb.checked = types.includes(cb.value); });
+    const hasCustom = types.includes("Custom");
+    document.getElementById("cc-wrap").style.display = hasCustom ? "block" : "none";
+    document.getElementById("cc-code").value = s ? WLSections.getCustomCode(s.name) : "";
+    if (hasCustom && !document.getElementById("cc-code").value.trim()) document.getElementById("cc-code").value = CUSTOM_EXAMPLE;
+    document.getElementById("section-modal").classList.add("visible");
+  }
+
+  document.getElementById("add-section").addEventListener("click", () => openSectionModal());
+  document.getElementById("sec-save").addEventListener("click", () => {
+    const err = document.getElementById("sec-error"); err.textContent = "";
+    const name = document.getElementById("sec-name").value.trim();
+    const types = Array.from(document.querySelectorAll("#ct-grid input:checked")).map(cb => cb.value);
+    const customCode = types.includes("Custom") ? document.getElementById("cc-code").value : "";
+    if (!editingName && !name) { err.textContent = "Enter a section name."; return; }
+
+    run(() => {
+      if (editingName) {
+        // Rename if changed (locked sections keep their name), then update types.
+        const s = WLSections.find(editingName);
+        if (!s.locked && name && name !== editingName) WLSections.rename(editingName, name);
+        const target = (!s.locked && name) ? name : editingName;
+        WLSections.setContentTypes(target, types);
+        WLSections.setCustomCode(target, customCode);
+      } else {
+        WLSections.add(name, { contentTypes: types, customCode });
+      }
+      closeModals();
+    });
+  });
+
+  // ===== Add new content =====
+  function openAddContent(name) {
+    const types = WLSections.contentTypes(name);
+    if (!types.length) {
+      alert(`Give “${name}” some content types first — click Edit.`);
+      return;
+    }
+    if (types.length === 1) { goAddContent(name, types[0]); return; }
+    document.getElementById("acm-section").textContent = name;
+    document.getElementById("acm-list").innerHTML = types.map(t =>
+      `<button class="btn-ghost" data-acm="${esc(t)}" data-name="${esc(name)}">${esc(t)}</button>`
+    ).join("");
+    document.querySelectorAll("#acm-list [data-acm]").forEach(b =>
+      b.addEventListener("click", () => { closeModals(); goAddContent(b.dataset.name, b.dataset.acm); }));
+    document.getElementById("addcontent-modal").classList.add("visible");
+  }
+
+  function goAddContent(name, type) {
+    if (type === "Custom") { openSectionModal(name); return; }
+    if (PIECE_TYPES[type]) { openPieceModal(type); return; }
+    if (type === "Videos") { openVideoModal(); return; }
+    const url = ROUTE[type];
+    if (url) location.href = url;
+    else alert("This content type doesn't have an editor yet.");
+  }
+
+  // ===== Add a piece: poems, art/photos, reveal-answer items =====
+  let pieceType = "poem";
+  let pieceNeedsAnswer = false;
+
+  const PIECE_COPY = {
+    poem: {
+      heading: "Add a poem",
+      sub: "Leave a blank line between stanzas. Every line break is kept as written.",
+      body: "Poem",
+      hint: "Line breaks and stanza spacing appear on the page exactly as typed."
+    },
+    image: {
+      heading: "Add art or a photo",
+      sub: "Point to an image file and describe what it shows.",
+      body: "Caption (optional)",
+      hint: ""
+    },
+    prose: {
+      heading: "Add a reveal-answer item",
+      sub: "Write the prompt readers see first, then the answer they reveal by clicking.",
+      body: "Prompt",
+      hint: "This is the riddle, question, or clue shown before the answer is revealed."
+    }
+  };
+
+  const $ = id => document.getElementById(id);
+  const PIECE_FIELDS = ["pc-title", "pc-kicker", "pc-byline", "pc-body",
+    "pc-image", "pc-alt", "pc-reveal-summary", "pc-reveal-answer"];
+
+  function slugify(s) {
+    return String(s).toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "").slice(0, 60);
+  }
+
+  function openPieceModal(contentType) {
+    pieceType = PIECE_TYPES[contentType] || "poem";
+    pieceNeedsAnswer = contentType === "Reveal-answer games";
+    const copy = PIECE_COPY[pieceType];
+
+    $("piece-modal-title").textContent = copy.heading;
+    $("pc-sub").textContent = copy.sub;
+    $("pc-body-label").textContent = copy.body;
+    $("pc-body-hint").textContent = copy.hint;
+    $("pc-body-hint").style.display = copy.hint ? "block" : "none";
+
+    const isImage = pieceType === "image";
+    $("pc-text-wrap").style.display = isImage ? "none" : "block";
+    $("pc-image-wrap").style.display = isImage ? "block" : "none";
+    $("pc-reveal-label").textContent = pieceNeedsAnswer ? "Reveal prompt" : "Reveal prompt (optional)";
+    $("pc-answer-label").textContent = pieceNeedsAnswer ? "Answer" : "Answer (optional)";
+
+    PIECE_FIELDS.forEach(id => { $(id).value = ""; });
+    $("pc-error").textContent = "";
+    $("piece-modal").classList.add("visible");
+    $("pc-title").focus();
+  }
+
+  function savePiece() {
+    const err = $("pc-error");
+    err.textContent = "";
+
+    const title = $("pc-title").value.trim();
+    if (!title) { err.textContent = "Give this a title."; return; }
+
+    const piece = { type: pieceType, title: title };
+    const kicker = $("pc-kicker").value.trim();
+    const byline = $("pc-byline").value.trim();
+    if (kicker) piece.kicker = kicker;
+    if (byline) piece.byline = byline;
+
+    if (pieceType === "image") {
+      const image = $("pc-image").value.trim();
+      if (!image) { err.textContent = "Add the image URL."; return; }
+      piece.image = image;
+      const alt = $("pc-alt").value.trim();
+      if (alt) piece.alt = alt;
+      const caption = $("pc-body").value.trim();
+      if (caption) piece.body = caption;
+    } else {
+      const body = $("pc-body").value.trim();
+      if (!body) { err.textContent = "Add the text."; return; }
+      piece.body = body;
+    }
+
+    const answer = $("pc-reveal-answer").value.trim();
+    if (pieceNeedsAnswer && !answer) { err.textContent = "Add the answer readers will reveal."; return; }
+    if (answer) {
+      piece.reveal = { summary: $("pc-reveal-summary").value.trim() || "Reveal the answer", answer: answer };
+    }
+
+    // Unique id derived from the title.
+    const taken = WLCenterspread.list().map(p => p.id);
+    const base = slugify(title) || "piece";
+    let id = base;
+    for (let n = 2; taken.indexOf(id) !== -1; n++) id = base + "-" + n;
+
+    const res = WLCenterspread.save(id, piece);
+    if (!res || res.ok === false) {
+      err.textContent = "Could not save. Your browser storage may be full.";
+      return;
+    }
+    closeModals();
+    renderSections();
+  }
+
+  // ===== Add a video =====
+  const VIDEO_FIELDS = ["vd-title", "vd-url", "vd-byline", "vd-date", "vd-duration", "vd-desc"];
+  const MONTHS = ["January", "February", "March", "April", "May", "June",
+    "July", "August", "September", "October", "November", "December"];
+
+  // <input type="date"> gives YYYY-MM-DD; videos display a written-out date.
+  function prettyDate(iso) {
+    const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(iso || "");
+    if (!m) return "";
+    const month = MONTHS[Number(m[2]) - 1];
+    return month ? `${month} ${Number(m[3])}, ${m[1]}` : "";
+  }
+
+  function openVideoModal() {
+    VIDEO_FIELDS.forEach(id => { $(id).value = ""; });
+    $("vd-error").textContent = "";
+    $("video-modal").classList.add("visible");
+    $("vd-title").focus();
+  }
+
+  function saveVideo() {
+    const err = $("vd-error");
+    err.textContent = "";
+
+    const title = $("vd-title").value.trim();
+    if (!title) { err.textContent = "Give the video a title."; return; }
+
+    const url = $("vd-url").value.trim();
+    if (!url) { err.textContent = "Paste the video link."; return; }
+    if (!WLVideos.parseVideo(url)) {
+      err.textContent = "That is not a YouTube or Vimeo link. Copy the address from the video's own page.";
+      return;
+    }
+
+    const data = { title: title, url: url };
+    const byline = $("vd-byline").value.trim();
+    const date = prettyDate($("vd-date").value);
+    const duration = $("vd-duration").value.trim();
+    const desc = $("vd-desc").value.trim();
+    if (byline) data.byline = byline;
+    if (date) data.date = date;
+    if (duration) data.duration = duration;
+    if (desc) data.description = desc;
+
+    const taken = Object.keys(WLVideos.getAll());
+    const base = slugify(title) || "video";
+    let id = base;
+    for (let n = 2; taken.indexOf(id) !== -1; n++) id = base + "-" + n;
+
+    WLVideos.save(id, data);
+    closeModals();
+    renderSections();
+  }
+
+  // ===== Modals =====
+  function closeModals() { document.querySelectorAll(".ed-modal-overlay").forEach(m => m.classList.remove("visible")); }
+  document.getElementById("pc-save").addEventListener("click", savePiece);
+  document.getElementById("vd-save").addEventListener("click", saveVideo);
+  document.querySelectorAll(".ed-modal-close, [data-cancel]").forEach(b => b.addEventListener("click", closeModals));
+  document.querySelectorAll(".ed-modal-overlay").forEach(m => m.addEventListener("click", e => { if (e.target === m) closeModals(); }));
+  document.addEventListener("keydown", e => { if (e.key === "Escape" && document.querySelector(".ed-modal-overlay.visible")) closeModals(); });
+
+  document.getElementById("prompt-preview").addEventListener("click", (e) => { e.preventDefault(); WLAuth.enableEditorPreview(); });
+
+  document.addEventListener("wl-auth-change", renderSections);
+  document.addEventListener("wl-sections-change", renderSections);
+  renderSections();
+})();
+</script>
+</body>
+</html>
