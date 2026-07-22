@@ -229,10 +229,13 @@ window.WLArticleEditor = (function () {
       galleryRowsEl.appendChild(row);
     });
     galleryRowsEl.querySelectorAll("[data-gfield]").forEach(el => el.addEventListener("input", (e) => {
-      workingGallery[+e.target.dataset.gi][e.target.dataset.gfield] = e.target.value;
+      const row = workingGallery[+e.currentTarget.dataset.gi];
+      if (row) row[e.currentTarget.dataset.gfield] = e.currentTarget.value;
     }));
     galleryRowsEl.querySelectorAll("[data-gremove]").forEach(b => b.addEventListener("click", (e) => {
-      workingGallery.splice(+e.target.dataset.gi, 1);
+      const i = +e.currentTarget.dataset.gi;
+      if (!workingGallery[i]) return;
+      workingGallery.splice(i, 1);
       renderGalleryRows();
     }));
   }

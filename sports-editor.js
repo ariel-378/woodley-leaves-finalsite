@@ -250,23 +250,25 @@ window.WLSportsEditor = (function () {
         });
       }
 
-      // Wire inputs
-      playedTbody.querySelectorAll("[data-field]").forEach(el => el.addEventListener("input", (e) => {
-        const i = +e.target.dataset.i, f = e.target.dataset.field;
-        workingGames[i][f] = f === "home" ? (e.target.value === "true") : e.target.value;
-      }));
-      upTbody.querySelectorAll("[data-ufield]").forEach(el => el.addEventListener("input", (e) => {
-        const i = +e.target.dataset.i, f = e.target.dataset.ufield;
-        workingUpcoming[i][f] = f === "home" ? (e.target.value === "true") : e.target.value;
-      }));
-      playedTbody.querySelectorAll("[data-remove]").forEach(b => b.addEventListener("click", (e) => {
-        const i = +e.target.dataset.i;
-        workingGames.splice(i, 1); renderGamesTables();
-      }));
-      upTbody.querySelectorAll("[data-remove]").forEach(b => b.addEventListener("click", (e) => {
-        const i = +e.target.dataset.i;
-        workingUpcoming.splice(i, 1); renderGamesTables();
-      }));
+      // Wire inputs. Index comes from currentTarget and is checked first, so a
+      // stale row can't throw and disable the rest of the form.
+      const writeRow = (list, fieldAttr) => (e) => {
+        const row = list[+e.currentTarget.dataset.i];
+        if (!row) return;
+        const f = e.currentTarget.dataset[fieldAttr];
+        row[f] = f === "home" ? (e.currentTarget.value === "true") : e.currentTarget.value;
+      };
+      const removeRow = (list) => (e) => {
+        const i = +e.currentTarget.dataset.i;
+        if (!list[i]) return;
+        list.splice(i, 1);
+        renderGamesTables();
+      };
+
+      playedTbody.querySelectorAll("[data-field]").forEach(el => el.addEventListener("input", writeRow(workingGames, "field")));
+      upTbody.querySelectorAll("[data-ufield]").forEach(el => el.addEventListener("input", writeRow(workingUpcoming, "ufield")));
+      playedTbody.querySelectorAll("[data-remove]").forEach(b => b.addEventListener("click", removeRow(workingGames)));
+      upTbody.querySelectorAll("[data-remove]").forEach(b => b.addEventListener("click", removeRow(workingUpcoming)));
     }
 
     document.getElementById("add-result").addEventListener("click", () => {
@@ -369,35 +371,50 @@ window.WLSportsEditor = (function () {
         wrap.appendChild(section);
       });
 
-      // Wire inputs
+      // Wire inputs. Every handler reads its index from currentTarget (the
+      // element the listener is on, not whatever child was clicked) and checks
+      // the round/match still exists, so a stale node can never throw and take
+      // the rest of the modal's handlers down with it.
+      const roundAt = (e) => workingRounds[+e.currentTarget.dataset.round];
+      const matchAt = (e) => {
+        const round = roundAt(e);
+        return round && round.matches ? round.matches[+e.currentTarget.dataset.match] : undefined;
+      };
+
       wrap.querySelectorAll("[data-round-name]").forEach(el => el.addEventListener("input", (e) => {
-        workingRounds[+e.target.dataset.round].name = e.target.value;
+        const round = roundAt(e);
+        if (round) round.name = e.currentTarget.value;
       }));
       wrap.querySelectorAll("[data-field]").forEach(el => el.addEventListener("input", (e) => {
-        const r = +e.target.dataset.round, m = +e.target.dataset.match, f = e.target.dataset.field;
-        const match = workingRounds[r].matches[m];
-        if (f === "team1" || f === "team2") match[f] = e.target.value;
+        const match = matchAt(e);
+        if (!match) return;
+        const f = e.currentTarget.dataset.field, value = e.currentTarget.value;
+        if (f === "team1" || f === "team2") match[f] = value;
         else if (f === "winner") {
-          if (e.target.value) match.result = { winner: e.target.value, score: (match.result && match.result.score) || "" };
+          if (value) match.result = { winner: value, score: (match.result && match.result.score) || "" };
           else delete match.result;
         } else if (f === "extra") {
           // If there's a winner, treat as score; otherwise as scheduled
-          if (match.result) match.result.score = e.target.value;
-          else match.scheduled = e.target.value;
+          if (match.result) match.result.score = value;
+          else match.scheduled = value;
         }
       }));
       wrap.querySelectorAll("[data-add-match]").forEach(b => b.addEventListener("click", (e) => {
-        const r = +e.target.dataset.round;
-        workingRounds[r].matches.push({ team1: "", team2: "" });
+        const round = roundAt(e);
+        if (!round) return;
+        if (!round.matches) round.matches = [];
+        round.matches.push({ team1: "", team2: "" });
         renderBracketRounds();
       }));
       wrap.querySelectorAll("[data-remove-match]").forEach(b => b.addEventListener("click", (e) => {
-        const r = +e.target.dataset.round, m = +e.target.dataset.match;
-        workingRounds[r].matches.splice(m, 1);
+        const round = roundAt(e);
+        if (!round || !round.matches) return;
+        round.matches.splice(+e.currentTarget.dataset.match, 1);
         renderBracketRounds();
       }));
       wrap.querySelectorAll("[data-remove-round]").forEach(b => b.addEventListener("click", (e) => {
-        const r = +e.target.dataset.round;
+        const r = +e.currentTarget.dataset.round;
+        if (!workingRounds[r]) return;
         if (!confirm("Remove this round and all its matches?")) return;
         workingRounds.splice(r, 1);
         renderBracketRounds();

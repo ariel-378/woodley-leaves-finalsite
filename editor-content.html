@@ -305,11 +305,6 @@
     return String(s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
   }
 
-  // Types that open their own editor page. Everything else is edited in-page:
-  // "Custom" in the section modal, and the piece types below in the piece modal.
-  // Every content type is now edited in place; nothing routes away.
-  const ROUTE = {};
-
   // Four different daily puzzles, so this asks which one.
   const PUZZLE_KINDS = [
     { label: "Spelling Bee", hint: "Seven letters, one in the center", open: () => WLPuzzleEditor.openBee({ onSave: renderSections }) },
@@ -597,9 +592,9 @@
     if (type === "Articles") { WLArticleEditor.open(null, { section: name, onSave: renderSections }); return; }
     if (type === "Sports stats") { openKindChooser("Sports stats", SPORTS_KINDS); return; }
     if (type === "Puzzle games") { openKindChooser("Puzzle games", PUZZLE_KINDS); return; }
-    const url = ROUTE[type];
-    if (url) location.href = url;
-    else alert("This content type doesn't have an editor yet.");
+    // Every type in WLSections.CONTENT_TYPES is handled above. This only fires
+    // if a new type is added to the store without an editor to go with it.
+    alert(`"${type}" doesn't have an editor yet.`);
   }
 
   // ===== Add a piece: poems, art/photos, reveal-answer items =====
