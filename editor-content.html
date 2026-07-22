@@ -49,6 +49,27 @@
   .ed-modal h2 { font-family: Georgia, serif; font-size: 24px; margin: 0 0 14px; }
   .ed-modal-close { position: absolute; top: 8px; right: 14px; background: none; border: none; font-size: 24px; color: var(--muted); cursor: pointer; }
 
+  /* Used by the shared article editor (article-editor.js) */
+  .ed-form .ed-form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .ed-media {
+    border: 1px solid var(--rule);
+    padding: 14px 16px 6px;
+    margin: 8px 0 14px;
+  }
+  .ed-media legend {
+    padding: 0 6px;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--muted);
+    font-weight: 600;
+  }
+  .ed-tip {
+    font-size: 12px;
+    color: var(--muted);
+    margin: -8px 0 12px;
+  }
+
   .ed-form label { display: block; font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: var(--muted); margin-bottom: 12px; }
   .ed-form input[type="text"], .ed-form textarea { display: block; width: 100%; padding: 8px 10px; margin-top: 4px; border: 1px solid var(--rule); font-family: inherit; font-size: 14px; background: #fafafa; box-sizing: border-box; }
   .ed-form .ed-error { color: #b8002a; font-size: 13px; min-height: 18px; margin: 6px 0 10px; }
@@ -240,6 +261,8 @@
 
 <script src="articles.js"></script>
 <script src="articles-store.js"></script>
+<script src="writers.js"></script>
+<script src="article-editor.js"></script>
 <script src="centerspread.js"></script>
 <script src="centerspread-store.js"></script>
 <script src="videos.js"></script>
@@ -256,7 +279,6 @@
   // Types that open their own editor page. Everything else is edited in-page:
   // "Custom" in the section modal, and the piece types below in the piece modal.
   const ROUTE = {
-    "Articles": "editor.html",
     "Sports stats": "editor-sports.html",
     "Puzzle games": "editor-centerspread.html"
   };
@@ -438,6 +460,7 @@
     if (type === "Custom") { openSectionModal(name); return; }
     if (PIECE_TYPES[type]) { openPieceModal(type); return; }
     if (type === "Videos") { openVideoModal(); return; }
+    if (type === "Articles") { WLArticleEditor.open(null, { section: name, onSave: renderSections }); return; }
     const url = ROUTE[type];
     if (url) location.href = url;
     else alert("This content type doesn't have an editor yet.");
