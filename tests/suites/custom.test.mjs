@@ -161,5 +161,34 @@ export async function run() {
     check.clean("no errors handling height messages", reader);
   }
 
+  // ===== A custom game can report its own height too =====
+  // A story game changes height as it moves between passages, so one fixed
+  // number cannot serve it.
+  {
+    const ctx = await loadPage("editor-content.html");
+    const { window } = ctx;
+    window.WLGamesStore.save({
+      id: "tall-game", title: "Tall Game", height: 400,
+      code: "<!doctype html><html><body><p>game</p></body></html>",
+    });
+
+    const storage = {};
+    for (const k of Object.keys(window.localStorage)) storage[k] = window.localStorage.getItem(k);
+    const reader = await loadPage("centerspread.html", { editor: false, storage });
+
+    const frame = reader.$('iframe.cs-custom-game-frame');
+    check.ok("the game renders on the Centerspread", !!frame);
+    if (frame) {
+      check.equal("starts at the height set in the editor", frame.style.height, "400px");
+      check.ok("sandboxed with no same-origin access",
+        (frame.getAttribute("sandbox") || "") === "allow-scripts");
+      reader.window.dispatchEvent(new reader.window.MessageEvent("message", {
+        data: { wlGameHeight: 940 }, source: frame.contentWindow,
+      }));
+      check.equal("resizes when the game reports its height", frame.style.height, "940px");
+    }
+    check.clean("no errors rendering the game", reader);
+  }
+
   return check;
 }

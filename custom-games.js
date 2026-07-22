@@ -92,6 +92,18 @@
     refresh() { mountAll(); }
   };
 
+  // A game can report its own height, the same way custom features do. A
+  // sandboxed frame has no same-origin access so it cannot be measured from
+  // out here, and a game whose content changes — a story that moves between
+  // passages — cannot be served by one fixed number.
+  window.addEventListener("message", function (e) {
+    const h = e.data && e.data.wlGameHeight;
+    if (!h) return;
+    document.querySelectorAll("iframe.cs-custom-game-frame").forEach(function (f) {
+      if (f.contentWindow === e.source) f.style.height = Math.ceil(h) + "px";
+    });
+  });
+
   document.addEventListener("wl-games-change", mountAll);
 
   function ready(fn) {
