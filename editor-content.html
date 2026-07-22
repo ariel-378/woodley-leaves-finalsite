@@ -70,6 +70,10 @@
     margin: -8px 0 12px;
   }
 
+  /* Used by the shared puzzle editor (puzzle-editor.js) */
+  #bee-modal .ed-form input.letter-cell, #cw-modal .ed-form input.letter-cell { text-align:center; text-transform:uppercase; font-weight:700; font-size:18px; letter-spacing:4px; }
+  #bee-modal .ed-form textarea, #cw-modal .ed-form textarea, #cn-modal .ed-form textarea { font-family: monospace; }
+
   .ed-form label { display: block; font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: var(--muted); margin-bottom: 12px; }
   .ed-form input[type="text"], .ed-form textarea { display: block; width: 100%; padding: 8px 10px; margin-top: 4px; border: 1px solid var(--rule); font-family: inherit; font-size: 14px; background: #fafafa; box-sizing: border-box; }
   .ed-form .ed-error { color: #b8002a; font-size: 13px; min-height: 18px; margin: 6px 0 10px; }
@@ -263,6 +267,11 @@
 <script src="articles-store.js"></script>
 <script src="writers.js"></script>
 <script src="article-editor.js"></script>
+<script src="teams.js"></script>
+<script src="teams-store.js"></script>
+<script src="sports-editor.js"></script>
+<script src="puzzles-store.js"></script>
+<script src="puzzle-editor.js"></script>
 <script src="centerspread.js"></script>
 <script src="centerspread-store.js"></script>
 <script src="videos.js"></script>
@@ -278,10 +287,23 @@
 
   // Types that open their own editor page. Everything else is edited in-page:
   // "Custom" in the section modal, and the piece types below in the piece modal.
-  const ROUTE = {
-    "Sports stats": "editor-sports.html",
-    "Puzzle games": "editor-centerspread.html"
-  };
+  // Every content type is now edited in place; nothing routes away.
+  const ROUTE = {};
+
+  // Four different daily puzzles, so this asks which one.
+  const PUZZLE_KINDS = [
+    { label: "Spelling Bee", hint: "Seven letters, one in the center", open: () => WLPuzzleEditor.openBee({ onSave: renderSections }) },
+    { label: "Mini Crossword", hint: "A small grid with across and down clues", open: () => WLPuzzleEditor.openCrossword({ onSave: renderSections }) },
+    { label: "Connections", hint: "Sixteen words in four hidden groups", open: () => WLPuzzleEditor.openConnections({ onSave: renderSections }) },
+    { label: "Word Search", hint: "A list of words hidden in a letter grid", open: () => WLPuzzleEditor.openWordsearch({ onSave: renderSections }) }
+  ];
+
+  // Sports stats covers three different records, so it asks which one.
+  const SPORTS_KINDS = [
+    { label: "Team", hint: "Record, roster details, played and upcoming games", open: () => WLSportsEditor.openTeam(null, { onSave: renderSections }) },
+    { label: "Game", hint: "A single game on the schedule", open: () => WLSportsEditor.openGame({ onSave: renderSections }) },
+    { label: "Playoff bracket", hint: "Rounds and matchups", open: () => WLSportsEditor.openBracket(null, { onSave: renderSections }) }
+  ];
 
   // Content type -> the kind of centerspread piece it creates.
   const PIECE_TYPES = {
@@ -456,11 +478,23 @@
     document.getElementById("addcontent-modal").classList.add("visible");
   }
 
+  function openKindChooser(label, kinds) {
+    document.getElementById("acm-section").textContent = label;
+    document.getElementById("acm-list").innerHTML = kinds.map((k, i) =>
+      `<button class="btn-ghost" data-sk="${i}">${esc(k.label)}<span style="display:block;font-weight:400;font-size:12px;color:var(--muted);margin-top:2px;">${esc(k.hint)}</span></button>`
+    ).join("");
+    document.querySelectorAll("#acm-list [data-sk]").forEach(b =>
+      b.addEventListener("click", () => { closeModals(); kinds[+b.dataset.sk].open(); }));
+    document.getElementById("addcontent-modal").classList.add("visible");
+  }
+
   function goAddContent(name, type) {
     if (type === "Custom") { openSectionModal(name); return; }
     if (PIECE_TYPES[type]) { openPieceModal(type); return; }
     if (type === "Videos") { openVideoModal(); return; }
     if (type === "Articles") { WLArticleEditor.open(null, { section: name, onSave: renderSections }); return; }
+    if (type === "Sports stats") { openKindChooser("Sports stats", SPORTS_KINDS); return; }
+    if (type === "Puzzle games") { openKindChooser("Puzzle games", PUZZLE_KINDS); return; }
     const url = ROUTE[type];
     if (url) location.href = url;
     else alert("This content type doesn't have an editor yet.");
