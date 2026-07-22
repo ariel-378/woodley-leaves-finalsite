@@ -361,6 +361,7 @@
   function renderSections() {
     if (!gate()) return;
     const wrap = document.getElementById("content-sections");
+    itemActions = {};
     const list = WLSections.list();
     wrap.innerHTML = list.map((s, i) => {
       const types = Array.isArray(s.contentTypes) ? s.contentTypes : [];
@@ -385,7 +386,7 @@
           </div>
           <div class="c-sec-body">
             <div class="c-types">${chips}</div>
-            ${types.includes("Articles") ? articlesBlock(s.name) : ""}
+            ${contentBlocks(s.name, types)}
             <button class="btn-primary" data-c="add" data-name="${esc(s.name)}">+ Add new content</button>
           </div>
         </div>`;
@@ -409,6 +410,7 @@
 
     wrap.querySelectorAll("[data-c]").forEach(btn => btn.addEventListener("click", () => onSectionAction(btn.dataset.c, btn.dataset.name)));
     wrap.querySelectorAll("[data-a]").forEach(btn => btn.addEventListener("click", () => onArticleAction(btn.dataset.a, btn.dataset.id)));
+    wrap.querySelectorAll("[data-i]").forEach(btn => btn.addEventListener("click", () => onItemAction(btn.dataset.i, btn.dataset.key)));
   }
 
   // ===== Articles inside a section card =====
@@ -450,6 +452,142 @@
           </div>
         </div>`;
     }).join("") + `</div>`;
+  }
+
+  // Everything a section holds, listed under its card. Articles keep their own
+  // richer row (deck, badges, Feature); every other type shows title, a short
+  // detail line, and whatever actions its store supports.
+  function contentBlocks(name, types) {
+    let html = types.includes("Articles") ? articlesBlock(name) : "";
+    types.forEach(t => {
+      if (t === "Articles") return;
+      const items = itemsFor(t);
+      html += `<div class="c-block">
+          <div class="c-block-head">${esc(t)}<span class="c-block-count">${items.length}</span></div>
+          ${items.length
+            ? items.map(it => `
+                <div class="c-item">
+                  <div class="c-item-main">
+                    <span class="c-item-title">${esc(it.title)}</span>
+                    ${it.meta ? `<div class="c-item-meta">${esc(it.meta)}</div>` : ""}
+                  </div>
+                  <div class="c-art-tools">
+                    ${it.edit ? `<button class="btn-ghost" data-i="edit" data-key="${esc(it.key)}">Edit</button>` : ""}
+                    ${it.remove ? `<button class="btn-danger" data-i="delete" data-key="${esc(it.key)}">Delete</button>` : ""}
+                    ${it.noRemove ? `<button class="btn-danger" disabled title="${esc(it.noRemove)}">Delete</button>` : ""}
+                  </div>
+                </div>`).join("")
+            : `<div class="c-item-empty">Nothing here yet.</div>`}
+        </div>`;
+    });
+    return html;
+  }
+
+  // key -> { edit, remove } for the row buttons, rebuilt on every render.
+  let itemActions = {};
+
+  function reg(key, item) { itemActions[key] = item; return item; }
+
+  function itemsFor(type) {
+    const out = [];
+    const cs = window.WLCenterspread, pz = window.WLPuzzles;
+
+    const pieceRows = (label, filter) => {
+      if (!cs) return;
+      cs.list().filter(filter).forEach(pc => out.push(reg(`piece:${pc.id}`, {
+        key: `piece:${pc.id}`, title: pc.title || pc.id, meta: pc.byline || label,
+        edit: () => openPieceModal(type, pc.id),
+        remove: () => { cs.remove(pc.id); renderSections(); },
+      })));
+    };
+
+    if (type === "Poems") pieceRows("Poem", pc => pc.type === "poem");
+    if (type === "Art/photos") pieceRows("Art", pc => pc.type === "image");
+    if (type === "Reveal-answer games") pieceRows("Reveal", pc => !!(pc.reveal && (pc.reveal.answer || "").trim()));
+
+    if (type === "Videos" && window.WLVideos) {
+      Object.entries(WLVideos.getAll()).forEach(([id, v]) => out.push(reg(`video:${id}`, {
+        key: `video:${id}`, title: v.title || id,
+        meta: [v.byline, v.date, v.duration].filter(Boolean).join(" · "),
+        edit: () => openVideoModal(id),
+        remove: () => { WLVideos.remove(id); renderSections(); },
+      })));
+    }
+
+    if (type === "Puzzle games" && pz) {
+      const pools = [
+        ["Spelling Bee", pz.getBeePool(), (i) => WLPuzzleEditor.openBee(i, { onSave: renderSections }), (i) => pz.removeBeeAt(i)],
+        ["Mini Crossword", pz.getCrosswordPool(), (i) => WLPuzzleEditor.openCrossword(i, { onSave: renderSections }), (i) => pz.removeCrosswordAt(i)],
+        ["Connections", pz.getConnectionsPool(), (i) => WLPuzzleEditor.openConnections(i, { onSave: renderSections }), (i) => pz.removeConnectionsAt(i)],
+        ["Word Search", pz.getWordsearchPool(), (i) => WLPuzzleEditor.openWordsearch(i, { onSave: renderSections }), (i) => pz.removeWordsearchAt(i)],
+      ];
+      pools.forEach(([label, pool, openAt, removeAt]) => {
+        const list = pool || [];
+        list.forEach((entry, i) => {
+          const key = `puzzle:${label}:${i}`;
+          // Emptying a pool makes the store fall back to the shipped puzzle, so
+          // deleting the last one of a type would look like nothing happened.
+          // Say so instead of offering a button that does nothing.
+          const last = list.length === 1;
+          out.push(reg(key, {
+            key, title: `${label} ${i + 1}`, meta: puzzleSummary(label, entry),
+            edit: () => openAt(i),
+            remove: last ? null : () => { removeAt(i); renderSections(); },
+            noRemove: last ? "The last " + label + " can't be removed — turn off Puzzle games for this section instead." : "",
+          }));
+        });
+      });
+      if (window.WLGamesStore) {
+        WLGamesStore.getAll().forEach(g => out.push(reg(`game:${g.id}`, {
+          key: `game:${g.id}`, title: g.title || g.id, meta: g.description || "Custom game",
+          edit: () => WLCodeEditor.open({ kind: "game", id: g.id, onSave: renderSections }),
+          remove: () => { WLGamesStore.remove(g.id); renderSections(); },
+        })));
+      }
+    }
+
+    if (type === "Custom feature" && window.WLFeatures) {
+      WLFeatures.getAll().forEach(f => out.push(reg(`feature:${f.id}`, {
+        key: `feature:${f.id}`, title: f.title || f.id, meta: f.description || "Custom feature",
+        edit: () => WLCodeEditor.open({ kind: "feature", id: f.id, onSave: renderSections }),
+        remove: () => { WLFeatures.remove(f.id); renderSections(); },
+      })));
+    }
+
+    if (type === "Sports stats" && window.WLTeams) {
+      Object.entries(WLTeams.getAllTeams()).forEach(([slug, t]) => out.push(reg(`team:${slug}`, {
+        key: `team:${slug}`, title: t.name || slug,
+        meta: `${t.sport || ""} · ${t.record ? `${t.record.w}-${t.record.l}` : ""}`.trim(),
+        edit: () => WLSportsEditor.openTeam(slug, { onSave: renderSections }),
+        remove: () => { WLTeams.removeTeam(slug); renderSections(); },
+      })));
+      Object.entries(WLTeams.getAllBrackets()).forEach(([slug, b]) => out.push(reg(`bracket:${slug}`, {
+        key: `bracket:${slug}`, title: b.title || slug, meta: "Playoff bracket",
+        edit: () => WLSportsEditor.openBracket(slug, { onSave: renderSections }),
+        remove: () => { WLTeams.removeBracket(slug); renderSections(); },
+      })));
+    }
+
+    return out;
+  }
+
+  function puzzleSummary(label, entry) {
+    if (!entry) return "";
+    if (label === "Spelling Bee") return `${entry.center || "?"} · ${(entry.words || []).length} words`;
+    if (label === "Word Search") return `${(entry.words || []).length} words`;
+    if (label === "Connections") return (entry.groups || []).map(g => g.category).filter(Boolean).join(", ");
+    if (label === "Mini Crossword") return (entry.rows || []).join(" / ");
+    return "";
+  }
+
+  function onItemAction(act, key) {
+    const item = itemActions[key];
+    if (!item) return;
+    if (act === "edit" && item.edit) { item.edit(); return; }
+    if (act === "delete" && item.remove) {
+      if (!confirm(`Delete “${item.title}”?`)) return;
+      item.remove();
+    }
   }
 
   function articlesBlock(name) {
@@ -603,7 +741,10 @@
     return String(s).toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "").slice(0, 60);
   }
 
-  function openPieceModal(contentType) {
+  let pieceEditingId = null;
+
+  function openPieceModal(contentType, id) {
+    pieceEditingId = id || null;
     pieceType = PIECE_TYPES[contentType] || "poem";
     pieceNeedsAnswer = contentType === "Reveal-answer games";
     const copy = PIECE_COPY[pieceType];
@@ -620,7 +761,28 @@
     $("pc-reveal-label").textContent = pieceNeedsAnswer ? "Reveal prompt" : "Reveal prompt (optional)";
     $("pc-answer-label").textContent = pieceNeedsAnswer ? "Answer" : "Answer (optional)";
 
-    PIECE_FIELDS.forEach(id => { $(id).value = ""; });
+    PIECE_FIELDS.forEach(f => { $(f).value = ""; });
+    if (pieceEditingId && window.WLCenterspread) {
+      const pc = WLCenterspread.getById(pieceEditingId);
+      if (pc) {
+        $("piece-modal-title").textContent = "Edit " + (copy.heading.replace(/^Add (a|an) /, ""));
+        $("pc-title").value = pc.title || "";
+        $("pc-kicker").value = pc.kicker || "";
+        $("pc-byline").value = pc.byline || "";
+        $("pc-body").value = pc.body || "";
+        $("pc-image").value = pc.image || "";
+        $("pc-alt").value = pc.alt || "";
+        if (pc.reveal) {
+          $("pc-reveal-summary").value = pc.reveal.summary || "";
+          $("pc-reveal-answer").value = pc.reveal.answer || "";
+        }
+        // Edit the piece as the kind it actually is, not the block it sat under.
+        if (pc.type) pieceType = pc.type;
+        const isImg = pieceType === "image";
+        $("pc-text-wrap").style.display = isImg ? "none" : "block";
+        $("pc-image-wrap").style.display = isImg ? "block" : "none";
+      }
+    }
     $("pc-error").textContent = "";
     $("piece-modal").classList.add("visible");
     $("pc-title").focus();
@@ -659,11 +821,14 @@
       piece.reveal = { summary: $("pc-reveal-summary").value.trim() || "Reveal the answer", answer: answer };
     }
 
-    // Unique id derived from the title.
-    const taken = WLCenterspread.list().map(p => p.id);
-    const base = slugify(title) || "piece";
-    let id = base;
-    for (let n = 2; taken.indexOf(id) !== -1; n++) id = base + "-" + n;
+    // Keep the id when editing; derive a fresh unique one when adding.
+    let id = pieceEditingId;
+    if (!id) {
+      const taken = WLCenterspread.list().map(p => p.id);
+      const base = slugify(title) || "piece";
+      id = base;
+      for (let n = 2; taken.indexOf(id) !== -1; n++) id = base + "-" + n;
+    }
 
     const res = WLCenterspread.save(id, piece);
     if (!res || res.ok === false) {
@@ -687,8 +852,31 @@
     return month ? `${month} ${Number(m[3])}, ${m[1]}` : "";
   }
 
-  function openVideoModal() {
-    VIDEO_FIELDS.forEach(id => { $(id).value = ""; });
+  let videoEditingId = null;
+
+  function isoFromPretty(pretty) {
+    const m = /^([A-Za-z]+)\s+(\d{1,2}),\s*(\d{4})$/.exec(String(pretty || "").trim());
+    if (!m) return "";
+    const i = MONTHS.indexOf(m[1]);
+    if (i < 0) return "";
+    return `${m[3]}-${String(i + 1).padStart(2, "0")}-${String(m[2]).padStart(2, "0")}`;
+  }
+
+  function openVideoModal(id) {
+    videoEditingId = id || null;
+    VIDEO_FIELDS.forEach(f => { $(f).value = ""; });
+    document.getElementById("video-modal-title").textContent = videoEditingId ? "Edit video" : "Add a video";
+    if (videoEditingId && window.WLVideos) {
+      const v = WLVideos.getAll()[videoEditingId];
+      if (v) {
+        $("vd-title").value = v.title || "";
+        $("vd-url").value = v.url || "";
+        $("vd-byline").value = v.byline || "";
+        $("vd-duration").value = v.duration || "";
+        $("vd-desc").value = v.description || "";
+        $("vd-date").value = isoFromPretty(v.date);
+      }
+    }
     $("vd-error").textContent = "";
     $("video-modal").classList.add("visible");
     $("vd-title").focus();
@@ -718,10 +906,13 @@
     if (duration) data.duration = duration;
     if (desc) data.description = desc;
 
-    const taken = Object.keys(WLVideos.getAll());
-    const base = slugify(title) || "video";
-    let id = base;
-    for (let n = 2; taken.indexOf(id) !== -1; n++) id = base + "-" + n;
+    let id = videoEditingId;
+    if (!id) {
+      const taken = Object.keys(WLVideos.getAll());
+      const base = slugify(title) || "video";
+      id = base;
+      for (let n = 2; taken.indexOf(id) !== -1; n++) id = base + "-" + n;
+    }
 
     WLVideos.save(id, data);
     closeModals();

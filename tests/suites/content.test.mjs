@@ -152,5 +152,85 @@ export async function run() {
     check.clean("no errors adding a video", ctx);
   }
 
+  // ===== Every declared content type is listed under its card =====
+  // The Content tab originally listed only Articles, so a section like
+  // Centerspread showed its type chips and an Add button but none of the
+  // puzzles, poems or art actually sitting in the stores.
+  {
+    const ctx = await loadPage("editor-content.html");
+    const { window, click, type, $ } = ctx;
+
+    const card = () => sectionCard(ctx, "Centerspread");
+    const blocks = () => [...card().querySelectorAll(".c-block")]
+      .map(b => b.querySelector(".c-block-head").textContent.replace(/\d+$/, "").trim());
+
+    const declared = window.WLSections.contentTypes("Centerspread").filter(t => t !== "Articles");
+    check.equal("every non-article type gets a block", blocks(), declared);
+
+    const listed = card().querySelectorAll(".c-item").length;
+    check.ok("the section's actual content is listed", listed > 0,
+      "the card showed no contents even though the stores held some");
+
+    // Editing from the card must update in place, not create a copy.
+    const poemBlock = [...card().querySelectorAll(".c-block")]
+      .find(b => b.querySelector(".c-block-head").textContent.includes("Poems"));
+    check.ok("poems are listed", !!poemBlock);
+    if (poemBlock && poemBlock.querySelector('[data-i="edit"]')) {
+      const countBefore = window.WLCenterspread.list().length;
+      click(poemBlock.querySelector('[data-i="edit"]'));
+      check.ok("editing opens the piece form prefilled", $("#pc-title").value.length > 0);
+      check.ok("the form says it is editing", $("#piece-modal-title").textContent.startsWith("Edit"));
+      type($("#pc-title"), "Renamed By Test");
+      click($("#pc-save"));
+      check.equal("editing does not create a duplicate",
+        window.WLCenterspread.list().length, countBefore);
+      check.ok("the new title is listed",
+        [...card().querySelectorAll(".c-item-title")].some(t => t.textContent === "Renamed By Test"));
+    }
+
+    // Deleting a piece removes it.
+    const pieceDelete = card().querySelector('[data-i="delete"][data-key^="piece:"]');
+    if (pieceDelete) {
+      const before = window.WLCenterspread.list().length;
+      click(pieceDelete);
+      check.equal("deleting a piece removes it", window.WLCenterspread.list().length, before - 1);
+    }
+
+    // The last puzzle of a type cannot be deleted: emptying the pool makes the
+    // store fall back to the shipped puzzle, so the button would do nothing.
+    const beeCount = window.WLPuzzles.getBeePool().length;
+    if (beeCount === 1) {
+      check.ok("the last puzzle offers no working Delete",
+        !card().querySelector('[data-i="delete"][data-key^="puzzle:Spelling Bee"]'),
+        "a Delete that silently does nothing is worse than none");
+      check.ok("and explains why",
+        [...card().querySelectorAll("button[disabled]")].some(b => (b.title || "").includes("can't be removed")));
+    }
+    check.clean("no errors listing content", ctx);
+  }
+
+  // ===== Videos are listed and editable in place =====
+  {
+    const ctx = await loadPage("editor-content.html");
+    const { window, click, type, $ } = ctx;
+    const card = () => sectionCard(ctx, "Video");
+
+    const count = Object.keys(window.WLVideos.getAll()).length;
+    check.equal("every video is listed", card().querySelectorAll(".c-item").length, count);
+
+    if (count) {
+      click(card().querySelector('[data-i="edit"]'));
+      check.equal("the form says it is editing", $("#video-modal-title").textContent, "Edit video");
+      check.ok("the link is prefilled", $("#vd-url").value.length > 0);
+      check.ok("the written-out date returns to the date picker",
+        /^\d{4}-\d{2}-\d{2}$/.test($("#vd-date").value), `got "${$("#vd-date").value}"`);
+      type($("#vd-title"), "Renamed Video");
+      click($("#vd-save"));
+      check.equal("editing a video does not create a second one",
+        Object.keys(window.WLVideos.getAll()).length, count);
+    }
+    check.clean("no errors listing videos", ctx);
+  }
+
   return check;
 }
