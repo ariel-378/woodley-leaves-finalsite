@@ -1,0 +1,164 @@
+/* ============================================================================
+   Small-screen and touch corrections.
+
+   Linked LAST on every page, after each page's inline <style> block. That
+   ordering is deliberate: styles.css is linked before those inline blocks, so
+   a rule placed there loses to them at equal specificity and silently does
+   nothing on exactly the editor pages that need it most.
+
+   Most of the small-screen breakage in the editor came from one CSS default:
+   a grid or flex item's `min-width` is `auto`, which for a form control
+   resolves to the control's intrinsic width. A row of three text inputs
+   therefore refuses to shrink below ~500px no matter what `width: 100%` says,
+   and pushes the whole page sideways. The primitives below fix that class of
+   bug once rather than per-form.
+   ============================================================================ */
+
+/* ── Let form rows actually shrink ──────────────────────────────────────── */
+.ed-form > *,
+.ed-form-row > *,
+.ct-grid > *,
+.ed-repeat-row > *,
+.bracket-match-row > * {
+  min-width: 0;
+}
+
+/* editor-content.html scoped this to input[type=text] only, so date, file and
+   select controls kept their intrinsic width and overflowed the modal. */
+.ed-form input,
+.ed-form textarea,
+.ed-form select {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* ── Repeater rows (writers, gallery photos, bracket matches) ───────────── */
+/* These grids used to be written as inline styles from JavaScript, which no
+   stylesheet can override. They live here so the collapse below can reach them. */
+.ed-repeat-row {
+  display: grid;
+  gap: 6px;
+  margin-bottom: 6px;
+}
+.ed-repeat-row-author { grid-template-columns: 1fr auto; }
+.ed-repeat-row-gallery { grid-template-columns: 2fr 2fr auto; }
+.bracket-match-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr auto;
+  gap: 8px;
+  align-items: center;
+  margin-top: 8px;
+}
+
+/* ── Multi-column form rows collapse on narrow screens ──────────────────── */
+@media (max-width: 640px) {
+  .ed-form-row,
+  .ct-grid,
+  .ed-repeat-row-author,
+  .ed-repeat-row-gallery,
+  .bracket-match-row {
+    grid-template-columns: 1fr;
+  }
+  /* Children that spanned a 3-column track must not span a 1-column one. */
+  .bracket-match-row > * {
+    grid-column: auto;
+  }
+  .ed-modal {
+    padding: 20px 16px;
+  }
+}
+
+/* ── Wide tables scroll inside their own box, never the page ────────────── */
+/* Same approach .bracket-tree already uses correctly. */
+.tbl-scroll {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+.tbl-scroll > table {
+  min-width: 640px;
+}
+
+/* ── Touch targets ──────────────────────────────────────────────────────── */
+/* Gated on pointer:coarse, not width: 44px controls would badly inflate the
+   dense article list on a desktop dashboard, where a mouse is precise anyway. */
+@media (pointer: coarse) {
+  .btn-ghost,
+  .btn-danger,
+  .btn-primary,
+  .c-art-tools button,
+  .c-sec-tools button,
+  .game-table-edit td button,
+  .ed-repeat-row button,
+  .bracket-match-row button,
+  .ed-modal-close {
+    min-height: 44px;
+    min-width: 44px;
+    padding-block: 10px;
+  }
+  .sectionnav-inner a {
+    padding-block: 12px;
+  }
+}
+
+/* ── Fluid display type ─────────────────────────────────────────────────── */
+/* The masthead appears on every page; at 64px fixed it consumed the whole
+   first viewport on a phone. */
+.masthead h1 {
+  font-size: clamp(30px, 9vw, 64px);
+  letter-spacing: clamp(-1px, -0.2vw, 0px);
+}
+.lede h2 {
+  font-size: clamp(28px, 6vw, 44px);
+}
+
+/* ── Word search: keep cells tappable ───────────────────────────────────── */
+/* A 16-wide grid at 320px gives ~14px cells, driven by a drag gesture — not
+   playable. Below 640px the panel pans horizontally so cells stay legible. */
+@media (max-width: 640px) {
+  .wordsearch-panel {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  .wordsearch-panel .ws-grid {
+    min-width: 420px;
+  }
+}
+
+/* ── Puzzle editor rows ─────────────────────────────────────────────────── */
+@media (max-width: 640px) {
+  .clue-row {
+    grid-template-columns: 1fr;
+  }
+  .bee-letters {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ── Keyboard alternatives to drag-and-drop ─────────────────────────────── */
+/* Reordering the front page and section blocks used to be drag-only. These
+   buttons carry the same action for keyboard and screen-reader users. */
+.wl-mc-btn {
+  background: #fff;
+  border: 1px solid var(--ink);
+  color: var(--ink);
+  font-size: 12px;
+  line-height: 1;
+  padding: 4px 7px;
+  margin-left: 4px;
+  cursor: pointer;
+  font-family: "Helvetica Neue", Arial, sans-serif;
+}
+.wl-mc-btn:hover { background: var(--cream); }
+.wl-mc-btn:disabled { opacity: 0.35; cursor: default; }
+
+.wl-home-move {
+  display: none;
+  gap: 4px;
+  margin-top: 8px;
+}
+/* Only while the front page is in edit mode. */
+.wl-home-edit .wl-home-move { display: flex; }
+
+@media (pointer: coarse) {
+  .wl-mc-btn { min-height: 44px; min-width: 44px; }
+}

@@ -105,8 +105,11 @@
   .acm-list { display: flex; flex-direction: column; gap: 8px; margin-top: 6px; }
   .acm-list button { text-align: left; padding: 12px 14px; font-size: 15px; font-weight: 600; }
 </style>
+<link rel="stylesheet" href="responsive.css" />
 </head>
 <body>
+
+<a href="#main-content" class="skip-link">Skip to main content</a>
 
 <div class="topbar"><div class="topbar-inner"><div><a href="#" class="topbar-cta">Subscribe</a></div><div></div></div></div>
 
@@ -121,7 +124,7 @@
   <div class="sectionnav-inner"></div>
 </nav>
 
-<main class="container">
+<main id="main-content" class="container">
   <div class="section-header">
     <h2>Editor Dashboard</h2>
     <span class="see-all" id="content-welcome"></span>
@@ -175,7 +178,7 @@
         <p class="cc-hint">This runs in a secure sandbox on the section's page, so it can't break the rest of the site.</p>
       </div>
 
-      <div class="ed-error" id="sec-error"></div>
+      <div class="ed-error" id="sec-error" role="alert"></div>
       <div class="ed-form-actions">
         <button class="btn-ghost" data-cancel type="button">Cancel</button>
         <button class="btn-primary" id="sec-save" type="button">Save section</button>
@@ -238,7 +241,7 @@
         </label>
       </div>
 
-      <div class="ed-error" id="pc-error"></div>
+      <div class="ed-error" id="pc-error" role="alert"></div>
       <div class="ed-form-actions">
         <button class="btn-ghost" data-cancel type="button">Cancel</button>
         <button class="btn-primary" id="pc-save" type="button">Save</button>
@@ -274,7 +277,7 @@
       <label>Description (optional)
         <textarea id="vd-desc" rows="4"></textarea>
       </label>
-      <div class="ed-error" id="vd-error"></div>
+      <div class="ed-error" id="vd-error" role="alert"></div>
       <div class="ed-form-actions">
         <button class="btn-ghost" data-cancel type="button">Cancel</button>
         <button class="btn-primary" id="vd-save" type="button">Save</button>
@@ -298,6 +301,7 @@
 <script src="videos-store.js"></script>
 <script src="submissions.js"></script>
 <script src="auth.js"></script>
+<script src="modal-a11y.js"></script>
 <script src="script.js"></script>
 <script>
 (function () {

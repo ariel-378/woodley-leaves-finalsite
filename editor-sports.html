@@ -94,8 +94,11 @@
   .sv-row input { width: auto; margin: 0; }
   .badge-custom { display: inline-block; background: var(--accent); color: #fff; font-size: 10px; padding: 2px 6px; margin-left: 6px; letter-spacing: 0.5px; text-transform: uppercase; font-weight: 700; vertical-align: middle; }
 </style>
+<link rel="stylesheet" href="responsive.css" />
 </head>
 <body>
+
+<a href="#main-content" class="skip-link">Skip to main content</a>
 
 <div class="topbar"><div class="topbar-inner"><div><a href="#" class="topbar-cta">Subscribe</a></div><div></div></div></div>
 
@@ -110,7 +113,7 @@
   <div class="sectionnav-inner"></div>
 </nav>
 
-<main class="container">
+<main id="main-content" class="container">
   <div class="section-header">
     <h2>Editor Dashboard</h2>
     <span class="see-all" id="sports-welcome"></span>
@@ -195,6 +198,7 @@
 <script src="sports-editor.js"></script>
 <script src="submissions.js"></script>
 <script src="auth.js"></script>
+<script src="modal-a11y.js"></script>
 <script src="script.js"></script>
 <script>
 (function () {

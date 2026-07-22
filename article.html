@@ -23,8 +23,11 @@
 <script src="brand.js"></script>
 <script src="sections-store.js"></script>
 <script src="nav.js"></script>
+<link rel="stylesheet" href="responsive.css" />
 </head>
 <body>
+
+<a href="#main-content" class="skip-link">Skip to main content</a>
 
 <div class="topbar"><div class="topbar-inner"><div><a href="#" class="topbar-cta">Subscribe</a></div><div></div></div></div>
 
@@ -39,7 +42,7 @@
   <div class="sectionnav-inner"></div>
 </nav>
 
-<main class="container">
+<main id="main-content" class="container">
   <article class="article-page" id="article-root">
     <div id="article-not-found" style="display:none;">
       <h1>Article not found</h1>
@@ -241,8 +244,21 @@
       capEl.textContent = a.gallery[current].caption || "";
       cntEl.textContent = `${current + 1} / ${a.gallery.length}`;
     }
-    function open(i) { show(i); overlay.classList.add("visible"); }
-    function close() { overlay.classList.remove("visible"); }
+    // The overlay covers the page, so focus must go into it and stay there.
+    // Without this, Tab walked onto links hidden behind the backdrop and the
+    // focus ring vanished from view.
+    let lastFocused = null;
+    function open(i) {
+      lastFocused = document.activeElement;
+      show(i);
+      overlay.classList.add("visible");
+      overlay.querySelector(".lb-close").focus();
+    }
+    function close() {
+      overlay.classList.remove("visible");
+      if (lastFocused && lastFocused.focus) lastFocused.focus();
+      lastFocused = null;
+    }
     grid.querySelectorAll(".gallery-thumb").forEach(b => b.addEventListener("click", () => open(+b.dataset.i)));
     overlay.querySelector(".lb-close").addEventListener("click", close);
     overlay.querySelector(".lb-prev").addEventListener("click", () => show(current - 1));
@@ -250,9 +266,16 @@
     overlay.addEventListener("click", e => { if (e.target === overlay) close(); });
     document.addEventListener("keydown", (e) => {
       if (!overlay.classList.contains("visible")) return;
-      if (e.key === "Escape") close();
-      if (e.key === "ArrowLeft") show(current - 1);
-      if (e.key === "ArrowRight") show(current + 1);
+      if (e.key === "Escape") { close(); return; }
+      if (e.key === "ArrowLeft") { show(current - 1); return; }
+      if (e.key === "ArrowRight") { show(current + 1); return; }
+      if (e.key !== "Tab") return;
+      const items = [...overlay.querySelectorAll("button")].filter(b => b.offsetParent !== null);
+      if (!items.length) return;
+      const first = items[0], last = items[items.length - 1];
+      if (!overlay.contains(document.activeElement)) { e.preventDefault(); first.focus(); }
+      else if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+      else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
     });
   }
 

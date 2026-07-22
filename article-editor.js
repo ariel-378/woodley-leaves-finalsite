@@ -81,7 +81,7 @@ window.WLArticleEditor = (function () {
           <button type="button" class="btn-ghost" id="ed-gallery-add" style="margin-top:6px;">+ Add photo to gallery</button>
         </fieldset>
 
-        <div class="ed-error" id="ed-error"></div>
+        <div class="ed-error" id="ed-error" role="alert"></div>
         <div class="ed-form-actions">
           <button class="btn-ghost" id="ed-cancel">Cancel</button>
           <button class="btn-primary" id="ed-save">Save article</button>
@@ -112,6 +112,7 @@ window.WLArticleEditor = (function () {
       errEl, photoEl, photoFileEl, captionEl, videoEl, photoPreviewEl,
       galleryRowsEl, publishEl, tagsEl, authorsEl, titleHeadingEl;
   let editingId = null;
+  let lastFocused = null;      // restored when the modal closes
   let workingGallery = [];
   let workingAuthors = [];
   let onSaveCallback = null;
@@ -193,7 +194,7 @@ window.WLArticleEditor = (function () {
     authorsEl.innerHTML = "";
     workingAuthors.forEach((name, i) => {
       const row = document.createElement("div");
-      row.style.cssText = "display:grid; grid-template-columns: 1fr auto; gap:6px; margin-bottom:6px;";
+      row.className = "ed-repeat-row ed-repeat-row-author";
       const input = document.createElement("input");
       input.type = "text";
       input.value = name;
@@ -220,7 +221,7 @@ window.WLArticleEditor = (function () {
     galleryRowsEl.innerHTML = "";
     workingGallery.forEach((g, i) => {
       const row = document.createElement("div");
-      row.style.cssText = "display:grid; grid-template-columns: 2fr 2fr auto; gap:6px; margin-bottom:6px;";
+      row.className = "ed-repeat-row ed-repeat-row-gallery";
       row.innerHTML = `
         <input type="text" placeholder="Photo URL" value="${(g.url || "").replace(/"/g, "&quot;")}" data-gi="${i}" data-gfield="url" style="padding:6px 8px; border:1px solid var(--rule); background:#fafafa; font-size:13px;">
         <input type="text" placeholder="Caption (optional)" value="${(g.caption || "").replace(/"/g, "&quot;")}" data-gi="${i}" data-gfield="caption" style="padding:6px 8px; border:1px solid var(--rule); background:#fafafa; font-size:13px;">
@@ -283,6 +284,7 @@ window.WLArticleEditor = (function () {
 
   // ===== Open / close =====
   function open(id, opts) {
+    lastFocused = document.activeElement;
     build();
     opts = opts || {};
     onSaveCallback = typeof opts.onSave === "function" ? opts.onSave : null;
@@ -348,6 +350,10 @@ window.WLArticleEditor = (function () {
   function close() {
     modal.classList.remove("visible");
     editingId = null;
+    // Send focus back where it came from, rather than dropping it on <body>
+    // and making a keyboard user navigate the page again.
+    if (lastFocused && lastFocused.focus) lastFocused.focus();
+    lastFocused = null;
   }
 
   // ===== Save =====

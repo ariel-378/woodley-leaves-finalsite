@@ -254,11 +254,46 @@
     const controls = document.createElement("div");
     controls.className = "wl-move-controls";
     const label = el.dataset.moveLabel || el.dataset.moveKey || "block";
+    // Dragging is a pointer gesture with no keyboard equivalent, so the same
+    // reordering is offered as buttons. Without these, an editor who cannot use
+    // a mouse could not rearrange the page at all.
     controls.innerHTML = `
       <span class="wl-move-label">${label}</span>
+      <button type="button" class="wl-mc-btn" data-move-dir="up" aria-label="Move ${label} earlier">↑</button>
+      <button type="button" class="wl-mc-btn" data-move-dir="down" aria-label="Move ${label} later">↓</button>
       <span class="wl-mc-handle" aria-hidden="true" title="Drag to reorder">⋮⋮</span>
     `;
+    controls.querySelectorAll("[data-move-dir]").forEach(b => {
+      b.addEventListener("click", (e) => {
+        e.stopPropagation();
+        moveByKeyboard(el, b.dataset.moveDir);
+      });
+    });
     el.appendChild(controls);
+  }
+
+  // Move a block one position earlier or later in the group's reading order,
+  // then reuse the drag path's own cleanup so the result is saved identically.
+  function moveByKeyboard(el, dir) {
+    const group = el.closest("[data-move-group]");
+    if (!group) return;
+    const blocks = [...group.querySelectorAll("[data-move-key]")];
+    const i = blocks.indexOf(el);
+    const j = dir === "up" ? i - 1 : i + 1;
+    if (i === -1 || j < 0 || j >= blocks.length) return;
+
+    const neighbour = blocks[j];
+    const sourceCol = el.parentNode;
+    const sourceRow = sourceCol && sourceCol.parentNode;
+
+    sourceCol.removeChild(el);
+    if (dir === "up") neighbour.parentNode.insertBefore(el, neighbour);
+    else neighbour.parentNode.insertBefore(el, neighbour.nextSibling);
+
+    finalizeDrop(group, sourceCol, sourceRow);
+    // Keep focus on the button the editor just pressed, so repeated presses work.
+    const again = el.querySelector(`[data-move-dir="${dir}"]`);
+    if (again) again.focus();
   }
 
   function setupControls() {

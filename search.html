@@ -14,8 +14,11 @@
 <script src="brand.js"></script>
 <script src="sections-store.js"></script>
 <script src="nav.js"></script>
+<link rel="stylesheet" href="responsive.css" />
 </head>
 <body>
+
+<a href="#main-content" class="skip-link">Skip to main content</a>
 
 <div class="topbar"><div class="topbar-inner"><div><a href="#" class="topbar-cta">Subscribe</a></div><div></div></div></div>
 
@@ -30,7 +33,7 @@
   <div class="sectionnav-inner"></div>
 </nav>
 
-<main class="container">
+<main id="main-content" class="container">
   <header class="section-hero">
     <div class="kicker" data-wl-text="search-kicker">Find It Fast</div>
     <h2>Search</h2>
@@ -41,7 +44,7 @@
         <circle cx="156" cy="12" r="2" fill="currentColor"/>
       </svg>
     </div>
-    <p class="section-hero-deck" id="search-summary">Look up articles, writers, and coverage across every section of The Student Times.</p>
+    <p class="section-hero-deck" id="search-summary" role="status" aria-live="polite">Look up articles, writers, and coverage across every section of The Student Times.</p>
   </header>
 
   <form class="search-form-page" id="search-form" autocomplete="off">

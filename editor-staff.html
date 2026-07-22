@@ -75,8 +75,11 @@
   #st-photo-preview { display: none; width: 96px; height: 96px; border-radius: 50%; object-fit: cover; margin-top: 8px; border: 1px solid var(--rule); }
   .st-hint { font-size: 12px; color: var(--muted); margin: 14px 0 18px; }
 </style>
+<link rel="stylesheet" href="responsive.css" />
 </head>
 <body>
+
+<a href="#main-content" class="skip-link">Skip to main content</a>
 
 <div class="topbar"><div class="topbar-inner"><div><a href="#" class="topbar-cta">Subscribe</a></div><div></div></div></div>
 
@@ -91,7 +94,7 @@
   <div class="sectionnav-inner"></div>
 </nav>
 
-<main class="container">
+<main id="main-content" class="container">
   <div class="section-header">
     <h2>Editor Dashboard</h2>
     <span class="see-all" id="staff-welcome"></span>
@@ -122,7 +125,7 @@
         <input id="grp-new" type="text" placeholder="Add a tier, e.g. Copy Editors" maxlength="60">
         <button class="btn-ghost" id="grp-add-btn" type="button">+ Add tier</button>
       </div>
-      <div class="ed-error" id="grp-error"></div>
+      <div class="ed-error" id="grp-error" role="alert"></div>
     </section>
 
     <div style="display:flex; gap:8px; flex-wrap:wrap; margin-bottom:8px; align-items:center;">
@@ -183,7 +186,7 @@
         <input id="st-photo-file" type="file" accept="image/*">
       </label>
       <img id="st-photo-preview" alt="Photo preview">
-      <div class="ed-error" id="st-error"></div>
+      <div class="ed-error" id="st-error" role="alert"></div>
       <div class="ed-form-actions">
         <button class="btn-ghost" data-cancel type="button">Cancel</button>
         <button class="btn-primary" id="st-save" type="button">Save member</button>
@@ -202,7 +205,7 @@
       <label>URL slug <span style="font-weight:400;text-transform:none;letter-spacing:0;color:var(--muted);">(auto-generated from the name)</span>
         <input type="text" id="w-slug" placeholder="maya-chen" readonly style="background:#f0f0f0;color:var(--muted);">
       </label>
-      <div class="ed-error" id="w-error"></div>
+      <div class="ed-error" id="w-error" role="alert"></div>
       <div class="ed-form-actions">
         <button class="btn-ghost" data-cancel>Cancel</button>
         <button class="btn-primary" id="w-save">Save</button>
@@ -219,6 +222,7 @@
 <script src="staff-store.js"></script>
 <script src="submissions.js"></script>
 <script src="auth.js"></script>
+<script src="modal-a11y.js"></script>
 <script src="script.js"></script>
 
 <!-- ===== Staff editor (owns the auth gate) ===== -->

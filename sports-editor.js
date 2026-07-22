@@ -39,21 +39,21 @@ window.WLSportsEditor = (function () {
           <h4>Results (games played)</h4>
           <button class="btn-ghost" id="add-result">+ Add result</button>
         </div>
-        <table class="game-table-edit" id="games-played-table">
+        <div class="tbl-scroll"><table class="game-table-edit" id="games-played-table">
           <thead><tr><th>Date</th><th>Opponent</th><th>Result</th><th>Score</th><th>H/A</th><th>Note</th><th></th></tr></thead>
           <tbody id="games-played-rows"></tbody>
-        </table>
+        </table></div>
 
         <div class="games-subheader">
           <h4>Upcoming games</h4>
           <button class="btn-ghost" id="add-upcoming">+ Add upcoming</button>
         </div>
-        <table class="game-table-edit" id="games-upcoming-table">
+        <div class="tbl-scroll"><table class="game-table-edit" id="games-upcoming-table">
           <thead><tr><th>Date</th><th>Opponent</th><th>Time</th><th>H/A</th><th>Theme</th><th>Note</th><th></th></tr></thead>
           <tbody id="games-upcoming-rows"></tbody>
-        </table>
+        </table></div>
 
-        <div class="ed-error" id="t-error"></div>
+        <div class="ed-error" id="t-error" role="alert"></div>
         <div class="ed-form-actions">
           <button class="btn-ghost" data-cancel>Cancel</button>
           <button class="btn-primary" id="t-save">Save team</button>
@@ -78,7 +78,7 @@ window.WLSportsEditor = (function () {
         <div id="bracket-rounds"></div>
         <button class="btn-ghost" id="add-round" style="margin-top:10px;">+ Add round</button>
 
-        <div class="ed-error" id="b-error"></div>
+        <div class="ed-error" id="b-error" role="alert"></div>
         <div class="ed-form-actions">
           <button class="btn-ghost" data-cancel>Cancel</button>
           <button class="btn-primary" id="b-save">Save bracket</button>
@@ -119,7 +119,7 @@ window.WLSportsEditor = (function () {
             <input id="sg-note" type="text" maxlength="120">
           </label>
         </div>
-        <div class="ed-error" id="sg-error"></div>
+        <div class="ed-error" id="sg-error" role="alert"></div>
         <div class="ed-form-actions">
           <button class="btn-ghost" data-cancel type="button">Cancel</button>
           <button class="btn-primary" id="sg-save" type="button">Save game</button>
@@ -134,6 +134,7 @@ window.WLSportsEditor = (function () {
 
   let built = false;
   let onSaveCallback = null;
+  let lastFocused = null;      // restored when a modal closes
   const api = {};
 
   function notifyHost() { if (onSaveCallback) onSaveCallback(); }
@@ -146,7 +147,12 @@ window.WLSportsEditor = (function () {
     mine.forEach(el => document.body.appendChild(el));
 
     // Close only this component's modals, never a host's.
-    function closeModals() { mine.forEach(m => m.classList.remove("visible")); }
+    function closeModals() {
+      mine.forEach(m => m.classList.remove("visible"));
+      // Return focus to whatever opened the modal.
+      if (lastFocused && lastFocused.focus) lastFocused.focus();
+      lastFocused = null;
+    }
 
     mine.forEach(m => {
       m.querySelectorAll(".ed-modal-close, [data-cancel]").forEach(b => b.addEventListener("click", closeModals));
@@ -344,7 +350,7 @@ window.WLSportsEditor = (function () {
         const section = document.createElement("div");
         section.style.cssText = "border:1px solid var(--rule); padding:12px 14px; margin-top:12px; background:#fafafa;";
         const matchesHtml = round.matches.map((m, mIdx) => `
-          <div style="display:grid; grid-template-columns:1fr 1fr auto; gap:8px; align-items:center; margin-top:8px;">
+          <div class="bracket-match-row">
             <input type="text" value="${escapeHtml(m.team1 || "")}" data-round="${rIdx}" data-match="${mIdx}" data-field="team1" placeholder="Team 1">
             <input type="text" value="${escapeHtml(m.team2 || "")}" data-round="${rIdx}" data-match="${mIdx}" data-field="team2" placeholder="Team 2">
             <button class="btn-danger" data-remove-match data-round="${rIdx}" data-match="${mIdx}">×</button>
@@ -513,6 +519,7 @@ window.WLSportsEditor = (function () {
       const args = Array.prototype.slice.call(arguments);
       const opts = (args.length && args[args.length - 1] && typeof args[args.length - 1] === "object")
         ? args.pop() : {};
+      lastFocused = document.activeElement;
       build();
       onSaveCallback = typeof opts.onSave === "function" ? opts.onSave : null;
       return api[fn].apply(null, args);

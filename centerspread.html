@@ -612,8 +612,20 @@
     user-select: none;
     color: var(--ink);
     transition: transform 0.05s ease;
+    /* These letters are <button>s so they are keyboard-reachable; strip the
+       default chrome so they still read as hexagons. */
+    border: none;
+    padding: 0;
+    margin: 0;
+    appearance: none;
   }
   .sb-cell:active { transform: scale(0.92); }
+  /* The clip-path crops an outline, so show focus as an inner ring instead. */
+  .sb-cell:focus-visible {
+    outline: none;
+    box-shadow: inset 0 0 0 4px var(--accent);
+  }
+  .sb-cell.sb-center:focus-visible { box-shadow: inset 0 0 0 4px var(--ink); }
   .sb-cell.sb-center { background: var(--accent); color: #fff; }
 
   .sb-controls {
@@ -751,7 +763,7 @@
   .cn-solved-row.yellow { background: #f9df6d; color: #3a3100; }
   .cn-solved-row.green  { background: #a0c35a; color: #1e3a06; }
   .cn-solved-row.blue   { background: #b0c4ef; color: #11275f; }
-  .cn-solved-row.purple { background: #ba81c5; color: #fff; }
+  .cn-solved-row.purple { background: #7a4a86; color: #fff; }
 
   .cn-grid {
     display: grid;
@@ -841,8 +853,11 @@
   html.wl-embed-puzzles #cs-custom-games { display: none !important; }
   html.wl-embed-puzzles .container { padding: 0 20px 24px; }
 </style>
+<link rel="stylesheet" href="responsive.css" />
 </head>
 <body>
+
+<a href="#main-content" class="skip-link">Skip to main content</a>
 <script>
 // When loaded as ?embed=puzzles (inside a section page), show only the puzzles
 // and report our height so the parent iframe can size itself.
@@ -872,7 +887,7 @@
   <div class="sectionnav-inner"></div>
 </nav>
 
-<main class="container">
+<main id="main-content" class="container">
   <header class="section-hero">
     <div class="kicker" data-wl-text="cs-hero-kicker">April 2026 · Print Edition</div>
     <h2 id="print-heading" data-wl-text="cs-hero-title">The Centerspread</h2>
@@ -1005,7 +1020,7 @@
       <button type="button" id="cn-deselect">Deselect all</button>
       <button type="button" id="cn-submit" class="primary">Submit</button>
     </div>
-    <div class="cn-result" id="cn-result" hidden></div>
+    <div class="cn-result" id="cn-result" role="status" aria-live="polite" hidden></div>
   </section>
 
 
@@ -1566,8 +1581,22 @@ updateUI();
 gridEl.addEventListener("keydown", handleKey);
 
 // Shared focus: which game should receive physical keyboard input?
-let activeGame = "cw";
-document.querySelector(".cw-layout").addEventListener("click", () => { activeGame = "cw"; });
+//
+// This starts as null, not "cw". While it defaulted to the crossword, the
+// page-wide handler below swallowed every arrow key and letter press from the
+// moment the page loaded — so a reader pressing Down to scroll the Centerspread
+// silently typed into a puzzle they had never touched. A single-key shortcut
+// that is always on and cannot be turned off is exactly what WCAG 2.1.4
+// prohibits. A game now claims the keyboard only once the reader clicks into it
+// or tabs to it.
+let activeGame = null;
+const claim = (name, selector) => {
+  const el = document.querySelector(selector);
+  if (!el) return;
+  el.addEventListener("click", () => { activeGame = name; });
+  el.addEventListener("focusin", () => { activeGame = name; });
+};
+claim("cw", ".cw-layout");
 
 document.addEventListener("keydown", (e) => {
   const ae = document.activeElement;
@@ -1638,9 +1667,16 @@ document.addEventListener("keydown", (e) => {
       const r = document.createElement("div");
       r.className = "sb-row";
       row.forEach(letter => {
-        const cell = document.createElement("div");
+        // A real <button>, not a div: a div with a click handler is not in the
+        // tab order and screen readers do not announce it as pressable, so the
+        // whole puzzle was mouse-only. Enter and Space come free with the
+        // element, so no key handling is needed here.
+        const cell = document.createElement("button");
+        cell.type = "button";
         cell.className = "sb-cell" + (letter === PUZZLE.center ? " sb-center" : "");
         cell.textContent = letter;
+        cell.setAttribute("aria-label",
+          letter === PUZZLE.center ? `${letter}, centre letter, required in every word` : letter);
         cell.addEventListener("click", () => { activeGame = "sb"; addLetter(letter); });
         r.appendChild(cell);
       });
@@ -1750,7 +1786,7 @@ document.addEventListener("keydown", (e) => {
   document.getElementById("sb-delete").addEventListener("click", () => { activeGame = "sb"; backspace(); });
   document.getElementById("sb-shuffle").addEventListener("click", () => { activeGame = "sb"; shuffle(); });
   document.getElementById("sb-enter").addEventListener("click", () => { activeGame = "sb"; submit(); });
-  document.querySelector(".sb-section").addEventListener("click", () => { activeGame = "sb"; });
+  claim("sb", ".sb-section");
 
   document.addEventListener("keydown", (e) => {
     const ae = document.activeElement;
@@ -1837,6 +1873,9 @@ document.addEventListener("keydown", (e) => {
       const btn = document.createElement("button");
       btn.type = "button";
       btn.className = "cn-tile" + (selected.has(idx) ? " cn-tile-selected" : "");
+      // Selection is otherwise conveyed only by colour, which screen readers
+      // cannot perceive.
+      btn.setAttribute("aria-pressed", selected.has(idx) ? "true" : "false");
       btn.textContent = entry.word;
       btn.dataset.idx = String(idx);
       btn.disabled = gameOver;

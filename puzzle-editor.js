@@ -18,7 +18,7 @@ window.WLPuzzleEditor = (function () {
   const MARKUP = `
   <div class="ed-modal-overlay" id="bee-modal" role="dialog" aria-modal="true" aria-labelledby="bee-modal-title">
     <div class="ed-modal">
-      <button class="ed-modal-close">×</button>
+      <button class="ed-modal-close" aria-label="Close">×</button>
       <h2 id="bee-modal-title">Add a Spelling Bee puzzle</h2>
       <div class="ed-form">
         <div class="bee-letters">
@@ -28,7 +28,7 @@ window.WLPuzzleEditor = (function () {
         <label>Valid words (one per line; must contain the center letter, ≥4 letters, only the 7 letters)
           <textarea id="bee-words" rows="14" placeholder="ANTE&#10;LATE&#10;TRAIL&#10;..."></textarea>
         </label>
-        <div class="ed-error" id="bee-error"></div>
+        <div class="ed-error" id="bee-error" role="alert"></div>
         <div class="ed-form-actions">
           <button class="btn-ghost" data-cancel>Cancel</button>
           <button class="btn-primary" id="bee-save">Save</button>
@@ -40,7 +40,7 @@ window.WLPuzzleEditor = (function () {
   <!-- Crossword modal -->
   <div class="ed-modal-overlay" id="cw-modal" role="dialog" aria-modal="true" aria-labelledby="cw-modal-title">
     <div class="ed-modal">
-      <button class="ed-modal-close">×</button>
+      <button class="ed-modal-close" aria-label="Close">×</button>
       <h2 id="cw-modal-title">Add a Mini Crossword</h2>
       <div class="ed-form">
         <p class="ed-tip">Enter five rows of five letters each. Columns will form the down-clue answers, so make sure they spell real words too.</p>
@@ -69,7 +69,7 @@ window.WLPuzzleEditor = (function () {
           <div class="clue-row"><label>5 Down</label><input type="text" id="cw-d-5"></div>
         </div>
 
-        <div class="ed-error" id="cw-error"></div>
+        <div class="ed-error" id="cw-error" role="alert"></div>
         <div class="ed-form-actions">
           <button class="btn-ghost" data-cancel>Cancel</button>
           <button class="btn-primary" id="cw-save">Save</button>
@@ -81,7 +81,7 @@ window.WLPuzzleEditor = (function () {
   <!-- Connections modal -->
   <div class="ed-modal-overlay" id="cn-modal" role="dialog" aria-modal="true" aria-labelledby="cn-modal-title">
     <div class="ed-modal">
-      <button class="ed-modal-close">×</button>
+      <button class="ed-modal-close" aria-label="Close">×</button>
       <h2 id="cn-modal-title">Add a Connections puzzle</h2>
       <div class="ed-form">
         <p class="ed-tip">Four groups of four words. Each group gets a category name and a difficulty (yellow = easiest, purple = hardest). Words will be shuffled before the reader sees them.</p>
@@ -105,7 +105,7 @@ window.WLPuzzleEditor = (function () {
           <label>Category <input type="text" data-cn-cat="purple"></label>
           <label>Four words <input type="text" data-cn-words="purple"></label>
         </div>
-        <div class="ed-error" id="cn-error"></div>
+        <div class="ed-error" id="cn-error" role="alert"></div>
         <div class="ed-form-actions">
           <button class="btn-ghost" data-cancel>Cancel</button>
           <button class="btn-primary" id="cn-save">Save</button>
@@ -117,14 +117,14 @@ window.WLPuzzleEditor = (function () {
   <!-- Word Search modal -->
   <div class="ed-modal-overlay" id="ws-modal" role="dialog" aria-modal="true" aria-labelledby="ws-modal-title">
     <div class="ed-modal">
-      <button class="ed-modal-close">×</button>
+      <button class="ed-modal-close" aria-label="Close">×</button>
       <h2 id="ws-modal-title">Add a Word Search puzzle</h2>
       <div class="ed-form">
         <p class="ed-tip">One word or phrase per line (or separate them with commas). Shown to the player exactly as typed. Only the letters go in the grid (spaces and punctuation are ignored). Keep each to 16 letters or fewer so it fits.</p>
         <label>Words
           <textarea id="ws-words" rows="14" placeholder="Cherry Blossoms&#10;April Fools Day&#10;Bees&#10;Sunshine&#10;..."></textarea>
         </label>
-        <div class="ed-error" id="ws-error"></div>
+        <div class="ed-error" id="ws-error" role="alert"></div>
         <div class="ed-form-actions">
           <button class="btn-ghost" data-cancel>Cancel</button>
           <button class="btn-primary" id="ws-save">Save</button>
@@ -140,6 +140,7 @@ window.WLPuzzleEditor = (function () {
 
   let built = false;
   let onSaveCallback = null;
+  let lastFocused = null;      // restored when a modal closes
   const api = {};
 
   function notifyHost() { if (onSaveCallback) onSaveCallback(); }
@@ -152,7 +153,12 @@ window.WLPuzzleEditor = (function () {
     mine.forEach(el => document.body.appendChild(el));
 
     // Close only this component's modals, never a host's.
-    function closeModals() { mine.forEach(m => m.classList.remove("visible")); }
+    function closeModals() {
+      mine.forEach(m => m.classList.remove("visible"));
+      // Return focus to whatever opened the modal.
+      if (lastFocused && lastFocused.focus) lastFocused.focus();
+      lastFocused = null;
+    }
 
     mine.forEach(m => {
       m.querySelectorAll(".ed-modal-close, [data-cancel]").forEach(b => b.addEventListener("click", closeModals));
@@ -326,6 +332,7 @@ window.WLPuzzleEditor = (function () {
   function entry(kind) {
     return function (index, opts) {
       if (index && typeof index === "object") { opts = index; index = undefined; }
+      lastFocused = document.activeElement;
       build();
       onSaveCallback = (opts && typeof opts.onSave === "function") ? opts.onSave : null;
       return api[kind](index);

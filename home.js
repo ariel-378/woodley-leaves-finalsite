@@ -183,8 +183,46 @@
   // ===== Drag-and-drop layout editing (editors only) =====
   let dragId = null;
 
+  // Reordering by dragging is pointer-only. The same move is offered as two
+  // buttons per story so the front page can be arranged from the keyboard.
+  function moveStory(id, dir) {
+    const ids = lastOrderIds.slice();
+    const from = ids.indexOf(id);
+    const to = dir === "up" ? from - 1 : from + 1;
+    if (from < 0 || to < 0 || to >= ids.length) return;
+    ids.splice(from, 1);
+    ids.splice(to, 0, id);
+    WLHomeOrder.set(ids);   // fires wl-home-order-change → render()
+    // Focus the same control on the re-rendered card so repeated presses work.
+    setTimeout(() => {
+      const btn = document.querySelector(`[data-home-id="${id}"] [data-home-move="${dir}"]`);
+      if (btn) btn.focus();
+    }, 0);
+  }
+
+  function addStoryMoveControls(el) {
+    if (el.querySelector(":scope > .wl-home-move")) return;
+    const title = (el.querySelector("h2, h3, .ha-hero-title, a") || {}).textContent || "story";
+    const label = title.trim().slice(0, 40);
+    const box = document.createElement("div");
+    box.className = "wl-home-move";
+    box.innerHTML = `
+      <button type="button" class="wl-mc-btn" data-home-move="up" aria-label="Move “${label}” earlier">↑</button>
+      <button type="button" class="wl-mc-btn" data-home-move="down" aria-label="Move “${label}” later">↓</button>
+    `;
+    box.querySelectorAll("[data-home-move]").forEach(b => {
+      b.addEventListener("click", (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        moveStory(el.dataset.homeId, b.dataset.homeMove);
+      });
+    });
+    el.appendChild(box);
+  }
+
   function enableDragDrop() {
     document.querySelectorAll("[data-home-id]").forEach(el => {
+      addStoryMoveControls(el);
       el.setAttribute("draggable", "true");
       el.addEventListener("dragstart", (e) => {
         dragId = el.dataset.homeId;
