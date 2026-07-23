@@ -1,6 +1,7 @@
 // Article data store. Real articles from the April 2026 edition of The Woodley Leaves.
 window.WL_ARTICLES = {
   "hopkinson-black-history-assembly": {
+    photo: "media/photo-hopkinson-black-history-assembly.jpg",
     title: "Dr. Natalie Hopkinson Speaks at Black History Month Assembly",
     deck: "The Black Student Union hosted the American University professor and Go-Go Museum founder for a Black History Month address on Feb. 27.",
     section: "News",
@@ -18,6 +19,7 @@ window.WL_ARTICLES = {
   },
 
   "achtmeyer-humanities-chair": {
+    photo: "media/photo-achtmeyer-humanities-chair.jpg",
     title: "Rob Ellwood Appointed as New Humanities Chair",
     deck: "The 5th Grade Dean and longtime middle school Humanities teacher will lead the Upper School department beginning in 2026-27.",
     section: "News",
@@ -34,6 +36,7 @@ window.WL_ARTICLES = {
   },
 
   "science-olympiad-dc-tournament": {
+    photo: "media/photo-science-olympiad-dc-tournament.jpg",
     title: "Maret Hosts DC Science Olympiad Tournament",
     deck: "After Basis DC ran out of space, Maret volunteered its campus to run the March competition across more than a dozen science events.",
     section: "News",
@@ -51,6 +54,7 @@ window.WL_ARTICLES = {
   },
 
   "harris-womens-history-assembly": {
+    photo: "media/photo-harris-womens-history-assembly.jpg",
     title: "Dr. Kanika Harris Inspires Students at Women's History Month Assembly",
     deck: "The behavioral health scientist and Executive Director of the National Association to Advance Black Birth addressed racial disparities in maternal care.",
     section: "News",
@@ -67,6 +71,7 @@ window.WL_ARTICLES = {
   },
 
   "ice-walkout-february": {
+    photo: "media/photo-ice-walkout-february.jpg",
     title: "Maret Upper School Students Walk Out of Classes to Protest ICE",
     deck: "On Feb. 27, Maret students joined more than a thousand DMV peers at the Lincoln Memorial to protest ICE brutality toward immigrants.",
     section: "News",
@@ -83,6 +88,7 @@ window.WL_ARTICLES = {
   },
 
   "benefit-concert-one-acts": {
+    photo: "media/photo-benefit-concert-one-acts.jpg",
     title: "Maret Students Unite for a Night of Theater, Music, and Charity",
     deck: "The May 1 Benefit Concert pairs student-written One Acts with musical performances to raise funds for the Horizons program.",
     section: "Features",
@@ -103,6 +109,7 @@ window.WL_ARTICLES = {
   },
 
   "womens-history-month-clubs": {
+    photo: "media/photo-womens-history-month-clubs.jpg",
     title: "Maret Upper School Honors Women's History Month Through Club Celebrations",
     deck: "Leaders of Girls Who Code and Black Girl Magic describe how their clubs are marking Women's History Month through research, programming, and community.",
     section: "Features",
@@ -118,6 +125,7 @@ window.WL_ARTICLES = {
   },
 
   "facilities-severe-weather": {
+    photo: "media/photo-facilities-severe-weather.jpg",
     title: "Maret Maintains Campus through Severe Weather",
     deck: "Facilities team member Mr. Whitaker describes how early mornings, plowing, and salt keep the campus safe through D.C.'s severe weather.",
     section: "Features",
@@ -137,6 +145,7 @@ window.WL_ARTICLES = {
   },
 
   "march-madness-maret": {
+    photo: "media/photo-march-madness-maret.jpg",
     title: "Madness Takes Over Maret in March",
     deck: "Faculty and student bracket pools turn March into a school-wide competition where even non-sports fans join the debate over upsets and Cinderellas.",
     section: "Features",
@@ -159,6 +168,7 @@ window.WL_ARTICLES = {
   },
 
   "service-clubs-engagement": {
+    photo: "media/photo-service-clubs-engagement.jpg",
     title: "Engagement Clubs Connect Students to the Wider Community",
     deck: "Extraordinary Birthdays Club and Comfort Cases Club mobilize Maret students to support children and families in need through donations and drives.",
     section: "Features",
@@ -177,6 +187,7 @@ window.WL_ARTICLES = {
   },
 
   "student-activism-youth-voices": {
+    photo: "media/photo-student-activism-youth-voices.jpg",
     title: "Student Activism Demonstrates The Power of Youth Voices",
     deck: "Nationwide student walkouts against ICE show a generation unwilling to stay silent about unconstitutional detentions and killings.",
     section: "Op-Ed",
@@ -192,6 +203,7 @@ window.WL_ARTICLES = {
   },
 
   "intolerant-politics-science-deadly": {
+    photo: "media/photo-intolerant-politics-science-deadly.jpg",
     title: "Intolerant Politics Controlling Scientific Research Is Deadly",
     deck: "When governments with intolerant ideologies dictate what gets researched, the systemic exclusion of minorities from science becomes a deadly weapon.",
     section: "Op-Ed",
@@ -210,6 +222,7 @@ window.WL_ARTICLES = {
   },
 
   "trump-stealing-midterms": {
+    photo: "media/photo-trump-stealing-midterms.jpg",
     title: "Trump is Trying to Steal the Midterms",
     deck: "From gerrymandering to voter suppression, the Trump administration's tactics reveal an effort to rig the 2026 midterms rather than win them.",
     section: "Op-Ed",
@@ -229,6 +242,7 @@ window.WL_ARTICLES = {
   },
 
   "wuthering-whites-review": {
+    photo: "media/photo-wuthering-whites-review.jpg",
     title: "Wuthering Whites",
     deck: "Emerald Fennell's new Wuthering Heights erases Heathcliff's race and replaces Bronte's gothic tragedy with hypersexualized fantasy.",
     section: "Op-Ed",
@@ -245,6 +259,7 @@ window.WL_ARTICLES = {
   },
 
   "gun-ownership-privilege-not-right": {
+    photo: "media/photo-gun-ownership-privilege-not-right.jpg",
     title: "Gun Ownership Should be a Privilege, not a Right",
     deck: "U.S. gun death rates will not fall until Americans stop treating firearm ownership as an absolute right instead of a qualified privilege.",
     section: "Op-Ed",
@@ -263,6 +278,7 @@ window.WL_ARTICLES = {
   },
 
   "dc-spring-activities-bloom": {
+    photo: "media/photo-dc-spring-activities-bloom.jpg",
     title: "D.C. Blooms with Spring Activities",
     deck: "From the first-ever Tulip Day on the National Mall to the Cherry Blossom races, D.C. offered floral ways to welcome spring this year.",
     section: "Style",
@@ -282,6 +298,7 @@ window.WL_ARTICLES = {
   },
 
   "beyond-handbook-maret-dress-code": {
+    photo: "media/photo-beyond-handbook-maret-dress-code.jpg",
     title: "Beyond the Handbook: Maret's Dress Code",
     deck: "Students say Maret's relaxed dress code gives them freedom to express themselves, setting it apart from stricter schools across the DMV.",
     section: "Style",
@@ -301,6 +318,7 @@ window.WL_ARTICLES = {
   },
 
   "harry-styles-kiss-all-the-time": {
+    photo: "media/photo-harry-styles-kiss-all-the-time.jpg",
     title: "Harry Styles Returns with Kiss All The Time. Disco, Occasionally.",
     deck: "The singer's fourth solo album debuted with 63 million streams and a world tour that sent ticket prices soaring into the thousands.",
     section: "Style",
@@ -321,6 +339,7 @@ window.WL_ARTICLES = {
   },
 
   "marets-favorite-literature": {
+    photo: "media/photo-marets-favorite-literature.jpg",
     title: "Maret's Favorite Literature",
     deck: "Students and faculty share the books they read for fun, from historical fiction and manga to Tim O'Brien and Bill Bryson.",
     section: "Style",
@@ -338,6 +357,7 @@ window.WL_ARTICLES = {
   },
 
   "mac-lacrosse-bounce-back": {
+    photo: "media/photo-mac-lacrosse-bounce-back.jpg",
     title: "Maret Lacrosse Looks to Bounce Back after a Disappointing Start",
     deck: "After opening the season 1-3, the lacrosse team is leaning on preseason work and player-to-player chemistry to build toward a playoff run.",
     section: "Sports",
@@ -356,6 +376,7 @@ window.WL_ARTICLES = {
   },
 
   "mac-tennis-full-swing": {
+    photo: "media/photo-mac-tennis-full-swing.jpg",
     title: "Mac Tennis is in Full Swing",
     deck: "With a full roster of 16, a new coach, and early matches under their belts, MAC tennis is building chemistry and momentum for the spring.",
     section: "Sports",
@@ -373,6 +394,7 @@ window.WL_ARTICLES = {
   },
 
   "ultimate-frisbee-hidden-gem": {
+    photo: "media/photo-ultimate-frisbee-hidden-gem.jpg",
     title: "Ultimate Frisbee, in a Class of its Own",
     deck: "Maret's ultimate frisbee team pairs jeans, jorts, and nicknames with fierce competition, building a hidden gem of a sports culture.",
     section: "Sports",
@@ -391,6 +413,7 @@ window.WL_ARTICLES = {
   },
 
   "student-athlete-pressure": {
+    photo: "media/photo-student-athlete-pressure.jpg",
     title: "Too Much, Too Young? The Pressure Facing Today's Student-Athletes.",
     deck: "From Olympic figure skater Alysa Liu to Maret's multi-sport students, young athletes are navigating early commitment and the toll it takes.",
     section: "Sports",
@@ -407,6 +430,7 @@ window.WL_ARTICLES = {
   },
 
   "isl-softball-momentum": {
+    photo: "media/photo-isl-softball-momentum.jpg",
     title: "ISL Softball Builds Momentum with Tight Bond, Fundamental Skills, and Rigorous Practices",
     deck: "After a tough opening loss to Potomac, ISL softball is leaning on close team chemistry and intense practices to prepare for a strong season.",
     section: "Sports",
