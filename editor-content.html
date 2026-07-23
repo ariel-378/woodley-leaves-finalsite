@@ -152,6 +152,18 @@
     </div>
 
     <div id="content-sections"></div>
+
+    <!-- ── Publish & transfer ─────────────────────────────────────────── -->
+    <section class="c-publish" id="wl-publish-panel" style="margin-top:36px;border-top:2px solid var(--ink);padding-top:20px;">
+      <h3 style="font-family:Georgia,serif;font-size:20px;margin:0 0 4px;">Publish &amp; transfer</h3>
+      <p class="c-intro" style="margin-top:4px;">Your edits are saved as <b>drafts in this browser only</b> — a co-editor on another laptop won't see them yet. To move them to another computer, hand them to a teammate, or publish them for readers, <b>download the content bundle</b> and commit it to the site (or send the file to a teammate to load).</p>
+      <div class="c-toolbar" style="gap:8px;">
+        <button class="btn-primary" id="wl-publish-download">Download content bundle</button>
+        <label class="btn-ghost" for="wl-publish-file" style="cursor:pointer;">Load content bundle…</label>
+        <input type="file" id="wl-publish-file" accept="application/json,.json" style="display:none;">
+      </div>
+      <p class="c-intro" id="wl-publish-status" role="status" aria-live="polite" style="margin-top:8px;color:var(--muted);"></p>
+    </section>
   </div>
 </main>
 
@@ -299,6 +311,7 @@
 <script src="submissions.js"></script>
 <script src="auth.js"></script>
 <script src="modal-a11y.js"></script>
+<script src="content-bundle.js"></script>
 <script src="script.js"></script>
 <script>
 (function () {
