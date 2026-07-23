@@ -126,8 +126,8 @@
     <p data-wl-text="tip-success-body">Our editors read every pitch. If we run with yours, you'll see it on the site soon. If you left an email, we might reach out.</p>
   </div>
 
-  <div class="tip-note">
-    <strong>Privacy note:</strong> in this demo version, tips are saved locally in your browser only. A real deployment would deliver tips to an editor-only email inbox. We are not using your information for anything else.
+  <div class="tip-note" id="tip-privacy-note">
+    <strong>Privacy note:</strong> your pitch goes straight to the editors. We are not using your information for anything else.
   </div>
 
   <div class="page-flourish flourish-large" aria-hidden="true">
@@ -152,6 +152,16 @@
   const form = document.getElementById("tip-form");
   const err = document.getElementById("tip-error");
   const btn = form.querySelector(".tip-submit");
+
+  // Tell readers the truth about where a pitch goes: straight to the editors
+  // when the submissions endpoint is set, or by email while it isn't. Reads the
+  // committed config (what every reader gets), not this browser's draft.
+  const note = document.getElementById("tip-privacy-note");
+  if (note && window.WLSubmit) {
+    note.innerHTML = WLSubmit.isConfigured()
+      ? "<strong>Privacy note:</strong> your pitch goes straight to the editors. We are not using your information for anything else."
+      : "<strong>Privacy note:</strong> pitch delivery isn't set up yet, so your pitch is sent by email instead. We are not using your information for anything else.";
+  }
 
   // Pitches may be sent anonymously — the page promises that. Name and email
   // stay optional here and are only passed along if the reader typed them.

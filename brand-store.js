@@ -18,7 +18,7 @@ window.WLBrand = (function () {
 
   // Only these keys may be overridden from the editor — an unknown key in
   // storage is ignored rather than blindly merged into the live config.
-  var FIELDS = ["name", "school", "tagline", "splashMark", "homeTeam", "colors", "ornament", "favicon", "contacts", "footerNote"];
+  var FIELDS = ["name", "school", "tagline", "splashMark", "homeTeam", "colors", "ornament", "favicon", "contacts", "footerNote", "submissions"];
 
   function readRaw() {
     try {
@@ -63,11 +63,10 @@ window.WLBrand = (function () {
     return out;
   }
 
-  // Like get(), but keeps every key config.js defines — including ones the
-  // Design tab never touches, such as `submissions`. Only for the export: a
-  // downloaded config.js must be a COMPLETE replacement, or settings the
-  // dashboard doesn't know about (the Google Sheet endpoint) would vanish the
-  // moment a school made their branding permanent.
+  // Like get(), but keeps every key config.js defines — including any the Design
+  // tab doesn't surface yet. Only for the export: a downloaded config.js must be
+  // a COMPLETE replacement, or settings the dashboard doesn't know about would
+  // vanish the moment a school made their branding permanent.
   function fullConfig() {
     var base = defaults();
     var over = readRaw();

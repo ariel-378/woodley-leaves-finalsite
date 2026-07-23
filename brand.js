@@ -161,6 +161,28 @@
     });
   }
 
+  // Opt-in body text: any element tagged data-wl-brand carries a placeholder
+  // name in its own text (e.g. a puzzle byline that reads "By The Student Times
+  // Puzzle Team"). Snapshot the originals so re-applying substitutes from the
+  // template text, then swap the same tokens the meta tags use. This is how
+  // JS-static strings the masthead/footer pass never touches get the real name.
+  var textBase = null;
+  function snapshotText() {
+    textBase = [];
+    document.querySelectorAll("[data-wl-brand]").forEach(function (elm) {
+      textBase.push({ el: elm, text: elm.textContent });
+    });
+  }
+  function rebrandText() {
+    if (!textBase) snapshotText();
+    textBase.forEach(function (rec) {
+      var v = rec.text;
+      if (cfg.name) v = v.replace(/The Student Times/g, function () { return cfg.name; });
+      if (cfg.school) v = v.replace(/Your School/g, function () { return cfg.school; });
+      rec.el.textContent = v;
+    });
+  }
+
   function apply() {
     setFavicon();
 
@@ -180,6 +202,9 @@
     // their own og: tags later (their inline script runs after this), so this
     // is just the sensible default for every page.
     rebrandMeta();
+
+    // Body-text strings tagged data-wl-brand (e.g. the puzzle byline).
+    rebrandText();
 
     // Dateline: SCHOOL · TAGLINE (uniform across pages).
     var parts = [cfg.school, cfg.tagline].filter(Boolean).map(function (x) { return String(x).toUpperCase(); });

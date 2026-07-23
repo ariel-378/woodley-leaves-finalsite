@@ -188,12 +188,18 @@
     }
   }
 
+  // The real paper name (from the Design tab / config), for strings this file
+  // injects after brand.js has already run its page-load rebrand pass.
+  function brandName() {
+    return (window.WLBrand && WLBrand.get && WLBrand.get().name) || "The Student Times";
+  }
+
   function showSubscribeModal() {
     if (!document.getElementById("wl-modal-overlay")) createModal();
     const c = document.getElementById("wl-modal-content");
     c.innerHTML = `
       <h2>Weekly Newsletter</h2>
-      <p class="wl-demo-note">Get The Student Times delivered every Friday. Enter your email, phone, or both.</p>
+      <p class="wl-demo-note">Get ${brandName()} delivered every Friday. Enter your email, phone, or both.</p>
       <label>Email <input type="email" id="sub-email" placeholder="you@example.com" autocomplete="email"></label>
       <label>Phone <input type="tel" id="sub-phone" placeholder="(202) 555-0123" autocomplete="tel"></label>
       <div class="wl-hp" aria-hidden="true"><label>Leave this empty <input type="text" id="sub-hp" tabindex="-1" autocomplete="off"></label></div>
@@ -224,7 +230,7 @@
                       : "by email";
       c.innerHTML = `
         <h2>You're on the list</h2>
-        <p style="color:#333; font-size:14px; margin: 6px 0 16px;">Thanks — you'll get the next Friday edition of The Student Times ${delivery}.</p>
+        <p style="color:#333; font-size:14px; margin: 6px 0 16px;">Thanks — you'll get the next Friday edition of ${brandName()} ${delivery}.</p>
         <button class="wl-submit" id="sub-close">Close</button>
       `;
       document.getElementById("sub-close").addEventListener("click", hideModal);
@@ -268,7 +274,7 @@
     if (!document.getElementById("wl-modal-overlay")) createModal();
     const c = document.getElementById("wl-modal-content");
     c.innerHTML = `
-      <h2>Join the Student Times staff</h2>
+      <h2>Join the ${brandName()} staff</h2>
       <p class="wl-demo-note">Add your email to the club mailing list. You'll get pitch deadlines, story assignments, and meeting times.</p>
       <label>Email <input type="email" id="wr-email" placeholder="you@example.com" autocomplete="email"></label>
       <div class="wl-hp" aria-hidden="true"><label>Leave this empty <input type="text" id="wr-hp" tabindex="-1" autocomplete="off"></label></div>

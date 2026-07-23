@@ -217,6 +217,17 @@
         <button class="btn-ghost" type="button" id="add-contact">+ Add contact</button>
       </section>
 
+      <!-- ── Submissions ───────────────────────────────────────────────── -->
+      <section class="bp">
+        <h3>Submissions</h3>
+        <p class="bp-hint">Where reader pitches, newsletter signups, and staff signups are sent. Paste a Google Apps Script web-app URL (see setup/README.md). It goes live for readers once you Download config and commit it.</p>
+        <label for="f-sub-endpoint">Submissions endpoint</label>
+        <input type="text" id="f-sub-endpoint" placeholder="https://script.google.com/macros/s/.../exec" spellcheck="false" style="width:100%;max-width:520px;">
+        <p class="bp-hint" id="sub-status" style="margin:6px 0 0;" role="status" aria-live="polite"></p>
+        <label for="f-sub-fallback" style="display:block;margin-top:12px;">Fallback email <span style="color:var(--muted);font-weight:400;">(used if a send fails)</span></label>
+        <input type="email" id="f-sub-fallback" placeholder="editor@school.org" spellcheck="false" style="max-width:320px;">
+      </section>
+
       <div class="save-bar">
         <div>
           <button class="btn-primary" type="button" id="save-all">Save design</button>
@@ -359,7 +370,28 @@
     renderOrnamentPreview();
 
     renderContacts(cfg.contacts);
+
+    const sub = (cfg.submissions && typeof cfg.submissions === "object") ? cfg.submissions : {};
+    el("f-sub-endpoint").value = sub.endpoint || "";
+    el("f-sub-fallback").value = sub.fallbackEmail || "";
+    updateSubStatus();
     dirty = false;
+  }
+
+  // Honest status: "live" reflects the COMMITTED config (what every reader
+  // actually gets, from config.js); "entered" reflects the draft in this form,
+  // which only reaches readers once the config is downloaded and committed.
+  function updateSubStatus() {
+    const s = el("sub-status");
+    if (!s) return;
+    const committed = String((((window.WL_CONFIG || {}).submissions) || {}).endpoint || "").trim();
+    const entered = el("f-sub-endpoint").value.trim();
+    let msg, live = false;
+    if (committed) { msg = "Live — reader forms are sending to the committed endpoint."; live = true; }
+    else if (entered) { msg = "Entered here, but not live for readers yet — Download config and commit it to activate."; }
+    else { msg = "Not set up — forms offer readers an email fallback instead."; }
+    s.textContent = msg;
+    s.style.color = live ? "var(--accent)" : "var(--muted)";
   }
 
   // Any edit anywhere in the form counts — used to avoid silently discarding
@@ -395,6 +427,7 @@
   }
   bindColorPair("f-accent", "f-accent-picker");
   bindColorPair("f-fav-bg", "f-fav-bg-picker");
+  el("f-sub-endpoint").addEventListener("input", updateSubStatus);
 
   // ── Flourish controls ───────────────────────────────────────────────────
   el("f-orn-file").addEventListener("change", () => {
@@ -473,6 +506,13 @@
         fg: "#ffffff",
       },
       contacts: readContacts(),
+      submissions: (function () {
+        const ep = el("f-sub-endpoint").value.trim();
+        const fb = el("f-sub-fallback").value.trim();
+        // Store the whole object (get() replaces submissions wholesale), or
+        // clear back to the config.js default when both fields are empty.
+        return (ep || fb) ? { endpoint: ep, fallbackEmail: fb || undefined } : undefined;
+      })(),
     };
   }
 
@@ -489,7 +529,7 @@
   }
 
   el("save-all").addEventListener("click", () => {
-    if (commit()) say("Saved. Every page in this browser now uses your design.", "ok");
+    if (commit()) { updateSubStatus(); say("Saved. Every page in this browser now uses your design.", "ok"); }
   });
 
   el("reset-all").addEventListener("click", () => {
