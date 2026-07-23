@@ -70,6 +70,75 @@
       </article>`;
   }
 
+  // ===== Designated section blocks (below the hero) =====
+  function slug(s) {
+    return String(s).toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+  }
+
+  // Image for a section-block card: photo, YouTube still, or placeholder box
+  // (the placeholder reuses .ha-ph so it fills the same aspect box).
+  function imgTag(a, cls) {
+    if (a.photo) {
+      return `<img class="${cls}" src="${escapeHtml(a.photo)}" alt="${escapeHtml(a.title)}" loading="lazy">`;
+    }
+    const yt = youtubeId(a.video);
+    if (yt) {
+      return `<img class="${cls}" src="https://img.youtube.com/vi/${yt}/hqdefault.jpg" alt="${escapeHtml(a.title)}" loading="lazy">`;
+    }
+    return `<span class="${cls} ha-ph" role="img" aria-label="Photo coming soon"></span>`;
+  }
+
+  // The lead story of a block: large image, deck, prominent headline.
+  function hsbLeadHtml(a) {
+    return `
+      <article class="hsb-lead">
+        <a class="hsb-lead-media" href="${href(a)}">${imgTag(a, "hsb-lead-img")}</a>
+        <div class="sec-eyebrow">${byline(a)}</div>
+        <h3><a href="${href(a)}">${escapeHtml(a.title)}</a></h3>
+        ${a.deck ? `<p class="sec-deck">${escapeHtml(a.deck)}</p>` : ""}
+      </article>`;
+  }
+  // Secondary stories: compact rows with a small thumbnail.
+  function hsbMiniHtml(a) {
+    return `
+      <article class="hsb-mini">
+        <div class="hsb-mini-text">
+          <h4><a href="${href(a)}">${escapeHtml(a.title)}</a></h4>
+          <div class="sec-eyebrow">${byline(a)}</div>
+        </div>
+        <a class="hsb-mini-thumb" href="${href(a)}">${imgTag(a, "hsb-mini-img")}</a>
+      </article>`;
+  }
+
+  // One block per editorial (article-holding) section, in nav order. Each block
+  // leads with its newest story and stacks up to three more beside it; the lead
+  // side alternates block-to-block for an editorial rhythm. Empty sections are
+  // skipped so the homepage never shows a blank block.
+  function sectionBlocksHtml() {
+    if (!window.WLSections || !window.WLArticles) return "";
+    const sections = WLSections.navSections()
+      .filter(s => Array.isArray(s.contentTypes) && s.contentTypes.includes("Articles"));
+    let shown = 0;
+    return sections.map(s => {
+      const arts = WLArticles.bySection(s.name).slice(0, 4);
+      if (!arts.length) return "";
+      const headingId = "hsb-" + slug(s.name);
+      const flip = (shown++ % 2 === 1) ? " hsb-flip" : "";
+      const [lead, ...rest] = arts;
+      return `
+        <section class="home-section-block${flip}" aria-labelledby="${headingId}">
+          <div class="section-header">
+            <h2 id="${headingId}"><a href="${escapeHtml(s.page)}">${escapeHtml(s.name)}</a></h2>
+            <a class="see-all" href="${escapeHtml(s.page)}">See all →</a>
+          </div>
+          <div class="hsb-grid">
+            ${hsbLeadHtml(lead)}
+            <div class="hsb-cards">${rest.map(hsbMiniHtml).join("")}</div>
+          </div>
+        </section>`;
+    }).join("");
+  }
+
   function renderBreaking(sorted) {
     const banner = document.getElementById("breaking-banner");
     const overlay = document.getElementById("breaking-popup");
@@ -151,16 +220,15 @@
     const hero = ordered[0];
     const left = ordered.slice(1, 3);
     const right = ordered.slice(3, 7);   // right rail: 4 stories
-    const more = ordered.slice(7, 13);
 
     const heroEl = document.getElementById("home-hero");
     if (heroEl) {
       heroEl.innerHTML = hero ? heroHtml(hero) : `<p class="ha-empty">No stories yet.</p>`;
       if (hero) heroEl.dataset.homeId = hero.id; else delete heroEl.dataset.homeId;
     }
-    fill("home-left", left.map(leftHtml).join(""));
-    fill("home-right", right.map(rightHtml).join("") +
+    fill("home-left", left.map(leftHtml).join("") +
       `<div class="sidebar-ads ha-sponsor" data-ads-offset="0" data-ads-limit="1"></div>`);
+    fill("home-right", right.map(rightHtml).join(""));
 
     const below = document.getElementById("home-below");
     if (below) {
@@ -169,8 +237,7 @@
           <div class="section-header"><h2>Video</h2><a href="videos.html" class="see-all">See all →</a></div>
           <a class="home-video-featured" id="home-video-featured" href="#"></a>
         </section>
-        ${more.length ? `<div class="section-header ha-more-head"><h2>More from the newsroom</h2></div>
-          <div class="ha-more">${more.map(leftHtml).join("")}</div>` : ""}`;
+        ${sectionBlocksHtml()}`;
       renderVideoModule();
     }
 

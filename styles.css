@@ -348,7 +348,9 @@ textarea:focus-visible,
 /* Left rail — two stacked stories */
 .ha-left { display: flex; flex-direction: column; }
 .ha-left-story { padding-bottom: 24px; margin-bottom: 24px; border-bottom: 1px solid var(--rule); }
-.ha-left-story:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+/* last-of-type, not last-child: the sponsor ad <div> can follow the stories,
+   and the final story should still sit flush with no divider rule under it. */
+.ha-left-story:last-of-type { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
 .ha-left-media { display: block; margin-bottom: 12px; }
 .ha-left-img { width: 100%; display: block; aspect-ratio: 3 / 2; object-fit: cover; }
 .ha-left-title { font-family: Georgia, "Times New Roman", serif; font-size: 25px; line-height: 1.14; font-weight: 700; margin: 0; }
@@ -356,8 +358,8 @@ textarea:focus-visible,
 
 /* Center hero */
 .ha-hero { text-align: center; }
-.ha-hero-media { display: block; max-width: 400px; margin: 0 auto 16px; }
-.ha-hero-img { width: 100%; display: block; aspect-ratio: 4 / 5; object-fit: cover; }
+.ha-hero-media { display: block; max-width: 460px; margin: 0 auto 16px; }
+.ha-hero-img { width: 100%; display: block; aspect-ratio: 4 / 3; object-fit: cover; }
 .ha-hero .kicker { text-align: center; color: var(--muted); }
 .ha-hero-title {
   font-family: "Old Standard TT", Georgia, serif;
@@ -456,6 +458,100 @@ body.wl-home-edit [data-home-id] a { pointer-events: none; }
 .ha-more-head { margin-top: 8px; }
 .ha-more { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 30px; margin-top: 20px; }
 .ha-more .ha-left-story { border-bottom: none; padding-bottom: 0; margin-bottom: 0; }
+
+/* Homepage designated section blocks — one per editorial section, below the
+   hero. Each leads with a large story and stacks up to three compact ones
+   beside it; the lead side alternates block-to-block for a magazine rhythm. */
+.home-section-block { margin-top: 56px; }
+
+/* Header: display-serif section name over a single strong rule, accent "See all" */
+.home-section-block .section-header {
+  border-top: 2px solid var(--ink);
+  border-bottom: none;
+  padding: 12px 0 14px;
+  margin-bottom: 26px;
+  align-items: baseline;
+}
+.home-section-block .section-header h2 {
+  font-family: "Old Standard TT", Georgia, serif;
+  font-size: clamp(26px, 3vw, 34px);
+  line-height: 1;
+  letter-spacing: -0.4px;
+}
+.home-section-block .section-header h2 a { color: var(--ink); }
+.home-section-block .section-header h2 a:hover { color: var(--accent); }
+.home-section-block .see-all {
+  font-family: "Helvetica Neue", Arial, sans-serif;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--accent);
+}
+.home-section-block .see-all:hover { text-decoration: underline; }
+
+/* Lead (wide) + stacked secondaries; flipped blocks put the lead on the right */
+.hsb-grid {
+  display: grid;
+  grid-template-columns: 1.5fr 1fr;
+  gap: 22px 46px;
+  align-items: start;
+}
+.home-section-block.hsb-flip .hsb-grid { grid-template-columns: 1fr 1.5fr; }
+.home-section-block.hsb-flip .hsb-lead { order: 2; }
+
+.hsb-lead-media { display: block; overflow: hidden; margin-bottom: 14px; }
+.hsb-lead-img {
+  width: 100%;
+  aspect-ratio: 3 / 2;
+  object-fit: cover;
+  display: block;
+  transition: transform 500ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+.hsb-lead:hover .hsb-lead-img { transform: scale(1.035); }
+.hsb-lead h3 {
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: clamp(22px, 2.2vw, 28px);
+  line-height: 1.12;
+  font-weight: 700;
+  margin: 2px 0 0;
+}
+.hsb-lead h3 a { color: var(--ink); }
+.hsb-lead:hover h3 a { color: var(--accent); }
+.hsb-lead .sec-deck { margin-top: 8px; }
+
+.hsb-cards { display: flex; flex-direction: column; }
+.hsb-mini {
+  display: grid;
+  grid-template-columns: 1fr 92px;
+  gap: 14px;
+  align-items: start;
+  padding: 15px 0;
+  border-top: 1px solid var(--rule);
+}
+.hsb-mini:first-child { border-top: none; padding-top: 0; }
+.hsb-mini:last-child { padding-bottom: 0; }
+.hsb-mini h4 {
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 16.5px;
+  line-height: 1.2;
+  font-weight: 700;
+  margin: 0 0 5px;
+}
+.hsb-mini h4 a { color: var(--ink); }
+.hsb-mini h4 a:hover { color: var(--accent); }
+.hsb-mini-thumb { line-height: 0; }
+.hsb-mini-img { width: 92px; height: 69px; object-fit: cover; display: block; }
+
+/* Stack to one column on narrow screens; the lead always comes first there */
+@media (max-width: 700px) {
+  .hsb-grid,
+  .home-section-block.hsb-flip .hsb-grid { grid-template-columns: 1fr; gap: 20px; }
+  .home-section-block.hsb-flip .hsb-lead { order: 0; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .hsb-lead-img { transition: none; }
+}
 
 .lede h2 {
   font-size: 44px;
