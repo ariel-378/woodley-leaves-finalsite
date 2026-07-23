@@ -1,0 +1,12 @@
+Old Standard TT is licensed under the SIL Open Font License, Version 1.1.
+Copyright (c) Alexey Kryukov (thessalonica@gmail.com).
+
+This license is available with a FAQ at: https://scripts.sil.org/OFL
+
+The SIL Open Font License (OFL) is a free, libre and open source license
+specifically designed for fonts and related software. It permits use, study,
+modification and redistribution (including bundling with a website) provided
+the fonts are not sold by themselves, the copyright/license notice is retained,
+and derivatives are not released under the "Reserved Font Name".
+
+Full license text: https://openfontlicense.org/open-font-license-official-text/

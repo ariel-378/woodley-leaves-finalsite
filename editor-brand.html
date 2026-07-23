@@ -5,8 +5,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Brand design — The Student Times</title>
 <link rel="icon" type="image/svg+xml" href="favicon.svg">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Old+Standard+TT:wght@400;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="styles.css" />
 <script src="config.js"></script>
 <script src="brand-store.js"></script>
@@ -57,6 +55,13 @@
   .checkbox-row input { width: auto; margin: 0; }
   .checkbox-row label { margin: 0; text-transform: none; letter-spacing: 0; font-size: 13px; color: var(--ink); }
   .field-note { font-size: 11px; color: var(--muted); text-transform: none; letter-spacing: 0; margin-top: 3px; line-height: 1.45; }
+
+  .theme-presets { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 4px; }
+  .preset-swatch { display: flex; align-items: center; gap: 8px; background: #fff; border: 1px solid var(--rule); padding: 6px 12px 6px 6px; cursor: pointer; font-family: inherit; font-size: 13px; color: var(--ink); }
+  .preset-swatch:hover { border-color: var(--ink); }
+  .preset-dots { display: inline-flex; }
+  .preset-dots span { width: 15px; height: 15px; border: 1px solid rgba(0,0,0,0.18); margin-right: -3px; border-radius: 2px; }
+  .preset-name { font-weight: 600; }
 
   .contact-row { display: grid; grid-template-columns: 1fr 1fr auto; gap: 8px; margin-bottom: 8px; align-items: start; }
   .contact-row input { margin-top: 0; }
@@ -134,6 +139,16 @@
             <input type="text" id="f-tagline" placeholder="Student Press Since 1998">
           </label>
         </div>
+        <div class="row-2">
+          <label>Splash word
+            <input type="text" id="f-splash" placeholder="RIVERSIDE" maxlength="16">
+            <span class="field-note">The big word behind the name on the opening splash — usually the school's short name.</span>
+          </label>
+          <label>Sports team name
+            <input type="text" id="f-hometeam" placeholder="Riverside">
+            <span class="field-note">Your team's name in the bracket data — it's highlighted in the sports brackets.</span>
+          </label>
+        </div>
       </section>
 
       <!-- ── Flourish ──────────────────────────────────────────────────── -->
@@ -184,12 +199,39 @@
           Used for the masthead rule, links, and buttons. Your flourish is not
           affected — it always keeps its own colors.
         </p>
-        <label for="f-accent">Accent</label>
+        <label>Palette</label>
+        <div class="theme-presets" id="theme-presets"></div>
+        <label for="f-accent" style="margin-top:14px;">Accent (school color)</label>
         <span class="swatch-row">
           <input type="color" id="f-accent-picker" aria-label="Pick accent color">
           <input type="text" id="f-accent" placeholder="#1d4e89" spellcheck="false" style="max-width:160px;">
         </span>
-        <span class="field-note">Leave empty to go back to the original color.</span>
+        <details style="margin-top:14px;">
+          <summary style="cursor:pointer;font-weight:600;font-size:13px;">Advanced — every color</summary>
+          <div class="row-2" style="margin-top:12px;">
+            <div>
+              <label for="f-ink">Text</label>
+              <span class="swatch-row"><input type="color" id="f-ink-picker" aria-label="Pick text color"><input type="text" id="f-ink" spellcheck="false"></span>
+            </div>
+            <div>
+              <label for="f-muted">Secondary text</label>
+              <span class="swatch-row"><input type="color" id="f-muted-picker" aria-label="Pick secondary text color"><input type="text" id="f-muted" spellcheck="false"></span>
+            </div>
+            <div>
+              <label for="f-paper">Page background</label>
+              <span class="swatch-row"><input type="color" id="f-paper-picker" aria-label="Pick page background"><input type="text" id="f-paper" spellcheck="false"></span>
+            </div>
+            <div>
+              <label for="f-cream">Panel background</label>
+              <span class="swatch-row"><input type="color" id="f-cream-picker" aria-label="Pick panel background"><input type="text" id="f-cream" spellcheck="false"></span>
+            </div>
+            <div>
+              <label for="f-rule">Hairlines</label>
+              <span class="swatch-row"><input type="color" id="f-rule-picker" aria-label="Pick hairline color"><input type="text" id="f-rule" spellcheck="false"></span>
+            </div>
+          </div>
+          <span class="field-note">Leave a field empty to use the palette default. Your flourish always keeps its own colors.</span>
+        </details>
       </section>
 
       <!-- ── Favicon ───────────────────────────────────────────────────── -->
@@ -209,6 +251,13 @@
             </span>
           </div>
         </div>
+        <div style="margin-top:8px;max-width:calc(50% - 5px);">
+          <label for="f-fav-fg">Letters color</label>
+          <span class="swatch-row">
+            <input type="color" id="f-fav-fg-picker" aria-label="Pick tab icon letters color">
+            <input type="text" id="f-fav-fg" placeholder="#ffffff" spellcheck="false">
+          </span>
+        </div>
       </section>
 
       <!-- ── Footer ────────────────────────────────────────────────────── -->
@@ -217,6 +266,10 @@
         <p class="bp-hint">Shown at the bottom of every page.</p>
         <div id="contacts-list"></div>
         <button class="btn-ghost" type="button" id="add-contact">+ Add contact</button>
+        <label style="margin-top:16px;">Footer note
+          <input type="text" id="f-footernote" placeholder="Student Publication">
+          <span class="field-note">A short line after the school name (e.g. "Student Publication").</span>
+        </label>
       </section>
 
       <!-- ── Submissions ───────────────────────────────────────────────── -->
@@ -377,6 +430,22 @@
     el("f-sub-endpoint").value = sub.endpoint || "";
     el("f-sub-fallback").value = sub.fallbackEmail || "";
     updateSubStatus();
+
+    el("f-splash").value = cfg.splashMark || "";
+    el("f-hometeam").value = cfg.homeTeam || "";
+    el("f-footernote").value = cfg.footerNote || "";
+
+    const favFg = fav.fg || "#ffffff";
+    el("f-fav-fg").value = favFg;
+    syncPicker("f-fav-fg-picker", favFg);
+
+    const cols = cfg.colors || {};
+    ["ink", "muted", "rule", "paper", "cream"].forEach(function (k) {
+      const v = cols[k] || "";
+      el("f-" + k).value = v;
+      if (v) syncPicker("f-" + k + "-picker", v);
+    });
+
     dirty = false;
   }
 
@@ -429,7 +498,45 @@
   }
   bindColorPair("f-accent", "f-accent-picker");
   bindColorPair("f-fav-bg", "f-fav-bg-picker");
+  bindColorPair("f-fav-fg", "f-fav-fg-picker");
+  ["ink", "muted", "rule", "paper", "cream"].forEach(function (k) {
+    bindColorPair("f-" + k, "f-" + k + "-picker");
+  });
   el("f-sub-endpoint").addEventListener("input", updateSubStatus);
+
+  // Ready-made palettes — one click fills every colour field (accent + advanced).
+  var PRESETS = [
+    { name: "Forest Green", colors: { ink: "#121212", muted: "#666666", rule: "#e2e2e2", paper: "#ffffff", cream: "#f7f5ef", accent: "#2e7d32" } },
+    { name: "Classic Ink",   colors: { ink: "#1a1a1a", muted: "#6b6b6b", rule: "#e0ddd6", paper: "#faf8f3", cream: "#f0ece2", accent: "#8a1c1c" } },
+    { name: "Midnight Navy", colors: { ink: "#14181f", muted: "#5b6470", rule: "#dfe3e8", paper: "#ffffff", cream: "#eef1f5", accent: "#1d4e89" } },
+    { name: "Sage Slate",    colors: { ink: "#1b1e23", muted: "#697079", rule: "#e3e5e8", paper: "#fbfbfa", cream: "#eef0f2", accent: "#3a6b52" } },
+  ];
+  function applyPreset(p) {
+    Object.keys(p.colors).forEach(function (k) {
+      el("f-" + k).value = p.colors[k];
+      syncPicker("f-" + k + "-picker", p.colors[k]);
+    });
+    dirty = true;
+  }
+  function renderPresets() {
+    var box = el("theme-presets");
+    if (!box) return;
+    box.innerHTML = "";
+    PRESETS.forEach(function (p) {
+      var b = document.createElement("button");
+      b.type = "button";
+      b.className = "preset-swatch";
+      b.setAttribute("aria-label", "Use the " + p.name + " palette");
+      b.innerHTML = '<span class="preset-dots">' +
+        ["paper", "cream", "accent", "ink"].map(function (k) {
+          return '<span style="background:' + p.colors[k] + '"></span>';
+        }).join("") +
+        '</span><span class="preset-name">' + p.name + "</span>";
+      b.addEventListener("click", function () { applyPreset(p); });
+      box.appendChild(b);
+    });
+  }
+  renderPresets();
 
   // ── Flourish controls ───────────────────────────────────────────────────
   el("f-orn-file").addEventListener("change", () => {
@@ -496,16 +603,23 @@
   // An empty field means "use the config.js default", never "store a blank" —
   // otherwise emptying a box would strand a value the form can't undo.
   function formPatch() {
+    const col = (id) => el(id).value.trim() || undefined;
     return {
       name: el("f-name").value.trim() || undefined,
       school: el("f-school").value.trim() || undefined,
       tagline: el("f-tagline").value.trim() || undefined,
-      colors: { accent: el("f-accent").value.trim() || undefined },
+      splashMark: el("f-splash").value.trim() || undefined,
+      homeTeam: el("f-hometeam").value.trim() || undefined,
+      footerNote: el("f-footernote").value.trim() || undefined,
+      colors: {
+        accent: col("f-accent"), ink: col("f-ink"), muted: col("f-muted"),
+        rule: col("f-rule"), paper: col("f-paper"), cream: col("f-cream"),
+      },
       ornament: Object.assign({}, ornament),
       favicon: {
         initials: el("f-fav-initials").value.trim().toUpperCase(),
         bg: el("f-fav-bg").value.trim() || undefined,
-        fg: "#ffffff",
+        fg: el("f-fav-fg").value.trim() || "#ffffff",
       },
       contacts: readContacts(),
       submissions: (function () {

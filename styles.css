@@ -1,5 +1,22 @@
 /* Student Times — NYT-inspired mockup styles */
 
+/* Self-hosted display face (SIL OFL, see fonts/OFL.txt) — no external request,
+   so the site runs under a strict CSP and stays private/offline-capable. */
+@font-face {
+  font-family: "Old Standard TT";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("fonts/old-standard-tt-400.woff2") format("woff2");
+}
+@font-face {
+  font-family: "Old Standard TT";
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url("fonts/old-standard-tt-700.woff2") format("woff2");
+}
+
 :root {
   --ink: #121212;
   --muted: #666;
@@ -7,6 +24,11 @@
   --paper: #ffffff;
   --cream: #f7f5ef;
   --accent: #2e7d32;
+
+  /* Typography tokens — a font picker sets these via brand.js (see Part 2). */
+  --font-display: "Old Standard TT", Georgia, "Times New Roman", serif;
+  --font-serif: Georgia, "Times New Roman", serif;
+  --font-sans: "Helvetica Neue", Arial, sans-serif;
 }
 
 * { box-sizing: border-box; }
