@@ -100,9 +100,56 @@ export async function run() {
     const ctx = await loadPage("editor-content.html");
     const { document } = ctx;
     check.ok("the Publish & transfer panel exists", !!document.getElementById("wl-publish-panel"));
+    check.ok("a publish button is present", !!document.getElementById("wl-publish-publish"));
     check.ok("a download button is present", !!document.getElementById("wl-publish-download"));
     check.ok("a load-from-file input is present", !!document.getElementById("wl-publish-file"));
     check.clean("editor page renders clean with the panel", ctx);
+  }
+
+  // ===== A published bundle seeds readers, once per version =====
+  {
+    const ctx = await loadPage("editor-content.html");
+    const { window } = ctx;
+    // Simulate a committed published-content.js having run.
+    window.WL_PUBLISHED = {
+      format: "woodley-content-bundle", version: 1,
+      data: { wl_brand: { name: "Published Paper" } },
+    };
+    check.ok("applies a new published version", window.WLBundle.applyPublished() === true);
+    check.equal("readers see the published content", window.WLBrand.get().name, "Published Paper");
+    check.ok("does not re-apply the same version", window.WLBundle.applyPublished() === false,
+      "the same published version was applied twice");
+
+    // A draft made after publishing survives a reload while the version is unchanged.
+    window.WLBrand.save({ name: "Local Draft" });
+    window.WLBundle.applyPublished();
+    check.equal("a local draft survives an unchanged published version",
+      window.WLBrand.get().name, "Local Draft");
+
+    // A brand-new published version wins over the draft.
+    window.WL_PUBLISHED = {
+      format: "woodley-content-bundle", version: 1,
+      data: { wl_brand: { name: "Newer Published" } },
+    };
+    check.ok("a newer published version re-applies", window.WLBundle.applyPublished() === true);
+    check.equal("and wins over the local draft", window.WLBrand.get().name, "Newer Published");
+    check.clean("no errors applying published content", ctx);
+  }
+
+  // ===== The publish artifact is valid, self-contained JS =====
+  {
+    const ctx = await loadPage("editor-content.html");
+    const { window } = ctx;
+    window.WLBrand.save({ name: "Export Me" });
+    const js = window.WLBundle.toPublishedJS();
+    check.ok("the publish file assigns WL_PUBLISHED", /window\.WL_PUBLISHED\s*=/.test(js));
+    // Run it into a fresh object to confirm it parses and carries the edit.
+    const sandbox = {};
+    new Function("window", js)(sandbox);
+    check.equal("the exported bundle carries the edit",
+      sandbox.WL_PUBLISHED.data.wl_brand.name, "Export Me");
+    check.equal("and is tagged as a bundle", sandbox.WL_PUBLISHED.format, "woodley-content-bundle");
+    check.clean("no errors exporting the publish file", ctx);
   }
 
   return check;

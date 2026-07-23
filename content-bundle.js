@@ -21,7 +21,7 @@ window.WLBundle = (function () {
   var FORMAT = "woodley-content-bundle";
   var VERSION = 1;
 
-  // Keys that are per-device/session, not content — never bundled.
+  // Keys that are per-device/session, not content — never bundled or applied.
   var EXCLUDE = {
     "wl_article_views": 1,             // reader analytics, per browser
     "wl_preview_role": 1,             // which role this browser is previewing
@@ -30,6 +30,7 @@ window.WLBundle = (function () {
     "wl_submit_last": 1,             // submission rate-limit timestamp
     "wl_sections_pages_migrated": 1,   // one-time data migration markers
     "wl_sections_custom_migrated": 1,
+    "wl_published_hash": 1,           // which published version this browser has applied
   };
 
   // Every store's change event — fired after a load so all pages re-render.
@@ -93,16 +94,21 @@ window.WLBundle = (function () {
     fireAll();
   }
 
-  function download(filename) {
-    var blob = new Blob([toJSON()], { type: "application/json" });
+  function saveFile(text, filename, type) {
+    var blob = new Blob([text], { type: type });
     var url = URL.createObjectURL(blob);
     var a = document.createElement("a");
     a.href = url;
-    a.download = filename || "content-bundle.json";
+    a.download = filename;
     document.body.appendChild(a);
     a.click();
     a.remove();
     setTimeout(function () { URL.revokeObjectURL(url); }, 0);
+  }
+
+  // The transfer/backup artifact: plain JSON a co-editor loads with load().
+  function download(filename) {
+    saveFile(toJSON(), filename || "content-bundle.json", "application/json");
   }
 
   function summary() {
@@ -110,27 +116,84 @@ window.WLBundle = (function () {
     return { keys: keys.length, bytes: toJSON().length };
   }
 
+  // ── Published content (the reader-apply half of publishing) ───────────────
+  //  A committed published-content.js sets window.WL_PUBLISHED to a bundle.
+  //  applyPublished() seeds it into localStorage on page load so every reader
+  //  sees the published content, and refreshes when a new version is published.
+  //  A content-hash marker makes it idempotent: the same published version is
+  //  applied once, so an editor's later drafts survive reloads — but a brand-new
+  //  published version wins over local drafts (commit drafts to keep them).
+  var MARKER = "wl_published_hash";
+
+  function hashStr(s) {
+    var h = 5381, i = s.length;
+    while (i) h = (h * 33) ^ s.charCodeAt(--i);
+    return (h >>> 0).toString(36);
+  }
+
+  function applyPublished() {
+    var pub = window.WL_PUBLISHED;
+    if (!pub || pub.format !== FORMAT || typeof pub.data !== "object" || !pub.data) return false;
+    var sig = hashStr(JSON.stringify(pub.data));
+    var already;
+    try { already = localStorage.getItem(MARKER); } catch (e) { return false; }
+    if (already === sig) return false;   // this published version is already in place
+    contentKeys().forEach(function (k) { localStorage.removeItem(k); });
+    Object.keys(pub.data).forEach(function (k) {
+      if (!isContentKey(k)) return;      // a published file can't smuggle a session key
+      var v = pub.data[k];
+      localStorage.setItem(k, typeof v === "string" ? v : JSON.stringify(v));
+    });
+    try { localStorage.setItem(MARKER, sig); } catch (e) {}
+    fireAll();
+    return true;
+  }
+
+  // The publish artifact: a committable JS file that assigns WL_PUBLISHED.
+  function toPublishedJS() {
+    return "// ============================================================================\n" +
+      "//  PUBLISHED CONTENT — exported from the editor's Publish panel.\n" +
+      "//  Commit this file to publish every current edit to all readers. It is\n" +
+      "//  applied on page load; readers refresh automatically when you re-publish.\n" +
+      "// ============================================================================\n" +
+      "window.WL_PUBLISHED = " + toJSON() + ";\n";
+  }
+
+  function downloadPublished() {
+    saveFile(toPublishedJS(), "published-content.js", "application/javascript");
+  }
+
+  // Seed the published content as early as this file loads (before the stores
+  // read localStorage), so the first render already shows it.
+  applyPublished();
+
   // ── Optional in-page panel wiring ─────────────────────────────────────────
   //  If the host page includes the publish panel, wire its buttons. Guarded so
   //  the module is inert on pages that don't have it.
   function wirePanel() {
+    var pub = document.getElementById("wl-publish-publish");
     var dl = document.getElementById("wl-publish-download");
     var file = document.getElementById("wl-publish-file");
     var status = document.getElementById("wl-publish-status");
-    if (!dl && !file) return;
+    if (!pub && !dl && !file) return;
 
     function setStatus(msg) { if (status) status.textContent = msg; }
     function refresh() {
       var s = summary();
       setStatus(s.keys
-        ? (s.keys + " draft item group" + (s.keys === 1 ? "" : "s") + " in this browser. Download to publish or transfer.")
+        ? (s.keys + " draft item group" + (s.keys === 1 ? "" : "s") + " in this browser. Publish to make them live for readers, or download to transfer.")
         : "No local edits — this browser shows the published content.");
     }
     refresh();
 
+    if (pub) pub.addEventListener("click", function () {
+      downloadPublished();
+      setStatus("Downloaded published-content.js. Commit it to the site to publish these edits to every reader.");
+    });
+
     if (dl) dl.addEventListener("click", function () {
       download("content-bundle.json");
-      setStatus("Downloaded content-bundle.json. Commit it to publish for readers, or send it to a co-editor to load.");
+      setStatus("Downloaded content-bundle.json — send it to a co-editor to load, or keep it as a backup.");
     });
 
     if (file) file.addEventListener("change", function (e) {
@@ -158,6 +221,7 @@ window.WLBundle = (function () {
   return {
     snapshot: snapshot, toJSON: toJSON, load: load, clearAll: clearAll,
     download: download, summary: summary, isContentKey: isContentKey,
+    applyPublished: applyPublished, toPublishedJS: toPublishedJS, downloadPublished: downloadPublished,
     FORMAT: FORMAT, VERSION: VERSION,
   };
 })();
