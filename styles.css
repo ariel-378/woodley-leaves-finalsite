@@ -3,14 +3,14 @@
 /* Self-hosted display face (SIL OFL, see fonts/OFL.txt) — no external request,
    so the site runs under a strict CSP and stays private/offline-capable. */
 @font-face {
-  font-family: "Old Standard TT";
+  font-family: var(--font-display);
   font-style: normal;
   font-weight: 400;
   font-display: swap;
   src: url("fonts/old-standard-tt-400.woff2") format("woff2");
 }
 @font-face {
-  font-family: "Old Standard TT";
+  font-family: var(--font-display);
   font-style: normal;
   font-weight: 700;
   font-display: swap;
@@ -38,7 +38,7 @@ html, body {
   padding: 0;
   background: var(--paper);
   color: var(--ink);
-  font-family: Georgia, "Times New Roman", serif;
+  font-family: var(--font-serif);
   line-height: 1.45;
 }
 
@@ -65,7 +65,7 @@ textarea:focus-visible,
   background: var(--accent);
   color: #fff !important;
   padding: 10px 14px;
-  font-family: "Helvetica Neue", Arial, sans-serif;
+  font-family: var(--font-sans);
   font-weight: 600;
   font-size: 14px;
   z-index: 10000;
@@ -91,7 +91,7 @@ textarea:focus-visible,
    actually want clicked carries the accent color. */
 .topbar {
   border-bottom: 1px solid var(--rule);
-  font-family: "Helvetica Neue", Arial, sans-serif;
+  font-family: var(--font-sans);
   font-size: 11px;
   color: var(--muted);
 }
@@ -126,14 +126,14 @@ textarea:focus-visible,
   border-bottom: 1px solid var(--rule);
 }
 .masthead h1 {
-  font-family: "Old Standard TT", "Times New Roman", serif;
+  font-family: var(--font-display);
   font-weight: 700;
   font-size: 64px;
   letter-spacing: -1px;
   margin: 0;
 }
 .masthead .dateline {
-  font-family: "Helvetica Neue", Arial, sans-serif;
+  font-family: var(--font-sans);
   font-size: 11px;
   color: var(--muted);
   margin-top: 6px;
@@ -158,7 +158,7 @@ textarea:focus-visible,
   display: flex;
   justify-content: center;
   flex-wrap: wrap;
-  font-family: "Helvetica Neue", Arial, sans-serif;
+  font-family: var(--font-sans);
 }
 .sectionnav-inner a {
   padding: 12px 15px;
@@ -197,7 +197,7 @@ textarea:focus-visible,
 .search-form-page input[type="search"] {
   flex: 1 1 280px;
   padding: 12px 14px;
-  font-family: Georgia, serif;
+  font-family: var(--font-serif);
   font-size: 17px;
   border: 1px solid var(--ink);
   background: #fff;
@@ -208,7 +208,7 @@ textarea:focus-visible,
 }
 .search-form-page select {
   padding: 12px 10px;
-  font-family: "Helvetica Neue", Arial, sans-serif;
+  font-family: var(--font-sans);
   font-size: 14px;
   border: 1px solid var(--rule);
   background: #fff;
@@ -218,7 +218,7 @@ textarea:focus-visible,
   color: #fff;
   border: none;
   padding: 12px 20px;
-  font-family: "Helvetica Neue", Arial, sans-serif;
+  font-family: var(--font-sans);
   font-weight: 600;
   font-size: 14px;
   cursor: pointer;
@@ -226,7 +226,7 @@ textarea:focus-visible,
 .search-form-page .btn-primary:hover { filter: brightness(0.92); }
 
 .search-tip {
-  font-family: "Helvetica Neue", Arial, sans-serif;
+  font-family: var(--font-sans);
   font-size: 12px;
   color: var(--muted);
   margin: 0 0 24px;
@@ -268,7 +268,7 @@ textarea:focus-visible,
 .breaking-banner {
   background: var(--accent);
   color: #fff;
-  font-family: "Helvetica Neue", Arial, sans-serif;
+  font-family: var(--font-sans);
   font-size: 13px;
   padding: 10px 20px;
   display: flex;
@@ -307,7 +307,7 @@ textarea:focus-visible,
   border-top: 4px solid var(--accent);
 }
 .popup .label {
-  font-family: "Helvetica Neue", Arial, sans-serif;
+  font-family: var(--font-sans);
   font-size: 11px;
   letter-spacing: 1.5px;
   text-transform: uppercase;
@@ -335,7 +335,7 @@ textarea:focus-visible,
 }
 .popup .popup-cta {
   display: inline-block;
-  font-family: "Helvetica Neue", Arial, sans-serif;
+  font-family: var(--font-sans);
   font-size: 13px;
   font-weight: 600;
   border: 1px solid var(--ink);
@@ -375,7 +375,7 @@ textarea:focus-visible,
 .ha-left-story:last-of-type { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
 .ha-left-media { display: block; margin-bottom: 12px; }
 .ha-left-img { width: 100%; display: block; aspect-ratio: 3 / 2; object-fit: cover; }
-.ha-left-title { font-family: Georgia, "Times New Roman", serif; font-size: 25px; line-height: 1.14; font-weight: 700; margin: 0; }
+.ha-left-title { font-family: var(--font-serif); font-size: 25px; line-height: 1.14; font-weight: 700; margin: 0; }
 .ha-left-title a { color: var(--ink); }
 
 /* Center hero */
@@ -384,7 +384,7 @@ textarea:focus-visible,
 .ha-hero-img { width: 100%; display: block; aspect-ratio: 4 / 3; object-fit: cover; }
 .ha-hero .kicker { text-align: center; color: var(--muted); }
 .ha-hero-title {
-  font-family: "Old Standard TT", Georgia, serif;
+  font-family: var(--font-display);
   font-size: clamp(30px, 3.4vw, 48px);
   line-height: 1.05;
   font-weight: 700;
@@ -393,7 +393,7 @@ textarea:focus-visible,
 }
 .ha-hero-title a { color: var(--ink); }
 .ha-hero-deck {
-  font-family: Georgia, serif;
+  font-family: var(--font-serif);
   font-size: 19px;
   line-height: 1.42;
   color: #333;
@@ -409,13 +409,13 @@ textarea:focus-visible,
 }
 .ha-right-item:last-of-type { border-bottom: none; }
 .ha-right-text { min-width: 0; }
-.ha-right-title { font-family: Georgia, "Times New Roman", serif; font-size: 19px; line-height: 1.18; font-weight: 700; margin: 0; }
+.ha-right-title { font-family: var(--font-serif); font-size: 19px; line-height: 1.18; font-weight: 700; margin: 0; }
 .ha-right-title a { color: var(--ink); }
 .ha-right-thumb { flex-shrink: 0; width: 82px; line-height: 0; }
 .ha-right-img { width: 82px; height: 82px; object-fit: cover; display: block; }
 
 /* Homepage bylines — uppercase sans author names, magazine style */
-.ha-byline { font-family: "Helvetica Neue", Arial, sans-serif; margin-top: 10px; }
+.ha-byline { font-family: var(--font-sans); margin-top: 10px; }
 .ha-byline .byline-tag {
   text-transform: uppercase; letter-spacing: 0.6px; font-size: 11px; font-weight: 700;
   color: var(--ink); border: none; border-radius: 0; padding: 0; margin: 0 10px 0 0;
@@ -452,7 +452,7 @@ textarea:focus-visible,
   display: flex; align-items: center; gap: 10px;
   background: var(--ink); color: #fff; padding: 8px 8px 8px 14px;
   border-radius: 999px; box-shadow: 0 6px 20px rgba(0,0,0,0.25);
-  font-family: "Helvetica Neue", Arial, sans-serif;
+  font-family: var(--font-sans);
 }
 .wl-home-edit-hint { font-size: 12px; color: rgba(255,255,255,0.8); }
 .wl-home-edit-bar button {
@@ -495,7 +495,7 @@ body.wl-home-edit [data-home-id] a { pointer-events: none; }
   align-items: baseline;
 }
 .home-section-block .section-header h2 {
-  font-family: "Old Standard TT", Georgia, serif;
+  font-family: var(--font-display);
   font-size: clamp(26px, 3vw, 34px);
   line-height: 1;
   letter-spacing: -0.4px;
@@ -503,7 +503,7 @@ body.wl-home-edit [data-home-id] a { pointer-events: none; }
 .home-section-block .section-header h2 a { color: var(--ink); }
 .home-section-block .section-header h2 a:hover { color: var(--accent); }
 .home-section-block .see-all {
-  font-family: "Helvetica Neue", Arial, sans-serif;
+  font-family: var(--font-sans);
   text-transform: uppercase;
   letter-spacing: 0.8px;
   font-size: 11px;
@@ -532,7 +532,7 @@ body.wl-home-edit [data-home-id] a { pointer-events: none; }
 }
 .hsb-lead:hover .hsb-lead-img { transform: scale(1.035); }
 .hsb-lead h3 {
-  font-family: Georgia, "Times New Roman", serif;
+  font-family: var(--font-serif);
   font-size: clamp(22px, 2.2vw, 28px);
   line-height: 1.12;
   font-weight: 700;
@@ -554,7 +554,7 @@ body.wl-home-edit [data-home-id] a { pointer-events: none; }
 .hsb-mini:first-child { border-top: none; padding-top: 0; }
 .hsb-mini:last-child { padding-bottom: 0; }
 .hsb-mini h4 {
-  font-family: Georgia, "Times New Roman", serif;
+  font-family: var(--font-serif);
   font-size: 16.5px;
   line-height: 1.2;
   font-weight: 700;
@@ -593,7 +593,7 @@ body.wl-home-edit [data-home-id] a { pointer-events: none; }
 /* NYT-style byline: small sans in normal case (not all-caps), muted, with the
    author name in darker ink. */
 .byline {
-  font-family: "Helvetica Neue", Arial, sans-serif;
+  font-family: var(--font-sans);
   font-size: 13px;
   color: var(--muted);
   letter-spacing: 0;
@@ -638,7 +638,7 @@ a.byline-tag:hover { border-color: var(--ink); text-decoration: none; }
   margin: 0;
 }
 .kicker {
-  font-family: "Helvetica Neue", Arial, sans-serif;
+  font-family: var(--font-sans);
   font-size: 11px;
   letter-spacing: 1.5px;
   text-transform: uppercase;
@@ -661,7 +661,7 @@ a.byline-tag:hover { border-color: var(--ink); text-decoration: none; }
   margin: 0;
 }
 .section-header .see-all {
-  font-family: "Helvetica Neue", Arial, sans-serif;
+  font-family: var(--font-sans);
   font-size: 12px;
   color: var(--muted);
 }
@@ -681,7 +681,7 @@ a.byline-tag:hover { border-color: var(--ink); text-decoration: none; }
   font-size: 11px;
 }
 .section-hero h2 {
-  font-family: "Old Standard TT", Georgia, serif;
+  font-family: var(--font-display);
   font-size: clamp(34px, 5.5vw, 54px);
   line-height: 1.04;
   margin: 4px 0 6px;
@@ -692,7 +692,7 @@ a.byline-tag:hover { border-color: var(--ink); text-decoration: none; }
 
 /* ===== Section page — NYT-style tiered grid (lead + cards + minis) ===== */
 .sec-eyebrow {
-  font-family: "Helvetica Neue", Arial, sans-serif;
+  font-family: var(--font-sans);
   font-size: 11px;
   letter-spacing: 0.6px;
   text-transform: uppercase;
@@ -718,7 +718,7 @@ a.byline-tag:hover { border-color: var(--ink); text-decoration: none; }
   border-bottom: 1px solid var(--rule);
 }
 .sec-lead h2 {
-  font-family: Georgia, "Times New Roman", serif;
+  font-family: var(--font-serif);
   font-size: clamp(24px, 2.6vw, 34px);
   line-height: 1.08;
   margin: 2px 0 0;
@@ -740,7 +740,7 @@ a.byline-tag:hover { border-color: var(--ink); text-decoration: none; }
 /* Overflow (everything past the top 4): a clean text list, no images */
 .sec-more-wrap { margin-top: 6px; }
 .sec-more-title {
-  font-family: "Helvetica Neue", Arial, sans-serif;
+  font-family: var(--font-sans);
   font-size: 12px;
   text-transform: uppercase;
   letter-spacing: 1px;
@@ -756,7 +756,7 @@ a.byline-tag:hover { border-color: var(--ink); text-decoration: none; }
 
 /* Heading that separates content-type blocks on a multi-type section page */
 .sec-block-title {
-  font-family: "Helvetica Neue", Arial, sans-serif;
+  font-family: var(--font-sans);
   font-size: 12px; text-transform: uppercase; letter-spacing: 1px;
   color: var(--muted); padding-bottom: 8px; border-bottom: 1px solid var(--ink);
   margin: 44px 0 20px;
@@ -767,22 +767,22 @@ a.byline-tag:hover { border-color: var(--ink); text-decoration: none; }
 .sec-pieces { display: grid; gap: 40px; }
 .sec-pieces .print-piece { margin: 0; }
 .sec-pieces .print-piece-head { margin-bottom: 14px; }
-.sec-pieces .print-piece-head h3 { font-family: Georgia, serif; font-size: 26px; line-height: 1.15; margin: 6px 0 6px; font-weight: 700; }
+.sec-pieces .print-piece-head h3 { font-family: var(--font-serif); font-size: 26px; line-height: 1.15; margin: 6px 0 6px; font-weight: 700; }
 .sec-pieces .poem-piece { background: rgba(46,125,50,0.05); padding: 22px 24px 18px; border-left: 3px solid var(--accent); }
 .sec-pieces .poem-piece .print-piece-head h3 { color: var(--accent); }
-.sec-pieces .poem-body { font-family: Georgia, serif; font-size: 17px; line-height: 1.6; color: var(--ink); }
+.sec-pieces .poem-body { font-family: var(--font-serif); font-size: 17px; line-height: 1.6; color: var(--ink); }
 .sec-pieces .poem-stanza { margin-bottom: 18px; }
 .sec-pieces .poem-stanza p { margin: 0; padding: 0; }
 .sec-pieces .poem-stanza p:nth-child(even) { padding-left: 24px; }
-.sec-pieces .teacher-body p { font-family: Georgia, serif; font-size: 16px; line-height: 1.6; margin: 0 0 14px; }
+.sec-pieces .teacher-body p { font-family: var(--font-serif); font-size: 16px; line-height: 1.6; margin: 0 0 14px; }
 .sec-pieces .print-piece-figure { margin: 0; }
 .sec-pieces .print-piece-figure img { width: 100%; display: block; }
 .sec-pieces .reveal { margin-top: 18px; background: var(--cream); padding: 12px 16px; border-left: 4px solid var(--accent); }
-.sec-pieces .reveal summary { font-family: "Helvetica Neue", Arial, sans-serif; font-size: 13px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: var(--accent); cursor: pointer; list-style: none; }
+.sec-pieces .reveal summary { font-family: var(--font-sans); font-size: 13px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: var(--accent); cursor: pointer; list-style: none; }
 .sec-pieces .reveal summary::-webkit-details-marker { display: none; }
 .sec-pieces .reveal summary::before { content: "▸ "; color: var(--accent); display: inline-block; }
 .sec-pieces .reveal[open] summary::before { content: "▾ "; }
-.sec-pieces .reveal-body { font-family: Georgia, serif; font-size: 19px; margin-top: 10px; line-height: 1.4; }
+.sec-pieces .reveal-body { font-family: var(--font-serif); font-size: 19px; margin-top: 10px; line-height: 1.4; }
 
 /* Interactive puzzles embedded on a section page (auto-sized via postMessage) */
 .sec-puzzles-frame { display: block; width: 100%; height: 900px; border: 0; background: #fff; }
@@ -791,14 +791,14 @@ a.byline-tag:hover { border-color: var(--ink); text-decoration: none; }
 .sec-custom { margin-top: 8px; }
 .sec-custom-frame { display: block; width: 100%; min-height: 420px; border: 0; background: #fff; }
 
-.schedule-banner { background: #fff7e0; border: 1px solid #e2c766; color: #7a5c00; font-family: "Helvetica Neue", Arial, sans-serif; font-size: 14px; font-weight: 600; padding: 10px 14px; margin: 0 0 20px; }
+.schedule-banner { background: #fff7e0; border: 1px solid #e2c766; color: #7a5c00; font-family: var(--font-sans); font-size: 14px; font-weight: 600; padding: 10px 14px; margin: 0 0 20px; }
 
 @media (max-width: 640px) {
   .sec-lead { grid-template-columns: 1fr; }
   .sec-lead-media { order: -1; }   /* image above text on narrow screens */
 }
 .section-hero-deck {
-  font-family: Georgia, serif;
+  font-family: var(--font-serif);
   font-size: 17px;
   font-style: italic;
   color: #333;
@@ -858,7 +858,7 @@ a.byline-tag:hover { border-color: var(--ink); text-decoration: none; }
   background: var(--cream);
   padding: 18px 16px;
   text-align: center;
-  font-family: "Helvetica Neue", Arial, sans-serif;
+  font-family: var(--font-sans);
   margin-bottom: 20px;
   color: var(--ink);
 }
@@ -870,7 +870,7 @@ a.byline-tag:hover { border-color: var(--ink); text-decoration: none; }
   margin-bottom: 8px;
 }
 .ad h4 {
-  font-family: Georgia, serif;
+  font-family: var(--font-serif);
   font-size: 18px;
   margin: 0 0 6px;
 }
@@ -946,7 +946,7 @@ a.byline-tag:hover { border-color: var(--ink); text-decoration: none; }
   width: 100%;
   padding: 28px 32px 26px;
   position: relative;
-  font-family: "Helvetica Neue", Arial, sans-serif;
+  font-family: var(--font-sans);
   border-top: 4px solid var(--accent);
 }
 .ad-modal-close {
@@ -967,7 +967,7 @@ a.byline-tag:hover { border-color: var(--ink); text-decoration: none; }
   margin-bottom: 4px;
 }
 .ad-modal h2 {
-  font-family: Georgia, serif;
+  font-family: var(--font-serif);
   font-size: 30px;
   line-height: 1.15;
   margin: 0 0 8px;
@@ -995,7 +995,7 @@ a.byline-tag:hover { border-color: var(--ink); text-decoration: none; }
   object-fit: contain;
 }
 .ad-modal-details {
-  font-family: Georgia, serif;
+  font-family: var(--font-serif);
   font-size: 16px;
   line-height: 1.55;
   color: var(--ink);
@@ -1003,7 +1003,7 @@ a.byline-tag:hover { border-color: var(--ink); text-decoration: none; }
 }
 .ad-modal-link {
   display: inline-block;
-  font-family: "Helvetica Neue", Arial, sans-serif;
+  font-family: var(--font-sans);
   font-size: 14px;
   font-weight: 600;
   color: #fff;
@@ -1022,7 +1022,7 @@ a.byline-tag:hover { border-color: var(--ink); text-decoration: none; }
   position: relative;
 }
 .game-of-week .gotw-tag {
-  font-family: "Helvetica Neue", Arial, sans-serif;
+  font-family: var(--font-sans);
   font-size: 11px;
   font-weight: 700;
   letter-spacing: 2.5px;
@@ -1034,7 +1034,7 @@ a.byline-tag:hover { border-color: var(--ink); text-decoration: none; }
   margin-bottom: 14px;
 }
 .game-of-week .gotw-kicker {
-  font-family: "Helvetica Neue", Arial, sans-serif;
+  font-family: var(--font-sans);
   font-size: 11px;
   letter-spacing: 1.5px;
   text-transform: uppercase;
@@ -1042,7 +1042,7 @@ a.byline-tag:hover { border-color: var(--ink); text-decoration: none; }
   margin-bottom: 4px;
 }
 .game-of-week .gotw-title {
-  font-family: Georgia, serif;
+  font-family: var(--font-serif);
   font-size: clamp(28px, 4vw, 44px);
   line-height: 1.1;
   margin: 0 0 10px;
@@ -1054,12 +1054,12 @@ a.byline-tag:hover { border-color: var(--ink); text-decoration: none; }
   font-weight: 400;
 }
 .game-of-week .gotw-meta {
-  font-family: "Helvetica Neue", Arial, sans-serif;
+  font-family: var(--font-sans);
   font-size: 15px;
   margin-bottom: 6px;
 }
 .game-of-week .gotw-note {
-  font-family: "Helvetica Neue", Arial, sans-serif;
+  font-family: var(--font-sans);
   font-size: 14px;
   font-style: italic;
   opacity: 0.9;
@@ -1069,7 +1069,7 @@ a.byline-tag:hover { border-color: var(--ink); text-decoration: none; }
   display: inline-block;
   background: #fff;
   color: var(--accent);
-  font-family: "Helvetica Neue", Arial, sans-serif;
+  font-family: var(--font-sans);
   font-size: 12px;
   font-weight: 700;
   letter-spacing: 0.5px;
@@ -1078,7 +1078,7 @@ a.byline-tag:hover { border-color: var(--ink); text-decoration: none; }
 }
 .game-of-week .gotw-link {
   display: inline-block;
-  font-family: "Helvetica Neue", Arial, sans-serif;
+  font-family: var(--font-sans);
   font-size: 13px;
   font-weight: 600;
   color: #fff;
@@ -1100,13 +1100,13 @@ a.byline-tag:hover { border-color: var(--ink); text-decoration: none; }
   margin-bottom: 14px;
 }
 .sports-sub-head h3 {
-  font-family: Georgia, serif;
+  font-family: var(--font-serif);
   font-size: 22px;
   margin: 0;
   border-bottom: none;
 }
 .sports-more-link {
-  font-family: "Helvetica Neue", Arial, sans-serif;
+  font-family: var(--font-sans);
   font-size: 12px;
   font-weight: 600;
   color: var(--accent);
@@ -1135,7 +1135,7 @@ a.byline-tag:hover { border-color: var(--ink); text-decoration: none; }
   text-decoration: none;
 }
 .team-card .team-sport {
-  font-family: "Helvetica Neue", Arial, sans-serif;
+  font-family: var(--font-sans);
   font-size: 10px;
   text-transform: uppercase;
   letter-spacing: 1.5px;
@@ -1143,7 +1143,7 @@ a.byline-tag:hover { border-color: var(--ink); text-decoration: none; }
   margin-bottom: 4px;
 }
 .team-card h4 {
-  font-family: Georgia, serif;
+  font-family: var(--font-serif);
   font-size: 17px;
   margin: 0 0 10px;
   line-height: 1.2;
@@ -1155,18 +1155,18 @@ a.byline-tag:hover { border-color: var(--ink); text-decoration: none; }
   margin-top: 4px;
 }
 .team-card .record-big {
-  font-family: Georgia, serif;
+  font-family: var(--font-serif);
   font-size: 28px;
   font-weight: 700;
   font-variant-numeric: tabular-nums;
 }
 .team-card .record-pct {
-  font-family: "Helvetica Neue", Arial, sans-serif;
+  font-family: var(--font-sans);
   font-size: 12px;
   color: var(--muted);
 }
 .team-card .team-record-label {
-  font-family: "Helvetica Neue", Arial, sans-serif;
+  font-family: var(--font-sans);
   font-size: 10px;
   letter-spacing: 1px;
   color: var(--muted);
@@ -1182,21 +1182,21 @@ a.byline-tag:hover { border-color: var(--ink); text-decoration: none; }
   margin-bottom: 28px;
 }
 .writer-text h1 {
-  font-family: Georgia, serif;
+  font-family: var(--font-serif);
   font-size: 40px;
   line-height: 1.05;
   margin: 4px 0 4px;
 }
 .writer-text .kicker { margin-bottom: 4px; }
 .writer-year {
-  font-family: "Helvetica Neue", Arial, sans-serif;
+  font-family: var(--font-sans);
   font-size: 13px;
   color: var(--muted);
   margin-bottom: 10px;
 }
 
 .writer-articles-heading {
-  font-family: Georgia, serif;
+  font-family: var(--font-serif);
   font-size: 22px;
   border-bottom: 2px solid var(--ink);
   padding-bottom: 4px;
@@ -1224,7 +1224,7 @@ a.byline-tag:hover { border-color: var(--ink); text-decoration: none; }
 /* ===== Individual team page ===== */
 .back-link {
   display: inline-block;
-  font-family: "Helvetica Neue", Arial, sans-serif;
+  font-family: var(--font-sans);
   font-size: 13px;
   font-weight: 600;
   color: var(--accent);
@@ -1248,7 +1248,7 @@ a.byline-tag:hover { border-color: var(--ink); text-decoration: none; }
 }
 .team-hero .kicker { margin-bottom: 4px; }
 .team-hero .team-meta {
-  font-family: "Helvetica Neue", Arial, sans-serif;
+  font-family: var(--font-sans);
   font-size: 13px;
   color: var(--muted);
 }
@@ -1260,14 +1260,14 @@ a.byline-tag:hover { border-color: var(--ink); text-decoration: none; }
   min-width: 160px;
 }
 .record-block .record-label {
-  font-family: "Helvetica Neue", Arial, sans-serif;
+  font-family: var(--font-sans);
   font-size: 11px;
   text-transform: uppercase;
   letter-spacing: 2px;
   opacity: 0.85;
 }
 .record-block .record-number {
-  font-family: Georgia, serif;
+  font-family: var(--font-serif);
   font-size: 48px;
   font-weight: 700;
   line-height: 1;
@@ -1275,7 +1275,7 @@ a.byline-tag:hover { border-color: var(--ink); text-decoration: none; }
   margin-top: 4px;
 }
 .record-block .record-sub {
-  font-family: "Helvetica Neue", Arial, sans-serif;
+  font-family: var(--font-sans);
   font-size: 12px;
   opacity: 0.9;
   margin-top: 4px;
@@ -1284,7 +1284,7 @@ a.byline-tag:hover { border-color: var(--ink); text-decoration: none; }
 .game-table {
   width: 100%;
   border-collapse: collapse;
-  font-family: "Helvetica Neue", Arial, sans-serif;
+  font-family: var(--font-sans);
 }
 .game-table th, .game-table td {
   text-align: left;
@@ -1300,7 +1300,7 @@ a.byline-tag:hover { border-color: var(--ink); text-decoration: none; }
   border-bottom: 2px solid var(--ink);
 }
 .game-table .game-score {
-  font-family: Georgia, serif;
+  font-family: var(--font-serif);
   font-variant-numeric: tabular-nums;
   font-weight: 700;
 }
@@ -1311,7 +1311,7 @@ a.byline-tag:hover { border-color: var(--ink); text-decoration: none; }
 
 .result-badge {
   display: inline-block;
-  font-family: "Helvetica Neue", Arial, sans-serif;
+  font-family: var(--font-sans);
   font-weight: 700;
   font-size: 12px;
   padding: 3px 10px;
@@ -1329,12 +1329,12 @@ a.byline-tag:hover { border-color: var(--ink); text-decoration: none; }
   border-bottom: 1px solid var(--rule);
 }
 .bracket-title {
-  font-family: Georgia, serif;
+  font-family: var(--font-serif);
   font-size: 24px;
   margin: 0 0 4px;
 }
 .bracket-meta {
-  font-family: "Helvetica Neue", Arial, sans-serif;
+  font-family: var(--font-sans);
   font-size: 12px;
   color: var(--muted);
   margin-bottom: 20px;
@@ -1352,7 +1352,7 @@ a.byline-tag:hover { border-color: var(--ink); text-decoration: none; }
   flex-direction: column;
 }
 .bracket-round-title {
-  font-family: "Helvetica Neue", Arial, sans-serif;
+  font-family: var(--font-sans);
   font-size: 11px;
   letter-spacing: 1.5px;
   text-transform: uppercase;
@@ -1372,7 +1372,7 @@ a.byline-tag:hover { border-color: var(--ink); text-decoration: none; }
   border: 1px solid var(--rule);
   background: #fff;
   width: 220px;
-  font-family: "Helvetica Neue", Arial, sans-serif;
+  font-family: var(--font-sans);
   overflow: hidden;
 }
 .bracket-match.pending {
@@ -1445,7 +1445,7 @@ a.byline-tag:hover { border-color: var(--ink); text-decoration: none; }
   margin: 0 0 10px;
 }
 .article-page .caption {
-  font-family: "Helvetica Neue", Arial, sans-serif;
+  font-family: var(--font-sans);
   font-size: 12px;
   color: var(--muted);
   margin-bottom: 24px;
@@ -1483,7 +1483,7 @@ a.byline-tag:hover { border-color: var(--ink); text-decoration: none; }
 }
 .home-video-text .kicker { margin-bottom: 6px; }
 .home-video-text h3 {
-  font-family: Georgia, serif;
+  font-family: var(--font-serif);
   font-size: 26px;
   line-height: 1.15;
   margin: 0 0 8px;
@@ -1551,7 +1551,7 @@ a.byline-tag:hover { border-color: var(--ink); text-decoration: none; }
   bottom: 8px; right: 8px;
   background: rgba(0,0,0,0.75);
   color: #fff;
-  font-family: "Helvetica Neue", Arial, sans-serif;
+  font-family: var(--font-sans);
   font-size: 11px;
   font-weight: 600;
   padding: 2px 6px;
@@ -1561,7 +1561,7 @@ a.byline-tag:hover { border-color: var(--ink); text-decoration: none; }
   padding: 10px 0 0;
 }
 .video-body h4 {
-  font-family: Georgia, serif;
+  font-family: var(--font-serif);
   font-size: 17px;
   line-height: 1.25;
   margin: 4px 0 6px;
@@ -1593,7 +1593,7 @@ a.byline-tag:hover { border-color: var(--ink); text-decoration: none; }
 /* Gallery */
 #art-gallery { margin: 28px 0 12px; }
 .gallery-heading {
-  font-family: Georgia, serif;
+  font-family: var(--font-serif);
   font-size: 18px;
   margin: 0 0 10px;
 }
@@ -1642,7 +1642,7 @@ a.byline-tag:hover { border-color: var(--ink); text-decoration: none; }
   left: 0; right: 0;
   color: #fff;
   text-align: center;
-  font-family: "Helvetica Neue", Arial, sans-serif;
+  font-family: var(--font-sans);
   font-size: 13px;
   padding: 0 20px;
 }
@@ -1652,7 +1652,7 @@ a.byline-tag:hover { border-color: var(--ink); text-decoration: none; }
   left: 0; right: 0;
   text-align: center;
   color: rgba(255,255,255,0.7);
-  font-family: "Helvetica Neue", Arial, sans-serif;
+  font-family: var(--font-sans);
   font-size: 12px;
   letter-spacing: 1px;
 }
@@ -1734,7 +1734,7 @@ body.wl-layout-edit .wl-row-gap.wl-row-gap-active {
   z-index: 30;
   gap: 6px;
   align-items: center;
-  font-family: "Helvetica Neue", Arial, sans-serif;
+  font-family: var(--font-sans);
   font-size: 11px;
   font-weight: 600;
   box-shadow: 0 2px 6px rgba(0,0,0,0.15);
@@ -1786,7 +1786,7 @@ body.wl-layout-edit [data-move-key].wl-dragging {
   color: var(--ink);
   border: 1px solid var(--ink);
   padding: 8px 14px;
-  font-family: "Helvetica Neue", Arial, sans-serif;
+  font-family: var(--font-sans);
   font-weight: 600;
   font-size: 13px;
   cursor: pointer;
@@ -1810,7 +1810,7 @@ body.wl-layout-edit [data-move-key].wl-dragging {
   display: none;
   gap: 6px;
   align-items: center;
-  font-family: "Helvetica Neue", Arial, sans-serif;
+  font-family: var(--font-sans);
   font-size: 11px;
   font-weight: 600;
   box-shadow: 0 2px 6px rgba(0,0,0,0.15);
@@ -1860,7 +1860,7 @@ body.wl-layout-edit .wl-block {
   color: #fff;
   border: none;
   padding: 12px 20px;
-  font-family: "Helvetica Neue", Arial, sans-serif;
+  font-family: var(--font-sans);
   font-weight: 600;
   font-size: 14px;
   cursor: pointer;
@@ -1879,7 +1879,7 @@ body.wl-layout-edit [data-zone]:empty::after {
   padding: 24px 12px;
   text-align: center;
   color: var(--muted);
-  font-family: "Helvetica Neue", Arial, sans-serif;
+  font-family: var(--font-sans);
   font-size: 12px;
   font-style: italic;
   border: 2px dashed var(--rule);
@@ -1898,7 +1898,7 @@ body.wl-layout-edit [data-zone]:empty::after {
 }
 .tag-chip {
   display: inline-block;
-  font-family: "Helvetica Neue", Arial, sans-serif;
+  font-family: var(--font-sans);
   font-size: 11px;
   letter-spacing: 0.5px;
   text-transform: lowercase;
@@ -1933,7 +1933,7 @@ body.wl-layout-edit [data-zone]:empty::after {
   border-top: 3px solid var(--ink);
 }
 .related-articles .related-heading {
-  font-family: Georgia, serif;
+  font-family: var(--font-serif);
   font-size: 22px;
   margin: 0 0 18px;
 }
@@ -1951,7 +1951,7 @@ body.wl-layout-edit [data-zone]:empty::after {
 .related-card:hover { text-decoration: none; }
 .related-card:hover h4 { text-decoration: underline; }
 .related-card h4 {
-  font-family: Georgia, serif;
+  font-family: var(--font-serif);
   font-size: 18px;
   line-height: 1.25;
   margin: 4px 0 6px;
@@ -2027,7 +2027,7 @@ body.wl-layout-edit [data-zone]:empty::after {
   margin-left: auto;
 }
 .share-btn {
-  font-family: "Helvetica Neue", Arial, sans-serif;
+  font-family: var(--font-sans);
   font-size: 12px;
   font-weight: 600;
   padding: 6px 12px;
@@ -2046,7 +2046,7 @@ footer {
   background: var(--accent);
   color: #fff;
   padding: 24px 20px;
-  font-family: "Helvetica Neue", Arial, sans-serif;
+  font-family: var(--font-sans);
   font-size: 12px;
   text-align: center;
   line-height: 1.7;
@@ -2077,7 +2077,7 @@ footer a:hover { opacity: 0.85; }
 }
 
 .wl-splash-mark {
-  font-family: "Old Standard TT", "Times New Roman", serif;
+  font-family: var(--font-display);
   font-size: clamp(96px, 18vw, 240px);
   font-weight: 700;
   line-height: 0.9;
@@ -2093,7 +2093,7 @@ footer a:hover { opacity: 0.85; }
 /* "The Student Times" types out one letter at a time. Each .wl-splash-letter
    carries an inline animation-delay that staggers its fade-in. */
 .wl-splash-sub {
-  font-family: "Old Standard TT", "Times New Roman", serif;
+  font-family: var(--font-display);
   font-style: italic;
   font-weight: 400;
   font-size: clamp(22px, 4vw, 48px);
@@ -2158,10 +2158,10 @@ footer a:hover { opacity: 0.85; }
   max-width: 380px;
   position: relative;
   border-top: 4px solid var(--accent);
-  font-family: "Helvetica Neue", Arial, sans-serif;
+  font-family: var(--font-sans);
 }
 .wl-modal h2 {
-  font-family: Georgia, serif;
+  font-family: var(--font-serif);
   font-size: 26px;
   margin: 0 0 6px;
 }
@@ -2244,7 +2244,7 @@ footer a:hover { opacity: 0.85; }
 }
 .page-flourish.flourish-large svg { width: 160px; }
 .page-flourish-caption {
-  font-family: Georgia, serif;
+  font-family: var(--font-serif);
   font-style: italic;
   font-size: 13px;
   color: var(--muted);
@@ -2314,7 +2314,7 @@ footer a:hover { opacity: 0.85; }
 /* Brand-design page header: title + a one-line "this is site-wide" subtitle. */
 .section-header.brand-header { align-items: flex-start; }
 .brand-subtitle {
-  font-family: "Helvetica Neue", Arial, sans-serif;
+  font-family: var(--font-sans);
   font-size: 13px;
   color: var(--muted);
   margin: 3px 0 0;

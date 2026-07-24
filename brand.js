@@ -19,6 +19,7 @@
   var cfg = config();
 
   var COLOR_KEYS = ["ink", "muted", "rule", "paper", "cream", "accent"];
+  var FONT_KEYS = ["display", "serif", "sans"];
 
   // 1) Colors — immediately, before first paint (documentElement exists in <head>).
   function setColors() {
@@ -28,6 +29,16 @@
     });
   }
   setColors();
+
+  // Fonts — the picker sets --font-display / -serif / -sans; unset keys keep the
+  // stylesheet's :root defaults, so an override is only ever what changed.
+  function setFonts() {
+    var f = cfg.fonts || {};
+    FONT_KEYS.forEach(function (k) {
+      if (f[k]) root.style.setProperty("--font-" + k, f[k]);
+    });
+  }
+  setFonts();
 
   function esc(s) {
     return String(s == null ? "" : s).replace(/[&<>"']/g, function (ch) {
@@ -249,7 +260,7 @@
 
   // Re-render when the Design dashboard saves, so the editor sees the change
   // immediately — including on a page open in another tab (storage event).
-  function refresh() { cfg = config(); setColors(); apply(); }
+  function refresh() { cfg = config(); setColors(); setFonts(); apply(); }
   document.addEventListener("wl-brand-change", refresh);
   window.addEventListener("storage", function (e) {
     if (e.key === "wl_brand") refresh();

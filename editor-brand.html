@@ -63,6 +63,13 @@
   .preset-dots span { width: 15px; height: 15px; border: 1px solid rgba(0,0,0,0.18); margin-right: -3px; border-radius: 2px; }
   .preset-name { font-weight: 600; }
 
+  .font-pairs { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 4px; }
+  .font-pair { border: 1px solid var(--rule); background: #fff; padding: 10px 14px; cursor: pointer; text-align: left; min-width: 128px; }
+  .font-pair:hover { border-color: var(--ink); }
+  .font-pair.active { border-color: var(--accent); box-shadow: inset 0 0 0 1px var(--accent); }
+  .font-pair .fp-name { display: block; font-size: 22px; line-height: 1.05; color: var(--ink); }
+  .font-pair .fp-label { display: block; font-family: "Helvetica Neue", Arial, sans-serif; font-size: 10px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.8px; margin-top: 4px; }
+
   .contact-row { display: grid; grid-template-columns: 1fr 1fr auto; gap: 8px; margin-bottom: 8px; align-items: start; }
   .contact-row input { margin-top: 0; }
 
@@ -234,6 +241,13 @@
         </details>
       </section>
 
+      <!-- ── Typography ────────────────────────────────────────────────── -->
+      <section class="bp">
+        <h3>Typography</h3>
+        <p class="bp-hint">Pick a font pairing for headlines and body text. Every option is self-hosted or built into the device — no external fonts are loaded.</p>
+        <div class="font-pairs" id="font-pairings"></div>
+      </section>
+
       <!-- ── Favicon ───────────────────────────────────────────────────── -->
       <section class="bp">
         <h3>Tab icon</h3>
@@ -402,6 +416,49 @@
   }
 
   // Load the live merged config into the form.
+  // Font pairings — headline / body. All are self-hosted or built into the
+  // device, so none adds an external request. The first is the built-in default.
+  var FONT_PAIRINGS = [
+    { name: "Old Standard", display: '"Old Standard TT", Georgia, "Times New Roman", serif', serif: 'Georgia, "Times New Roman", serif', sans: '"Helvetica Neue", Arial, sans-serif' },
+    { name: "Georgia", display: 'Georgia, "Times New Roman", serif', serif: 'Georgia, "Times New Roman", serif', sans: '"Helvetica Neue", Arial, sans-serif' },
+    { name: "Palatino", display: '"Palatino Linotype", Palatino, Georgia, serif', serif: '"Palatino Linotype", Palatino, Georgia, serif', sans: '"Helvetica Neue", Arial, sans-serif' },
+    { name: "Times", display: '"Times New Roman", Times, serif', serif: '"Times New Roman", Times, serif', sans: '"Helvetica Neue", Arial, sans-serif' },
+    { name: "Sans heads", display: '"Helvetica Neue", Arial, sans-serif', serif: 'Georgia, "Times New Roman", serif', sans: '"Helvetica Neue", Arial, sans-serif' },
+  ];
+  var fontSel = null;   // null = keep the stylesheet default (the first pairing)
+  function fontsMatch(a, b) {
+    return !!a && a.display === b.display && a.serif === b.serif && a.sans === b.sans;
+  }
+  function selectFont(p) {
+    // Choosing the built-in default clears the override rather than storing it.
+    fontSel = (p.name === FONT_PAIRINGS[0].name) ? null : { display: p.display, serif: p.serif, sans: p.sans };
+    dirty = true;
+    renderFontPicker();
+  }
+  function renderFontPicker() {
+    var box = el("font-pairings");
+    if (!box) return;
+    box.innerHTML = "";
+    FONT_PAIRINGS.forEach(function (p) {
+      var active = fontSel ? fontsMatch(fontSel, p) : (p.name === FONT_PAIRINGS[0].name);
+      var b = document.createElement("button");
+      b.type = "button";
+      b.className = "font-pair" + (active ? " active" : "");
+      b.setAttribute("aria-pressed", active ? "true" : "false");
+      var nm = document.createElement("span");
+      nm.className = "fp-name";
+      nm.style.fontFamily = p.display;     // set via DOM to avoid quotes in an attribute
+      nm.textContent = "Aa Headline";
+      var lb = document.createElement("span");
+      lb.className = "fp-label";
+      lb.textContent = p.name;
+      b.appendChild(nm);
+      b.appendChild(lb);
+      b.addEventListener("click", function () { selectFont(p); });
+      box.appendChild(b);
+    });
+  }
+
   function loadForm() {
     const cfg = WLBrand.get();
     el("f-name").value = cfg.name || "";
@@ -445,6 +502,9 @@
       el("f-" + k).value = v;
       if (v) syncPicker("f-" + k + "-picker", v);
     });
+
+    fontSel = (cfg.fonts && typeof cfg.fonts === "object") ? cfg.fonts : null;
+    renderFontPicker();
 
     dirty = false;
   }
@@ -537,6 +597,7 @@
     });
   }
   renderPresets();
+  renderFontPicker();
 
   // ── Flourish controls ───────────────────────────────────────────────────
   el("f-orn-file").addEventListener("change", () => {
@@ -615,6 +676,7 @@
         accent: col("f-accent"), ink: col("f-ink"), muted: col("f-muted"),
         rule: col("f-rule"), paper: col("f-paper"), cream: col("f-cream"),
       },
+      fonts: fontSel || undefined,
       ornament: Object.assign({}, ornament),
       favicon: {
         initials: el("f-fav-initials").value.trim().toUpperCase(),

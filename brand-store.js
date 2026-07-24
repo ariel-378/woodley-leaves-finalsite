@@ -18,7 +18,7 @@ window.WLBrand = (function () {
 
   // Only these keys may be overridden from the editor — an unknown key in
   // storage is ignored rather than blindly merged into the live config.
-  var FIELDS = ["name", "school", "tagline", "splashMark", "homeTeam", "colors", "ornament", "favicon", "contacts", "footerNote", "submissions"];
+  var FIELDS = ["name", "school", "tagline", "splashMark", "homeTeam", "colors", "fonts", "ornament", "favicon", "contacts", "footerNote", "submissions"];
 
   function readRaw() {
     try {
