@@ -31,11 +31,18 @@ Only `config.js` and the content files differ. A fix in one applies to both.
 
 **This is the decision that has to be made before launch.**
 
-Today the editor dashboard saves everything to `localStorage` — the editor's own
-browser. That is ideal for a demo: open the site, click *Editor preview*, change
-anything, and it persists with no backend. It is **not** how the paper can
-publish for real, because an article written on one laptop is not visible to
-anyone else.
+The editor dashboard saves edits to `localStorage` — the editor's own browser —
+as **drafts**. That is ideal for a demo, and it is also the working state before
+publishing: open the site, click *Editor preview*, change anything, and it
+persists with no backend.
+
+To make drafts visible to everyone, the dashboard's **Publish & transfer** panel
+turns every edit into a single file. An editor clicks *Download to publish* and
+commits the downloaded `published-content.js`; the site then serves those edits
+to every reader, refreshing automatically the next time someone publishes. So a
+static, backend-free site *can* publish for real — publishing is a file commit.
+The options below differ in **who authors and commits that file**, and how deeply
+the host system is involved.
 
 Every content type is read the same way: a **base** JavaScript object shipped in
 a file, with the editor's local changes layered on top.
@@ -53,7 +60,15 @@ window.WL_ARTICLES = { "article-id": { title, deck, section, byline, date, body:
 | Puzzles & pieces | `puzzles-store.js`, `centerspread.js` | `centerspread-store.js` |
 | Staff | `staff-data.js` | `staff-store.js` |
 
-### Three ways forward
+### The ways forward
+
+**Built-in publish — available now, recommended to start.** Editors use the
+dashboard, click *Download to publish*, and commit `published-content.js` (anyone
+with repo/upload access can commit it). Readers see the result, and refresh on
+the next publish. No host work and no backend — publishing is a commit. Content
+also exports/loads as a portable `content-bundle.json` for transferring drafts
+between editors. This is the simplest real publishing path; the options below
+integrate the host more deeply when that is wanted.
 
 **A. Demo / pilot — no work.** Leave it as is. Editors can explore the full
 dashboard and nothing they do affects anyone else. Right for evaluation, and for
@@ -130,7 +145,7 @@ refuses to enable preview when hosted.
 - [ ] Decide on content: option A, B or C above
 - [ ] Edit `config.js` — masthead, school name, colours, logo, footer contacts
 - [ ] Optional: set `submissions.endpoint` for reader forms (below)
-- [ ] Confirm the Content-Security-Policy allows the site's inline scripts
+- [ ] Set the Content-Security-Policy (see the CSP section below)
 
 ### Branding
 
@@ -167,11 +182,56 @@ one-line change in `submissions.js`.
 
 ---
 
+## Content-Security-Policy
+
+The site is friendly to a strict CSP. It makes **no external requests except**
+video embeds/thumbnails (YouTube, Vimeo) and — if you enable reader forms — the
+Google Apps Script endpoint. Fonts are **self-hosted** (no font CDN). There are
+**no inline event handlers** (`onclick=` etc.) and **no `eval`/`new Function`**
+in the shipped code, so the only inline surface is per-page `<script>`/`<style>`
+blocks.
+
+A working policy:
+
+```text
+Content-Security-Policy:
+  default-src 'self';
+  script-src  'self' 'unsafe-inline';   /* or nonce the inline blocks — see below */
+  style-src   'self' 'unsafe-inline';
+  img-src     'self' data: https://img.youtube.com https://i.ytimg.com https://i.vimeocdn.com;
+  frame-src   https://www.youtube.com https://player.vimeo.com;
+  connect-src 'self' https://script.google.com;   /* only if reader forms are enabled */
+  font-src    'self';
+  object-src  'none';
+  base-uri    'self';
+```
+
+Trim what you don't use — drop `frame-src`/`img-src` video hosts if the paper has
+no video, and `connect-src` if forms post to a host endpoint instead of Apps
+Script.
+
+**About the inline blocks.** ~21 pages carry a small inline `<script>` (page glue
+like the breaking-news banner or a form handler) and inline `<style>`. Under a
+strict `script-src`/`style-src` without `'unsafe-inline'`, choose one:
+
+1. **Allow `'unsafe-inline'`** for script/style (shown above) — simplest, and
+   still safe here since there are no inline handlers and no `eval`.
+2. **Nonce them** — if the host injects a per-request nonce, add `nonce-…` to the
+   inline tags (a mechanical pass we can do).
+3. **Externalize them** — move each page's inline block into a `.js`/`.css` file
+   so `script-src 'self'` alone suffices (a larger but one-time change).
+
+Custom section code that editors paste runs in an `<iframe sandbox="allow-scripts">`
+with no same-origin access; it cannot reach the parent page, cookies, or storage,
+and needs no CSP allowance.
+
+---
+
 ## Maintenance
 
 ```bash
 npm install   # once — jsdom, used only by the tests
-npm test      # 239 checks across 7 suites
+npm test      # 419 checks across 11 suites (415 in the template)
 ```
 
 Tests load real pages and drive them by clicking and typing, so a green run
