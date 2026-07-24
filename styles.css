@@ -1,20 +1,50 @@
 /* Student Times — NYT-inspired mockup styles */
 
-/* Self-hosted display face (SIL OFL, see fonts/OFL.txt) — no external request,
-   so the site runs under a strict CSP and stays private/offline-capable. */
+/* Self-hosted fonts (SIL OFL, see fonts/OFL.txt) — no external request, so the
+   site runs under a strict CSP and stays private/offline-capable. @font-face
+   font-family MUST be the literal family name (a var() here would break it). */
 @font-face {
-  font-family: var(--font-display);
+  font-family: "Old Standard TT";
   font-style: normal;
   font-weight: 400;
   font-display: swap;
   src: url("fonts/old-standard-tt-400.woff2") format("woff2");
 }
 @font-face {
-  font-family: var(--font-display);
+  font-family: "Old Standard TT";
   font-style: normal;
   font-weight: 700;
   font-display: swap;
   src: url("fonts/old-standard-tt-700.woff2") format("woff2");
+}
+/* Playfair Display / Libre Franklin / Lora are variable — one file, 400–700. */
+@font-face {
+  font-family: "Playfair Display";
+  font-style: normal;
+  font-weight: 400 700;
+  font-display: swap;
+  src: url("fonts/playfair-display.woff2") format("woff2");
+}
+@font-face {
+  font-family: "Libre Franklin";
+  font-style: normal;
+  font-weight: 400 700;
+  font-display: swap;
+  src: url("fonts/libre-franklin.woff2") format("woff2");
+}
+@font-face {
+  font-family: "Lora";
+  font-style: normal;
+  font-weight: 400 700;
+  font-display: swap;
+  src: url("fonts/lora.woff2") format("woff2");
+}
+@font-face {
+  font-family: "UnifrakturMaguntia";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("fonts/unifraktur-maguntia-400.woff2") format("woff2");
 }
 
 :root {
@@ -25,10 +55,11 @@
   --cream: #f7f5ef;
   --accent: #2e7d32;
 
-  /* Typography tokens — a font picker sets these via brand.js (see Part 2). */
+  /* Typography tokens — the Design-tab font pickers set these via brand.js. */
   --font-display: "Old Standard TT", Georgia, "Times New Roman", serif;
   --font-serif: Georgia, "Times New Roman", serif;
   --font-sans: "Helvetica Neue", Arial, sans-serif;
+  --font-name: var(--font-display);   /* the masthead nameplate; may differ from headlines */
 }
 
 * { box-sizing: border-box; }
@@ -126,7 +157,7 @@ textarea:focus-visible,
   border-bottom: 1px solid var(--rule);
 }
 .masthead h1 {
-  font-family: var(--font-display);
+  font-family: var(--font-name);
   font-weight: 700;
   font-size: 64px;
   letter-spacing: -1px;

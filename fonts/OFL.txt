@@ -1,12 +1,19 @@
-Old Standard TT is licensed under the SIL Open Font License, Version 1.1.
-Copyright (c) Alexey Kryukov (thessalonica@gmail.com).
+FONT LICENSES — all fonts bundled in this folder are licensed under the
+SIL Open Font License, Version 1.1, which permits bundling with a website
+provided the copyright/license notice is retained and the fonts are not
+sold on their own. Full text & FAQ: https://openfontlicense.org  /  https://scripts.sil.org/OFL
 
-This license is available with a FAQ at: https://scripts.sil.org/OFL
+Bundled families and their copyright holders:
 
-The SIL Open Font License (OFL) is a free, libre and open source license
-specifically designed for fonts and related software. It permits use, study,
-modification and redistribution (including bundling with a website) provided
-the fonts are not sold by themselves, the copyright/license notice is retained,
-and derivatives are not released under the "Reserved Font Name".
+• Old Standard TT — Copyright (c) Alexey Kryukov.
+• Playfair Display — Copyright (c) Claus Eggers Sørensen (playfairdisplay.com).
+• Libre Franklin — Copyright (c) The Libre Franklin Project Authors
+  (https://github.com/impallari/Libre-Franklin). A free revival in the style of
+  Franklin Gothic; it is NOT any proprietary newspaper typeface.
+• Lora — Copyright (c) The Lora Project Authors (https://github.com/cyrealtype/Lora-Cyrillic).
+• UnifrakturMaguntia — Copyright (c) The UnifrakturMaguntia Project Authors
+  (j. 'mach' wust, Peter Wiegel, et al.), based on Peter Wiegel's "Berthold Mainzer Fraktur".
 
-Full license text: https://openfontlicense.org/open-font-license-official-text/
+Note: The New York Times's own typefaces (Cheltenham, Franklin, Imperial, Karnak)
+are proprietary and are NOT included here. The "NYT-style" pairing in the Design
+tab is an editorial look built entirely from the free OFL fonts above.

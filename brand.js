@@ -19,7 +19,7 @@
   var cfg = config();
 
   var COLOR_KEYS = ["ink", "muted", "rule", "paper", "cream", "accent"];
-  var FONT_KEYS = ["display", "serif", "sans"];
+  var FONT_KEYS = ["display", "serif", "sans", "name"];
 
   // 1) Colors — immediately, before first paint (documentElement exists in <head>).
   function setColors() {

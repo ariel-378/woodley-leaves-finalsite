@@ -244,8 +244,12 @@
       <!-- ── Typography ────────────────────────────────────────────────── -->
       <section class="bp">
         <h3>Typography</h3>
-        <p class="bp-hint">Pick a font pairing for headlines and body text. Every option is self-hosted or built into the device — no external fonts are loaded.</p>
+        <p class="bp-hint">Pick a font pairing for headlines and body text. Every option is self-hosted or built into the device — no external fonts are loaded. (The "NYT-style" option is an editorial look built from free fonts, not the proprietary New York Times typefaces.)</p>
         <div class="font-pairs" id="font-pairings"></div>
+
+        <label style="margin-top:18px;">Newspaper name</label>
+        <p class="field-note" style="margin-top:0;">The nameplate at the top of every page. Keep it matching the headlines, or give it its own font (e.g. a classic "Old English" nameplate).</p>
+        <div class="font-pairs" id="name-fonts"></div>
       </section>
 
       <!-- ── Favicon ───────────────────────────────────────────────────── -->
@@ -424,6 +428,11 @@
     { name: "Palatino", display: '"Palatino Linotype", Palatino, Georgia, serif', serif: '"Palatino Linotype", Palatino, Georgia, serif', sans: '"Helvetica Neue", Arial, sans-serif' },
     { name: "Times", display: '"Times New Roman", Times, serif', serif: '"Times New Roman", Times, serif', sans: '"Helvetica Neue", Arial, sans-serif' },
     { name: "Sans heads", display: '"Helvetica Neue", Arial, sans-serif', serif: 'Georgia, "Times New Roman", serif', sans: '"Helvetica Neue", Arial, sans-serif' },
+    // Editorial "NYT-style" look — built entirely from free OFL fonts (Playfair
+    // for headlines, Lora for body, Libre Franklin — a Franklin Gothic revival —
+    // for the sans). NOT the proprietary New York Times typefaces.
+    { name: "NYT-style", display: '"Playfair Display", Georgia, serif', serif: 'Lora, Georgia, "Times New Roman", serif', sans: '"Libre Franklin", "Helvetica Neue", Arial, sans-serif' },
+    { name: "Lora", display: 'Lora, Georgia, serif', serif: 'Lora, Georgia, serif', sans: '"Libre Franklin", "Helvetica Neue", Arial, sans-serif' },
   ];
   var fontSel = null;   // null = keep the stylesheet default (the first pairing)
   function fontsMatch(a, b) {
@@ -455,6 +464,41 @@
       b.appendChild(nm);
       b.appendChild(lb);
       b.addEventListener("click", function () { selectFont(p); });
+      box.appendChild(b);
+    });
+  }
+
+  // The masthead nameplate can use its own font, separate from the headlines —
+  // e.g. a blackletter "Old English" nameplate over a modern headline face.
+  var NAME_FONTS = [
+    { name: "Match headlines", value: null },
+    { name: "Playfair", value: '"Playfair Display", Georgia, serif' },
+    { name: "Old Standard", value: '"Old Standard TT", Georgia, "Times New Roman", serif' },
+    { name: "Old English", value: '"UnifrakturMaguntia", "Old English Text MT", Georgia, serif' },
+  ];
+  var nameSel = null;   // null = the nameplate follows the headline font
+  function selectName(v) { nameSel = v || null; dirty = true; renderNamePicker(); }
+  function renderNamePicker() {
+    var box = el("name-fonts");
+    if (!box) return;
+    box.innerHTML = "";
+    var sample = (el("f-name") && el("f-name").value.trim()) || "The Times";
+    NAME_FONTS.forEach(function (nf) {
+      var active = (nf.value || null) === (nameSel || null);
+      var b = document.createElement("button");
+      b.type = "button";
+      b.className = "font-pair name-pair" + (active ? " active" : "");
+      b.setAttribute("aria-pressed", active ? "true" : "false");
+      var nm = document.createElement("span");
+      nm.className = "fp-name";
+      nm.style.fontFamily = nf.value || "var(--font-display)";
+      nm.textContent = sample;
+      var lb = document.createElement("span");
+      lb.className = "fp-label";
+      lb.textContent = nf.name;
+      b.appendChild(nm);
+      b.appendChild(lb);
+      b.addEventListener("click", function () { selectName(nf.value); });
       box.appendChild(b);
     });
   }
@@ -503,8 +547,11 @@
       if (v) syncPicker("f-" + k + "-picker", v);
     });
 
-    fontSel = (cfg.fonts && typeof cfg.fonts === "object") ? cfg.fonts : null;
+    const ff = (cfg.fonts && typeof cfg.fonts === "object") ? cfg.fonts : {};
+    fontSel = (ff.display || ff.serif || ff.sans) ? { display: ff.display, serif: ff.serif, sans: ff.sans } : null;
+    nameSel = ff.name || null;
     renderFontPicker();
+    renderNamePicker();
 
     dirty = false;
   }
@@ -598,6 +645,9 @@
   }
   renderPresets();
   renderFontPicker();
+  renderNamePicker();
+  // Keep the name-font previews showing the real paper name as it's typed.
+  el("f-name").addEventListener("input", renderNamePicker);
 
   // ── Flourish controls ───────────────────────────────────────────────────
   el("f-orn-file").addEventListener("change", () => {
@@ -676,7 +726,11 @@
         accent: col("f-accent"), ink: col("f-ink"), muted: col("f-muted"),
         rule: col("f-rule"), paper: col("f-paper"), cream: col("f-cream"),
       },
-      fonts: fontSel || undefined,
+      fonts: (function () {
+        const f = fontSel ? { display: fontSel.display, serif: fontSel.serif, sans: fontSel.sans } : {};
+        if (nameSel) f.name = nameSel;
+        return Object.keys(f).length ? f : undefined;
+      })(),
       ornament: Object.assign({}, ornament),
       favicon: {
         initials: el("f-fav-initials").value.trim().toUpperCase(),
