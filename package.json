@@ -2,10 +2,11 @@
   "name": "woodley-leaves",
   "private": true,
   "type": "module",
-  "description": "The Woodley Leaves — student newspaper site. No build step; jsdom is used only to run the tests.",
+  "description": "The Woodley Leaves \u2014 student newspaper site. No build step; jsdom is used only to run the tests.",
   "scripts": {
     "test": "node tests/run.mjs",
-    "serve": "python3 serve.py"
+    "serve": "python3 serve.py",
+    "brand": "node setup/stamp-brand.mjs"
   },
   "devDependencies": {
     "jsdom": "^26.0.0"

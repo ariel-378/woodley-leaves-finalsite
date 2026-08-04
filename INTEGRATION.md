@@ -23,7 +23,8 @@ There are two repositories with identical code:
 | `newspaper-template` | The reusable platform. Ships with no content. |
 | `woodley-leaves` | Maret's paper. Same code, plus `config.js` and content. |
 
-Only `config.js` and the content files differ. A fix in one applies to both.
+Only `config.js`, the content files, and the paper name stamped into each
+page's `<head>` by `npm run brand` differ. A fix to the code applies to both.
 
 ---
 
@@ -149,7 +150,9 @@ refuses to enable preview when hosted.
 
 ### Branding
 
-`config.js` is the only file that differs between the template and a school's
+`config.js` is the one file a school edits to rebrand; `npm run brand` then
+copies the name into each page's `<head>`. Together they are what differs
+between the template and a school's
 paper. It sets the masthead name, school, tagline, colours, ornament, favicon
 and footer contacts across every page. Editors can also adjust design in the
 dashboard's **Brand design** tab, but those changes are per-browser previews —
@@ -231,7 +234,8 @@ and needs no CSP allowance.
 
 ```bash
 npm install   # once — jsdom, used only by the tests
-npm test      # 478 checks across 11 suites (471 in the template)
+npm test      # 562 checks across 11 suites
+npm run brand # after changing `name`/`school` in config.js
 ```
 
 Tests load real pages and drive them by clicking and typing, so a green run

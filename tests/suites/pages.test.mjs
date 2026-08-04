@@ -8,7 +8,10 @@
 // out a paper name or an article id — the branded site and the template would
 // disagree.
 
-import { pages, loadPage, Check } from "../harness.mjs";
+import fs from "fs";
+import path from "path";
+import { SITE, pages, loadPage, Check } from "../harness.mjs";
+import { readConfig, stamp, PLACEHOLDER_NAME } from "../../setup/stamp-brand.mjs";
 
 // Pages that navigate on load by design; jsdom reports that as an error.
 const REDIRECTS = new Set(["editor.html", "editor-puzzles.html", "editor-writers.html"]);
@@ -75,6 +78,29 @@ export async function run() {
       check.equal("a rename keeps the story's own title",
         ctx.window.document.title, `${headline} — Renamed Paper`);
       check.clean("no errors renaming the paper", ctx);
+    }
+  }
+
+  // ===== The shipped HTML already names the paper =====
+  // brand.js fixes the name at runtime, which does nothing for link previews,
+  // crawlers or anything else that reads the raw markup. `npm run brand` writes
+  // it into each <head>; this fails if someone renames the paper in config.js
+  // and forgets to re-run it.
+  {
+    const cfg = readConfig(SITE);
+    for (const page of pages()) {
+      const src = fs.readFileSync(path.join(SITE, page), "utf8");
+      const head = (src.match(/<head>[\s\S]*?<\/head>/i) || [""])[0];
+      const title = (head.match(/<title>([\s\S]*?)<\/title>/i) || [, ""])[1];
+
+      check.ok(`${page} ships the real paper name in <head>`,
+        !head.includes(PLACEHOLDER_NAME),
+        `run "npm run brand" — <head> still says "${PLACEHOLDER_NAME}"`);
+      check.ok(`${page} titles itself in the raw markup`,
+        title.includes(cfg.name), `<title> is "${title}"`);
+      check.equal(`${page} is stamped, so renames still work`,
+        stamp(src, cfg), src,
+        "stamping would change this file — it is out of date");
     }
   }
 

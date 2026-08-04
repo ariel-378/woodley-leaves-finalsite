@@ -34,6 +34,22 @@ In `config.js` you can set:
 Colors and the favicon update instantly; the name, dateline, flourish, and
 footer update on every page. Nothing else needs editing.
 
+### After changing `name` or `school`, run this once
+
+```bash
+npm run brand
+```
+
+`brand.js` applies the name in the browser, which covers every human reader but
+not link previews (Slack, iMessage, Messenger), search crawlers or RSS readers —
+none of those run JavaScript, so they read the raw HTML and would see the old
+name. `npm run brand` writes the current name and school into every page's
+`<head>`, so what gets shared is right.
+
+Run it whenever `name` or `school` changes. It is safe to run repeatedly, it
+touches nothing but the `<head>` and one attribute on `<html>`, and `npm test`
+fails if you forget.
+
 ### Using your own flourish
 
 The default is a leaf branch (`media/leaf.svg`) drawn on both sides of the

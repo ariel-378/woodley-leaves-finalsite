@@ -158,12 +158,45 @@
   var titleBase = document.title;
   var titleWritten = titleBase;
 
+  // The strings to substitute the configured name and school into.
+  //
+  // Pages ship carrying the template's placeholders, but `npm run brand` writes
+  // the real name into each <head> so link previews and crawlers — which never
+  // run this script — read the right paper. A stamped page records what it was
+  // stamped with on <html data-wl-name/-school>, and that becomes the string to
+  // replace when an editor renames the paper from the Design tab.
+  //
+  // Both are swapped: the stamped value for a stamped <head>, the placeholder
+  // for the inline body scripts, which are deliberately left unstamped.
+  var PLACEHOLDER_NAME = "The Student Times";
+  var PLACEHOLDER_SCHOOL = "Your School";
+  var docEl = document.documentElement;
+  var BASE_NAME = (docEl && docEl.getAttribute("data-wl-name")) || PLACEHOLDER_NAME;
+  var BASE_SCHOOL = (docEl && docEl.getAttribute("data-wl-school")) || PLACEHOLDER_SCHOOL;
+
+  function escapeRe(s) { return String(s).replace(/[.*+?^${}()|[\]\\]/g, "\\$&"); }
+
+  // A function replacement keeps "$&"/"$1" intact in a paper name literal.
+  function swapOne(text, froms, to) {
+    if (!to) return text;
+    var out = text;
+    froms.forEach(function (from) {
+      if (!from) return;
+      out = out.replace(new RegExp(escapeRe(from), "g"), function () { return to; });
+    });
+    return out;
+  }
+
+  function swapBrand(text) {
+    var out = swapOne(text, [BASE_NAME, PLACEHOLDER_NAME], cfg.name);
+    return swapOne(out, [BASE_SCHOOL, PLACEHOLDER_SCHOOL], cfg.school);
+  }
+
   function setTitle() {
     if (!cfg.name) return;
     if (document.title !== titleWritten) titleBase = document.title;
     if (!titleBase) return;
-    // A function replacement keeps "$&"/"$1" in a paper name literal.
-    titleWritten = titleBase.replace(/The Student Times/g, function () { return cfg.name; });
+    titleWritten = swapBrand(titleBase);
     document.title = titleWritten;
   }
 
@@ -184,10 +217,7 @@
   function rebrandMeta() {
     if (!metaBase) snapshotMeta();
     metaBase.forEach(function (rec) {
-      var v = rec.content;
-      if (cfg.name) v = v.replace(/The Student Times/g, function () { return cfg.name; });
-      if (cfg.school) v = v.replace(/Your School/g, function () { return cfg.school; });
-      rec.el.setAttribute("content", v);
+      rec.el.setAttribute("content", swapBrand(rec.content));
     });
   }
 
@@ -206,10 +236,7 @@
   function rebrandText() {
     if (!textBase) snapshotText();
     textBase.forEach(function (rec) {
-      var v = rec.text;
-      if (cfg.name) v = v.replace(/The Student Times/g, function () { return cfg.name; });
-      if (cfg.school) v = v.replace(/Your School/g, function () { return cfg.school; });
-      rec.el.textContent = v;
+      rec.el.textContent = swapBrand(rec.text);
     });
   }
 
