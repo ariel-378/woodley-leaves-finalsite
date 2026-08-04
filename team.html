@@ -59,20 +59,23 @@
       </div>
     </div>
 
-    <section class="sports-subsection">
-      <div class="sports-sub-head"><h3 data-wl-text="team-upcoming-heading">Upcoming</h3></div>
-      <div class="game-list" id="upcoming-list"></div>
-    </section>
+    <div data-move-group="team-main">
+      <section class="sports-subsection" data-move-key="upcoming" data-move-label="Upcoming games">
+        <div class="sports-sub-head"><h3 data-wl-text="team-upcoming-heading">Upcoming</h3></div>
+        <div class="game-list" id="upcoming-list"></div>
+      </section>
 
-    <section class="sports-subsection">
-      <div class="sports-sub-head"><h3 data-wl-text="team-results-heading">Season Results</h3></div>
-      <table class="game-table">
-        <thead>
-          <tr><th>Date</th><th>Opponent</th><th>Home/Away</th><th>Result</th><th>Score</th></tr>
-        </thead>
-        <tbody id="games-rows"></tbody>
-      </table>
-    </section>
+      <section class="sports-subsection" data-move-key="results" data-move-label="Season results">
+        <div class="sports-sub-head"><h3 data-wl-text="team-results-heading">Season Results</h3></div>
+        <table class="game-table">
+          <thead>
+            <tr><th>Date</th><th>Opponent</th><th>Home/Away</th><th>Result</th><th>Score</th></tr>
+          </thead>
+          <tbody id="games-rows"></tbody>
+        </table>
+      </section>
+      <div class="sidebar-ads" data-ads-limit="2" data-move-key="ads" data-move-label="Announcements"></div>
+    </div>
   </div>
 </main>
 
@@ -80,10 +83,13 @@
 
 <script src="teams.js"></script>
 <script src="teams-store.js"></script>
+<script src="ads.js"></script>
+<script src="ads-store.js"></script>
 <script src="submissions.js"></script>
 <script src="auth.js"></script>
 <script src="script.js"></script>
 <script src="text-editor.js"></script>
+<script src="layout-editor.js"></script>
 <script>
 (function () {
   function escapeHtml(s) {

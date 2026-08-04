@@ -68,7 +68,10 @@
 
   <p class="search-tip">Tip: search by a writer's name (e.g., "Maya Chen") to find every article they've written.</p>
 
-  <div id="search-results"></div>
+  <div data-move-group="search-main">
+    <div id="search-results" data-move-key="results" data-move-label="Results"></div>
+    <div class="sidebar-ads" data-ads-limit="2" data-move-key="ads" data-move-label="Announcements"></div>
+  </div>
 
   <div class="page-flourish" aria-hidden="true">
     <svg viewBox="0 0 140 70" xmlns="http://www.w3.org/2000/svg">
@@ -85,10 +88,13 @@
 <script src="articles.js"></script>
 <script src="articles-store.js"></script>
 <script src="writers.js"></script>
+<script src="ads.js"></script>
+<script src="ads-store.js"></script>
 <script src="submissions.js"></script>
 <script src="auth.js"></script>
 <script src="script.js"></script>
 <script src="search.js"></script>
 <script src="text-editor.js"></script>
+<script src="layout-editor.js"></script>
 </body>
 </html>

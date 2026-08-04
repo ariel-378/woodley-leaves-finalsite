@@ -48,17 +48,23 @@
     </div>
   </header>
 
-  <div id="brackets-container"></div>
+  <div data-move-group="brackets-main">
+    <div id="brackets-container" data-move-key="brackets" data-move-label="Brackets"></div>
+    <div class="sidebar-ads" data-ads-limit="2" data-move-key="ads" data-move-label="Announcements"></div>
+  </div>
 </main>
 
 <footer></footer>
 
 <script src="teams.js"></script>
 <script src="teams-store.js"></script>
+<script src="ads.js"></script>
+<script src="ads-store.js"></script>
 <script src="submissions.js"></script>
 <script src="auth.js"></script>
 <script src="script.js"></script>
 <script src="text-editor.js"></script>
+<script src="layout-editor.js"></script>
 <script>
 (function () {
   function escapeHtml(s) {

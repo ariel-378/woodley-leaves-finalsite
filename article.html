@@ -55,30 +55,35 @@
       <p class="deck" id="art-deck"></p>
       <div class="byline" id="art-byline"></div>
 
-      <div class="article-actions">
-        <div class="share-row">
-          <button class="share-btn" data-action="copy" title="Copy link">Copy link</button>
-          <button class="share-btn" data-action="instagram" title="Share to Instagram (copies link so you can paste it into your story)">Instagram</button>
-          <a class="share-btn" id="share-email" title="Share by email">Email</a>
+      <div data-move-group="article-main">
+        <div class="article-actions" data-move-key="share" data-move-label="Share buttons">
+          <div class="share-row">
+            <button class="share-btn" data-action="copy" title="Copy link">Copy link</button>
+            <button class="share-btn" data-action="instagram" title="Share to Instagram (copies link so you can paste it into your story)">Instagram</button>
+            <a class="share-btn" id="share-email" title="Share by email">Email</a>
+          </div>
         </div>
+
+        <div data-move-key="media" data-move-label="Photo / video">
+          <div id="art-media"></div>
+          <div class="caption" id="art-caption"></div>
+        </div>
+
+        <div id="art-gallery" data-move-key="gallery" data-move-label="Photo gallery" hidden>
+          <h3 class="gallery-heading">Photos</h3>
+          <div class="gallery-grid" id="gallery-grid"></div>
+        </div>
+
+        <div id="art-prose" data-move-key="story" data-move-label="Story text"></div>
+
+        <div class="article-tags" id="article-tags" data-move-key="tags" data-move-label="Tags" hidden></div>
+
+        <section class="related-articles" id="related-articles" data-move-key="related" data-move-label="More from this section" hidden>
+          <h3 class="related-heading">More from this section</h3>
+          <div class="related-grid" id="related-grid"></div>
+        </section>
+        <div class="sidebar-ads" data-ads-limit="2" data-move-key="ads" data-move-label="Announcements"></div>
       </div>
-
-      <div id="art-media"></div>
-      <div class="caption" id="art-caption"></div>
-
-      <div id="art-gallery" hidden>
-        <h3 class="gallery-heading">Photos</h3>
-        <div class="gallery-grid" id="gallery-grid"></div>
-      </div>
-
-      <div id="art-prose"></div>
-
-      <div class="article-tags" id="article-tags" hidden></div>
-
-      <section class="related-articles" id="related-articles" hidden>
-        <h3 class="related-heading">More from this section</h3>
-        <div class="related-grid" id="related-grid"></div>
-      </section>
     </div>
   </article>
 </main>
@@ -89,10 +94,13 @@
 <script src="writers.js"></script>
 <script src="writers-store.js"></script>
 <script src="views-store.js"></script>
+<script src="ads.js"></script>
+<script src="ads-store.js"></script>
 <script src="submissions.js"></script>
 <script src="auth.js"></script>
 <script src="script.js"></script>
 <script src="text-editor.js"></script>
+<script src="layout-editor.js"></script>
 <script>
 (function () {
   const params = new URLSearchParams(location.search);

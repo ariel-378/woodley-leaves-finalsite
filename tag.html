@@ -46,12 +46,15 @@
     <p class="section-hero-deck" id="tag-summary">Every story filed under this topic.</p>
   </header>
 
-  <div id="tag-results"></div>
+  <div data-move-group="tag-main">
+    <div id="tag-results" data-move-key="results" data-move-label="Tagged articles"></div>
 
-  <section style="margin-top: 40px;">
-    <h3 style="font-family: Georgia, serif; font-size: 18px; border-bottom: 2px solid var(--ink); padding-bottom: 4px;" data-wl-text="tag-browse-heading">Browse all tags</h3>
-    <div class="tag-cloud" id="tag-cloud"></div>
-  </section>
+    <section style="margin-top: 40px;" data-move-key="tag-cloud" data-move-label="Browse all tags">
+      <h3 style="font-family: Georgia, serif; font-size: 18px; border-bottom: 2px solid var(--ink); padding-bottom: 4px;" data-wl-text="tag-browse-heading">Browse all tags</h3>
+      <div class="tag-cloud" id="tag-cloud"></div>
+    </section>
+    <div class="sidebar-ads" data-ads-limit="2" data-move-key="ads" data-move-label="Announcements"></div>
+  </div>
 
   <div class="page-flourish" aria-hidden="true">
     <svg viewBox="0 0 140 70" xmlns="http://www.w3.org/2000/svg">
@@ -68,10 +71,13 @@
 <script src="articles.js"></script>
 <script src="articles-store.js"></script>
 <script src="writers.js"></script>
+<script src="ads.js"></script>
+<script src="ads-store.js"></script>
 <script src="submissions.js"></script>
 <script src="auth.js"></script>
 <script src="script.js"></script>
 <script src="text-editor.js"></script>
+<script src="layout-editor.js"></script>
 <script>
 (function () {
   function escapeHtml(s) {

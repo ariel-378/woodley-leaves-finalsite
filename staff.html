@@ -126,7 +126,10 @@
     </div>
   </header>
 
-  <div id="staff-root"></div>
+  <div data-move-group="staff-main">
+    <div id="staff-root" data-move-key="staff" data-move-label="Staff list"></div>
+    <div class="sidebar-ads" data-ads-limit="2" data-move-key="ads" data-move-label="Announcements"></div>
+  </div>
 </main>
 
 <!-- The masthead year rolls over on its own. It was written in as "2025–2026",
@@ -147,10 +150,13 @@
 
 <script src="staff-data.js"></script>
 <script src="staff-store.js"></script>
+<script src="ads.js"></script>
+<script src="ads-store.js"></script>
 <script src="submissions.js"></script>
 <script src="auth.js"></script>
 <script src="script.js"></script>
 <script src="text-editor.js"></script>
+<script src="layout-editor.js"></script>
 <script>
 (function () {
   function esc(s) {

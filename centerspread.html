@@ -892,13 +892,14 @@
     <div class="kicker" data-wl-text="cs-hero-kicker">April 2026 · Print Edition</div>
     <h2 id="print-heading" data-wl-text="cs-hero-title">The Centerspread</h2>
   </header>
-  <section class="print-edition" aria-labelledby="print-heading">
+  <div data-move-group="centerspread-main">
+  <section class="print-edition" aria-labelledby="print-heading" data-move-key="pieces" data-move-label="Print pieces">
 
    <div class="print-pieces" id="cs-pieces" aria-live="polite"></div>
    <p id="cs-pieces-empty" class="print-edition-deck" style="text-align:center;display:none;">No centerspread pieces yet. Add poems, prose, or images from the <b>Centerspread</b> tab in the editor dashboard.</p>
   </section>
 
-  <section class="play-hero" aria-labelledby="play-heading">
+  <section class="play-hero" aria-labelledby="play-heading" data-move-key="play-intro" data-move-label="Play intro">
     <div class="play-hero-flourish" aria-hidden="true">
       <svg viewBox="0 0 160 24" xmlns="http://www.w3.org/2000/svg">
         <path d="M 4 12 Q 25 2 45 12 Q 60 20 75 12 Q 95 2 115 12 Q 130 20 145 12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
@@ -909,7 +910,7 @@
     <h2 id="play-heading" class="play-hero-title" data-wl-text="cs-play-title">Play</h2>
   </section>
 
-  <section class="cw-section" data-cs-puzzle="crossword">
+  <section class="cw-section" data-cs-puzzle="crossword" data-move-key="crossword" data-move-label="Mini crossword">
   <div class="cw-hero">
     <div class="kicker" data-wl-text="cs-cw-kicker">The Daily</div>
     <h2 data-wl-text="cs-cw-title">Mini Crossword</h2>
@@ -951,7 +952,7 @@
 
   </section>
 
-  <section class="ws-section" data-cs-puzzle="wordsearch" aria-labelledby="ws-heading">
+  <section class="ws-section" data-cs-puzzle="wordsearch" aria-labelledby="ws-heading" data-move-key="wordsearch" data-move-label="Word search">
     <div class="cw-hero">
       <div class="kicker" data-wl-text="cs-wordsearch-kicker">Word Search</div>
       <h2 id="ws-heading" data-wl-text="cs-wordsearch-title">Spring Word Search</h2>
@@ -970,7 +971,7 @@
     <div id="ws-done" class="ws-done" hidden>All 14 words found — nice work.</div>
   </section>
 
-  <section class="sb-section" data-cs-puzzle="spellingbee">
+  <section class="sb-section" data-cs-puzzle="spellingbee" data-move-key="spellingbee" data-move-label="Spelling bee">
     <div class="sb-hero">
       <div class="kicker" data-wl-text="cs-sb-kicker">Centerspread · Puzzles</div>
       <h2 data-wl-text="cs-sb-title">Spelling Bee</h2>
@@ -1002,7 +1003,7 @@
        the CSS (.cn-* rules above), and the game IIFE below are all still
        present, so un-commenting the block restores the feature with no other
        changes needed.
-  <section class="cn-section" data-cs-puzzle="connections" aria-labelledby="cn-heading">
+  <section class="cn-section" data-cs-puzzle="connections" aria-labelledby="cn-heading" data-move-key="connections" data-move-label="Connections">
     <div class="cn-hero">
       <div class="kicker" data-wl-text="cs-cn-kicker">Centerspread · Puzzles</div>
       <h2 id="cn-heading" data-wl-text="cs-cn-title">Connections</h2>
@@ -1029,6 +1030,8 @@
        renders here automatically. See custom-games.js to add a new one.
        =================================================================== -->
   <div id="cs-custom-games"></div>
+  <div class="sidebar-ads" data-ads-limit="2" data-move-key="ads" data-move-label="Announcements"></div>
+  </div>
 </main>
 
 <footer></footer>
@@ -1038,6 +1041,8 @@
 <script src="puzzles-store.js"></script>
 <script src="games-store.js"></script>
 <script src="custom-games.js"></script>
+<script src="ads.js"></script>
+<script src="ads-store.js"></script>
 <script src="submissions.js"></script>
 <script src="auth.js"></script>
 <script src="script.js"></script>

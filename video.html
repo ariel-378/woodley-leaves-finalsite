@@ -45,13 +45,16 @@
     <h1 class="article-title" id="v-title"></h1>
     <div class="byline" id="v-byline"></div>
 
-    <div id="v-embed"></div>
-    <p class="video-description" id="v-desc"></p>
+    <div data-move-group="video-main">
+      <div id="v-embed" data-move-key="player" data-move-label="Player"></div>
+      <p class="video-description" id="v-desc" data-move-key="description" data-move-label="Description"></p>
 
-    <section class="related-articles" id="more-videos" hidden>
-      <h3 class="related-heading">More video</h3>
-      <div class="related-grid" id="more-grid"></div>
-    </section>
+      <section class="related-articles" id="more-videos" data-move-key="more-videos" data-move-label="More video" hidden>
+        <h3 class="related-heading">More video</h3>
+        <div class="related-grid" id="more-grid"></div>
+      </section>
+      <div class="sidebar-ads" data-ads-limit="2" data-move-key="ads" data-move-label="Announcements"></div>
+    </div>
   </article>
 </main>
 
@@ -59,10 +62,13 @@
 
 <script src="videos.js"></script>
 <script src="videos-store.js"></script>
+<script src="ads.js"></script>
+<script src="ads-store.js"></script>
 <script src="submissions.js"></script>
 <script src="auth.js"></script>
 <script src="script.js"></script>
 <script src="text-editor.js"></script>
+<script src="layout-editor.js"></script>
 <script>
 (function () {
   function escapeHtml(s) {

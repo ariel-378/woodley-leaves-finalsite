@@ -49,10 +49,13 @@
       </div>
     </div>
 
-    <section class="writer-articles-section">
-      <h2 class="writer-articles-heading">All articles</h2>
-      <ul class="writer-articles-list" id="writer-articles"></ul>
-    </section>
+    <div data-move-group="writer-main">
+      <section class="writer-articles-section" data-move-key="articles" data-move-label="All articles">
+        <h2 class="writer-articles-heading">All articles</h2>
+        <ul class="writer-articles-list" id="writer-articles"></ul>
+      </section>
+      <div class="sidebar-ads" data-ads-limit="2" data-move-key="ads" data-move-label="Announcements"></div>
+    </div>
   </div>
 </main>
 
@@ -62,10 +65,13 @@
 <script src="articles-store.js"></script>
 <script src="writers.js"></script>
 <script src="writers-store.js"></script>
+<script src="ads.js"></script>
+<script src="ads-store.js"></script>
 <script src="submissions.js"></script>
 <script src="auth.js"></script>
 <script src="script.js"></script>
 <script src="text-editor.js"></script>
+<script src="layout-editor.js"></script>
 <script>
 (function () {
   function escapeHtml(s) {
