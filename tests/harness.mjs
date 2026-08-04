@@ -44,9 +44,11 @@ export async function loadPage(file, opts = {}) {
   vc.on("jsdomError", e => errors.push(e.message.split("\n")[0]));
   vc.on("error", (...args) => errors.push("console.error: " + args.join(" ").slice(0, 200)));
 
+  // opts.query ("?name=Reviews") reaches pages that read location.search —
+  // section.html resolves which section it is that way.
   const dom = new JSDOM(inlineScripts(file), {
     runScripts: "dangerously",
-    url: "https://localhost/" + file,
+    url: "https://localhost/" + file + (opts.query || ""),
     virtualConsole: vc,
     beforeParse(w) {
       if (opts.editor !== false) w.localStorage.setItem("wl_preview_role", "editor");

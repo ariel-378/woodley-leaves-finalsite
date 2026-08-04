@@ -232,5 +232,59 @@ export async function run() {
     check.clean("no errors listing videos", ctx);
   }
 
+  // ===== An editor-created section gets the same page as a built-in one =====
+  // News, Sports and friends each have a bespoke .html file with an editable
+  // kicker and a movable article block. Sections an editor adds all render
+  // through section.html, and used to arrive without either. Every key is
+  // namespaced by section name, because otherwise one shared page means one
+  // shared kicker and one shared layout for every section at once.
+  {
+    const ctx = await loadPage("section.html", { query: "?name=News" });
+    const { document } = ctx.window;
+
+    check.equal("the page names the section", document.getElementById("section-title").textContent, "News");
+    check.ok("og:title follows the section",
+      document.querySelector('meta[property="og:title"]').getAttribute("content").startsWith("News —"));
+    check.equal("the kicker is inline-editable under a section-scoped key",
+      document.getElementById("section-kicker").dataset.wlText, "section-news-kicker");
+    check.equal("so is the dateline",
+      document.getElementById("section-dateline").dataset.wlText, "section-news-dateline");
+    check.equal("the article list is a movable block",
+      document.getElementById("article-list").dataset.moveKey, "articles");
+    check.equal("inside a section-scoped move group",
+      document.getElementById("section-main").dataset.moveGroup, "section-news-main");
+    check.equal("and the saved layout is keyed per section",
+      document.body.dataset.layoutPage, "section-news");
+    check.equal("the list still renders the right section",
+      document.getElementById("article-list").dataset.section, "News");
+    check.clean("no errors on a generic section page", ctx);
+  }
+
+  // A second section must collide with the first on none of those keys.
+  {
+    const ctx = await loadPage("section.html", { query: "?name=Sports" });
+    const { document } = ctx.window;
+    check.equal("another section gets its own text key",
+      document.getElementById("section-kicker").dataset.wlText, "section-sports-kicker");
+    check.equal("its own layout key", document.body.dataset.layoutPage, "section-sports");
+    check.equal("and its own move group",
+      document.getElementById("section-main").dataset.moveGroup, "section-sports-main");
+    check.clean("no errors on a second section page", ctx);
+  }
+
+  // An unresolvable section must not leave a movable block with no group: the
+  // layout toolbar keys off [data-move-key] and would appear over dead controls.
+  for (const [label, query] of [["an unknown section", "?name=Nope"], ["no section named", ""]]) {
+    const ctx = await loadPage("section.html", { query });
+    const { document } = ctx.window;
+    check.ok(`${label} explains itself`,
+      /doesn’t exist/.test(document.getElementById("article-list").textContent));
+    check.ok(`${label} leaves no orphan movable block`,
+      document.querySelector("[data-move-key]") === null);
+    check.ok(`${label} leaves no editable text keys`,
+      document.querySelector("[data-wl-text]") === null);
+    check.clean(`no errors with ${label}`, ctx);
+  }
+
   return check;
 }

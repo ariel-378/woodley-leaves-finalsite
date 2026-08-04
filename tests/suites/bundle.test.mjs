@@ -21,7 +21,7 @@ export async function run() {
     window.localStorage.setItem("wl_preview_role", "editor");    // session
 
     const snap = window.WLBundle.snapshot();
-    check.equal("bundle is tagged with the format", snap.format, "woodley-content-bundle");
+    check.equal("bundle is tagged with the format", snap.format, "newspaper-content-bundle");
     check.ok("captures a content key (brand)", !!snap.data.wl_brand,
       "the brand edit was not in the bundle");
     check.ok("brand value survives the round-trip readable",
@@ -65,12 +65,33 @@ export async function run() {
     const { window } = ctx;
 
     window.WLBrand.save({ name: "Stale Local Edit" });   // a draft that should be dropped
-    const emptyBundle = { format: "woodley-content-bundle", version: 1, data: {} };
+    const emptyBundle = { format: "newspaper-content-bundle", version: 1, data: {} };
     window.WLBundle.load(emptyBundle);
     check.ok("loading an empty bundle clears prior local edits",
       window.WLBrand.get().name !== "Stale Local Edit",
       "a local edit lingered after loading a bundle that didn't contain it");
     check.clean("no errors replacing state", ctx);
+  }
+
+  // ===== Bundles written under the old format name still import =====
+  // The identifier used to be "woodley-content-bundle". Anything an editor
+  // exported before the rename must keep loading, or a saved publish file
+  // becomes unopenable.
+  {
+    const ctx = await loadPage("editor-content.html");
+    const { window } = ctx;
+
+    const legacy = {
+      format: "woodley-content-bundle", version: 1,
+      data: { wl_brand: { name: "Legacy Bundle Paper" } },
+    };
+    const res = window.WLBundle.load(legacy);
+    check.ok("accepts a bundle tagged with the legacy format", res.ok === true,
+      "a bundle exported before the format rename was rejected");
+    check.equal("and applies its content", window.WLBrand.get().name, "Legacy Bundle Paper");
+    check.equal("but new exports carry the current format",
+      window.WLBundle.snapshot().format, "newspaper-content-bundle");
+    check.clean("no errors loading a legacy bundle", ctx);
   }
 
   // ===== A load refuses junk and never writes session keys =====
@@ -85,7 +106,7 @@ export async function run() {
     // harness pre-seeds wl_preview_role for editor pages, so assert the bundle's
     // value was NOT applied rather than that the key is absent.)
     window.WLBundle.load({
-      format: "woodley-content-bundle", version: 1,
+      format: "newspaper-content-bundle", version: 1,
       data: { wl_preview_role: "SHOULD_NOT_APPLY", wl_brand: { name: "Ok" } },
     });
     check.ok("a bundle cannot overwrite a session key",
@@ -112,7 +133,7 @@ export async function run() {
     const { window } = ctx;
     // Simulate a committed published-content.js having run.
     window.WL_PUBLISHED = {
-      format: "woodley-content-bundle", version: 1,
+      format: "newspaper-content-bundle", version: 1,
       data: { wl_brand: { name: "Published Paper" } },
     };
     check.ok("applies a new published version", window.WLBundle.applyPublished() === true);
@@ -128,7 +149,7 @@ export async function run() {
 
     // A brand-new published version wins over the draft.
     window.WL_PUBLISHED = {
-      format: "woodley-content-bundle", version: 1,
+      format: "newspaper-content-bundle", version: 1,
       data: { wl_brand: { name: "Newer Published" } },
     };
     check.ok("a newer published version re-applies", window.WLBundle.applyPublished() === true);
@@ -148,7 +169,7 @@ export async function run() {
     new Function("window", js)(sandbox);
     check.equal("the exported bundle carries the edit",
       sandbox.WL_PUBLISHED.data.wl_brand.name, "Export Me");
-    check.equal("and is tagged as a bundle", sandbox.WL_PUBLISHED.format, "woodley-content-bundle");
+    check.equal("and is tagged as a bundle", sandbox.WL_PUBLISHED.format, "newspaper-content-bundle");
     check.clean("no errors exporting the publish file", ctx);
   }
 

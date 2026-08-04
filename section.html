@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Section — The Student Times</title>
 <meta name="description" content="Section coverage from The Student Times.">
+<meta property="og:title" content="Section — The Student Times">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="The Student Times">
 <link rel="icon" type="image/svg+xml" href="favicon.svg">
@@ -31,7 +32,7 @@
   <div class="masthead-ornament left" aria-hidden="true"><img src="media/leaf.svg" alt="" width="60" height="30"></div>
   <div class="masthead-ornament right" aria-hidden="true"><img src="media/leaf.svg" alt="" width="60" height="30"></div>
   <h1><a href="index.html">The Student Times</a></h1>
-  <div class="dateline">YOUR SCHOOL</div>
+  <div class="dateline" id="section-dateline">YOUR SCHOOL</div>
 </div>
 
 <nav class="sectionnav">
@@ -40,7 +41,7 @@
 
 <main id="main-content" class="container">
   <header class="section-hero">
-    <div class="kicker">Section</div>
+    <div class="kicker" id="section-kicker">Top Stories</div>
     <h2 id="section-title">Section</h2>
     <div class="section-hero-flourish" aria-hidden="true">
       <svg viewBox="0 0 160 24" xmlns="http://www.w3.org/2000/svg">
@@ -51,7 +52,9 @@
     </div>
   </header>
 
-  <div class="article-list" id="article-list"></div>
+  <div id="section-main">
+    <div class="article-list" id="article-list"></div>
+  </div>
 </main>
 
 <!-- Resolve the section from ?name= before the renderers run. Runs synchronously
@@ -63,18 +66,45 @@
     const known = window.WLSections && WLSections.find(name);
     const list = document.getElementById("article-list");
     const titleEl = document.getElementById("section-title");
+    const kickerEl = document.getElementById("section-kicker");
+    const datelineEl = document.getElementById("section-dateline");
+    const groupEl = document.getElementById("section-main");
+
+    // A slug of the section name namespaces this page's editable text and its
+    // saved layout. Both are keyed by page, and every editor-created section
+    // shares section.html — without the slug, renaming a kicker or reordering
+    // one section's modules would change every other section too.
+    function slugify(s) {
+      return s.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
+    }
+
     if (name && known) {
+      const slug = slugify(name) || "section";
       document.title = name + " — The Student Times";
       titleEl.textContent = name;
       list.dataset.section = name;
+
+      const ogTitle = document.querySelector('meta[property="og:title"]');
+      if (ogTitle) ogTitle.setAttribute("content", name + " — The Student Times");
+
+      // Parity with the built-in section pages (news.html and friends): the
+      // kicker and dateline are inline-editable, and the article list is a
+      // movable block. Set before text-editor.js and layout-editor.js run.
+      document.body.dataset.layoutPage = "section-" + slug;
+      kickerEl.dataset.wlText = "section-" + slug + "-kicker";
+      datelineEl.dataset.wlText = "section-" + slug + "-dateline";
+      groupEl.dataset.moveGroup = "section-" + slug + "-main";
+      list.dataset.moveKey = "articles";
+      list.dataset.moveLabel = "Articles";
     } else {
       titleEl.textContent = name ? "Section not found" : "Section";
+      kickerEl.textContent = "Section";
       list.innerHTML = '<p class="section-empty">That section doesn’t exist. <a href="index.html">Back to the front page.</a></p>';
     }
   })();
 </script>
 
-<footer>© 2026 The Student Times · Your School Student Publication · <a href="staff.html">Staff</a> · <a href="tip.html">Pitch a story</a><br>Online Editor-in-Chief: <a href="mailto:editor@example.org">editor@example.org</a> · Online Managing Editor: <a href="mailto:managing@example.org">managing@example.org</a></footer>
+<footer></footer>
 <script src="articles.js"></script>
 <script src="articles-store.js"></script>
 <script src="writers.js"></script>

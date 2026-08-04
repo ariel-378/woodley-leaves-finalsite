@@ -83,7 +83,7 @@
   </article>
 </main>
 
-<footer>© 2026 The Student Times · Your School Student Publication · <a href="staff.html">Staff</a> · <a href="tip.html">Pitch a story</a><br>Online Editor-in-Chief: <a href="mailto:editor@example.org">editor@example.org</a> · Online Managing Editor: <a href="mailto:managing@example.org">managing@example.org</a></footer>
+<footer></footer>
 <script src="articles.js"></script>
 <script src="articles-store.js"></script>
 <script src="writers.js"></script>
@@ -96,7 +96,10 @@
 <script>
 (function () {
   const params = new URLSearchParams(location.search);
-  const id = params.get("id") || "debate-regional-2026-04-17";  // default
+  // No fallback id: this page renders whatever ?id= names. Defaulting to one
+  // article meant a bare /article.html silently served that story forever, and
+  // pinned a demo slug into the page for good.
+  const id = params.get("id") || "";
 
   const a = WLArticles.getById(id);
 

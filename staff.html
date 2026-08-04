@@ -113,7 +113,7 @@
 
 <main id="main-content" class="container">
   <header class="section-hero">
-    <div class="kicker" data-wl-text="staff-kicker">Masthead · 2025–2026</div>
+    <div class="kicker" data-wl-text="staff-kicker" id="staff-kicker">Masthead</div>
     <h2>The Staff</h2>
     <div class="section-hero-flourish" aria-hidden="true">
       <svg viewBox="0 0 160 24" xmlns="http://www.w3.org/2000/svg">
@@ -129,7 +129,21 @@
   <div id="staff-root"></div>
 </main>
 
-<footer>© 2026 The Student Times · Your School Student Publication · <a href="staff.html">Staff</a> · <a href="tip.html">Pitch a story</a><br>Online Editor-in-Chief: <a href="mailto:editor@example.org">editor@example.org</a> · Online Managing Editor: <a href="mailto:managing@example.org">managing@example.org</a></footer>
+<!-- The masthead year rolls over on its own. It was written in as "2025–2026",
+     which quietly went stale every August. An editor who wants different
+     wording can still overwrite the kicker inline; text-editor.js stamps this
+     as the default and any saved override wins. School years are labelled by
+     the fall term, so August onward belongs to the year that just started. -->
+<script>
+(function () {
+  const now = new Date();
+  const startYear = now.getMonth() >= 7 ? now.getFullYear() : now.getFullYear() - 1;
+  document.getElementById("staff-kicker").textContent =
+    "Masthead · " + startYear + "–" + (startYear + 1);
+})();
+</script>
+
+<footer></footer>
 
 <script src="staff-data.js"></script>
 <script src="staff-store.js"></script>

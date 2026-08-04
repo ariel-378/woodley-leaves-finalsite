@@ -18,8 +18,16 @@
 //  separate — this half is safe on any page and changes no reader behaviour.
 // ============================================================================
 window.WLBundle = (function () {
-  var FORMAT = "woodley-content-bundle";
+  var FORMAT = "newspaper-content-bundle";
   var VERSION = 1;
+
+  // The format identifier was once named after the first paper to use it.
+  // Bundles exported under the old name still import — read accepts either,
+  // write always emits the current one.
+  var LEGACY_FORMATS = ["woodley-content-bundle"];
+  function isBundleFormat(f) {
+    return f === FORMAT || LEGACY_FORMATS.indexOf(f) !== -1;
+  }
 
   // Keys that are per-device/session, not content — never bundled or applied.
   var EXCLUDE = {
@@ -73,7 +81,7 @@ window.WLBundle = (function () {
   // restore, not a merge (so loading a bundle reproduces it exactly). Per-device
   // keys are left untouched.
   function load(bundle) {
-    if (!bundle || bundle.format !== FORMAT || typeof bundle.data !== "object" || !bundle.data) {
+    if (!bundle || !isBundleFormat(bundle.format) || typeof bundle.data !== "object" || !bundle.data) {
       return { ok: false, error: "not-a-bundle" };
     }
     contentKeys().forEach(function (k) { localStorage.removeItem(k); });
@@ -133,7 +141,7 @@ window.WLBundle = (function () {
 
   function applyPublished() {
     var pub = window.WL_PUBLISHED;
-    if (!pub || pub.format !== FORMAT || typeof pub.data !== "object" || !pub.data) return false;
+    if (!pub || !isBundleFormat(pub.format) || typeof pub.data !== "object" || !pub.data) return false;
     var sig = hashStr(JSON.stringify(pub.data));
     var already;
     try { already = localStorage.getItem(MARKER); } catch (e) { return false; }
@@ -208,7 +216,7 @@ window.WLBundle = (function () {
         if (res.ok) refresh();
         setStatus(res.ok
           ? ("Loaded " + res.applied + " item group" + (res.applied === 1 ? "" : "s") + ". Every editor page now shows this content.")
-          : "That file isn't a Woodley content bundle.");
+          : "That file isn't a content bundle.");
         e.target.value = "";
       };
       reader.readAsText(f);
@@ -222,6 +230,6 @@ window.WLBundle = (function () {
     snapshot: snapshot, toJSON: toJSON, load: load, clearAll: clearAll,
     download: download, summary: summary, isContentKey: isContentKey,
     applyPublished: applyPublished, toPublishedJS: toPublishedJS, downloadPublished: downloadPublished,
-    FORMAT: FORMAT, VERSION: VERSION,
+    FORMAT: FORMAT, VERSION: VERSION, isBundleFormat: isBundleFormat,
   };
 })();
