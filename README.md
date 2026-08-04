@@ -35,12 +35,21 @@ pages. See [tests/README.md](tests/README.md).
 
 ## Run it locally
 
-No build step. Serve the folder with any static server:
+No build step and nothing to install:
 
 ```bash
-python3 -m http.server 8000
-# open http://localhost:8000
+npm run serve      # http://localhost:8781
 ```
+
+`serve.py` sends no-cache headers, so a reload always shows your latest edit.
+Pass a port if you want a specific one (`npm run serve 9000`); with no argument
+it steps past a busy port rather than failing, which is what lets a second copy
+of the site run alongside the first.
+
+Any static server works just as well — `python3 -m http.server 8000` and open
+`http://localhost:8000`. Opening the files directly with `file://` does not:
+every editor change is kept in `localStorage`, which browsers restrict on
+`file://` origins, so the dashboard cannot save.
 
 With no host platform present, the site runs in **demo mode** — use the
 **"Editor preview"** link in the account bar to open the dashboard. Editor changes
