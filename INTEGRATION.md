@@ -231,7 +231,7 @@ and needs no CSP allowance.
 
 ```bash
 npm install   # once — jsdom, used only by the tests
-npm test      # 419 checks across 11 suites (415 in the template)
+npm test      # 478 checks across 11 suites (471 in the template)
 ```
 
 Tests load real pages and drive them by clicking and typing, so a green run

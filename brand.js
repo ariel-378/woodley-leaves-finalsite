@@ -144,9 +144,28 @@
     });
   }
 
-  // The as-authored title, kept so re-applying after a Design save renames from
-  // the original rather than from the previously-substituted name.
-  var BASE_TITLE = document.title;
+  // The title to substitute the paper name into, kept so re-applying after a
+  // Design save renames from the original rather than from the previously-
+  // substituted name.
+  //
+  // This script runs while the head is parsing, so the snapshot below is the
+  // page's static <title>. But article/writer/tag/team/video/section pages set
+  // a title of their own from an inline script, and those run before the
+  // DOMContentLoaded that triggers apply() — re-applying the head snapshot then
+  // threw the real one away, leaving every story tab reading just the paper
+  // name. So `titleWritten` records what this script last set: if the title no
+  // longer matches, a page set its own and that becomes the new base.
+  var titleBase = document.title;
+  var titleWritten = titleBase;
+
+  function setTitle() {
+    if (!cfg.name) return;
+    if (document.title !== titleWritten) titleBase = document.title;
+    if (!titleBase) return;
+    // A function replacement keeps "$&"/"$1" in a paper name literal.
+    titleWritten = titleBase.replace(/The Student Times/g, function () { return cfg.name; });
+    document.title = titleWritten;
+  }
 
   // Meta tags carry placeholder names in their content; snapshot the originals
   // so re-applying (after a Design save) substitutes from the template text,
@@ -203,9 +222,8 @@
         var a = h.querySelector("a");
         if (a) a.textContent = cfg.name; else h.textContent = cfg.name;
       });
-      // A function replacement keeps "$&"/"$1" in a paper name literal.
-      if (BASE_TITLE) document.title = BASE_TITLE.replace(/The Student Times/g, function () { return cfg.name; });
     }
+    setTitle();
 
     // Share/SEO metadata. Pages ship with placeholder names ("The Student
     // Times", "Your School"); swap those for the real paper so og:/twitter tags
