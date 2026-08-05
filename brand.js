@@ -133,7 +133,7 @@
         img.setAttribute("alt", "");
         if (img.getAttribute("src") !== s.file) img.setAttribute("src", s.file);
         // The school's art has its own proportions — let width drive height
-        // rather than the leaf's baked-in 60×30 attributes.
+        // rather than the markup's baked-in 60×30 attributes.
         img.removeAttribute("width");
         img.removeAttribute("height");
         return;

@@ -196,7 +196,7 @@
         </p>
 
         <button class="btn-ghost" type="button" id="orn-remove">Remove flourish</button>
-        <button class="btn-ghost" type="button" id="orn-revert">Back to the leaf</button>
+        <button class="btn-ghost" type="button" id="orn-revert">Back to the default</button>
       </section>
 
       <!-- ── Color ─────────────────────────────────────────────────────── -->
@@ -325,7 +325,14 @@
   const welcome = document.getElementById("welcome");
   const msg = document.getElementById("save-msg");
 
-  const DEFAULT_ORNAMENT = { file: "media/leaf.svg", width: 72, mirror: true, opacity: 0.55 };
+  // "Reset" has to restore what config.js ships, not a file named here. This
+  // was hardcoded to the template's own default art, so a school that swapped
+  // in its own crest got the template's back the first time it reset.
+  const SHIPPED_ORNAMENT = (window.WL_CONFIG || {}).ornament;
+  const DEFAULT_ORNAMENT = Object.assign(
+    { file: "", width: 72, mirror: true, opacity: 0.55 },
+    typeof SHIPPED_ORNAMENT === "string" ? { file: SHIPPED_ORNAMENT } : SHIPPED_ORNAMENT
+  );
   const MAX_UPLOAD = 2 * 1024 * 1024;
 
   function gate() {
@@ -693,7 +700,7 @@
     el("f-orn-opacity").value = Math.round(ornament.opacity * 100);
     el("f-orn-mirror").checked = ornament.mirror;
     renderOrnamentPreview();
-    say("Back to the leaf — click Save design to keep it.", "");
+    say("Back to the shipped flourish — click Save design to keep it.", "");
   });
 
   el("add-contact").addEventListener("click", () => {

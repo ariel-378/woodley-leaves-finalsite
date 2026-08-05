@@ -58,6 +58,10 @@ export async function loadPage(file, opts = {}) {
       w.prompt = () => "";
       w.scrollTo = () => {};
       w.addEventListener("error", e => errors.push("onerror: " + (e.message || "")));
+      // opts.beforeParse runs last, with the window ready but no page script
+      // executed yet — the slot a host platform (or a committed
+      // published-content.js) occupies in a real page's <head>.
+      if (opts.beforeParse) opts.beforeParse(w);
     },
   });
 

@@ -77,6 +77,20 @@ export function stamp(html, cfg) {
   // they are runtime-only, no crawler sees them, and brand.js still swaps them.
   let out = html.replace(/<head>[\s\S]*?<\/head>/i, head => swap(head));
 
+  // The masthead flourish. brand.js swaps this at runtime from cfg.ornament,
+  // but the src sits in static markup on 25 pages, so before scripts run the
+  // browser requests whichever file the pages happened to ship with — a 404 for
+  // any school that removed the template's default, and the wrong art for one
+  // that replaced it. Point it at the configured file up front. No baseline is
+  // needed: the attribute is addressed directly rather than matched on value.
+  const ornament = typeof cfg.ornament === "string" ? cfg.ornament : (cfg.ornament || {}).file;
+  if (ornament && /\.(svg|png|jpe?g|webp|avif)$/i.test(ornament)) {
+    out = out.replace(
+      /(<div class="masthead-ornament[^"]*"[^>]*>\s*<img\s+src=")[^"]*(")/gi,
+      (_m, before, after) => before + escapeAttr(ornament) + after
+    );
+  }
+
   // Record what we just stamped with.
   out = out.replace(/<html\b[^>]*>/i, tag => {
     const cleaned = tag.replace(/\s+data-wl-(name|school)="[^"]*"/gi, "");

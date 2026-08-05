@@ -82,5 +82,46 @@ export async function run() {
       reader.document.body.textContent.includes("A Test Video"));
   }
 
+  // ===== The publish loop reaches a reader who never opened the editor =====
+  // Every other case above hands the editor's own localStorage to the reader,
+  // which is the same browser. Publishing is the path that crosses browsers:
+  // an editor downloads published-content.js, someone commits it, and it loads
+  // in <head> on every page. This is the only route by which a stranger's
+  // browser — empty localStorage, never signed in — sees an editor's work, and
+  // it was the one route nothing exercised end to end.
+  {
+    const editor = await loadPage("editor-content.html");
+    editor.window.WLArticles.save("published-loop-story", {
+      title: "Filed Before The Bell",
+      deck: "A story that only exists because an editor published it.",
+      section: "News", sectionPage: "news.html",
+      byline: "Wire Staff", date: "May 20, 2026", body: ["One paragraph."],
+    });
+
+    const js = editor.window.WLBundle.toPublishedJS();
+    check.ok("publishing produces a committable file", /window\.WL_PUBLISHED\s*=/.test(js));
+
+    // Exactly what committing that file and loading any page does: the script
+    // runs in <head>, content-bundle.js applies it, the page renders.
+    const reader = await loadPage("news.html", { editor: false, beforeParse: w => {
+      w.eval(js);
+    }});
+
+    check.ok("a reader with no local edits sees the published story",
+      reader.document.body.textContent.includes("Filed Before The Bell"),
+      "the published file did not reach a fresh browser");
+    check.ok("and the reader is not shown editor tools",
+      !reader.document.getElementById("wl-layout-toggle"));
+    check.clean("the published page renders clean", reader);
+
+    // Loading it twice must not double-apply or wipe the reader's own state.
+    const again = await loadPage("news.html", { editor: false, beforeParse: w => {
+      w.eval(js);
+    }});
+    check.ok("re-loading the same published version is stable",
+      again.document.body.textContent.includes("Filed Before The Bell"));
+    check.clean("no errors on a second load", again);
+  }
+
   return check;
 }

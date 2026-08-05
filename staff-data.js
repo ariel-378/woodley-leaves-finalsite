@@ -2,10 +2,12 @@
 // (Staff tab); their changes are stored in localStorage and override these
 // defaults. "Reset staff to defaults" restores this list.
 //
-// The people below are placeholders, so their addresses are placeholders too —
-// a real address on an invented name misroutes mail and reads as a leak. The
-// paper's actual contacts live in config.js (`contacts`), which is what the
-// footer publishes. Enter the real masthead from the Staff tab.
+// This is the real online masthead, and it is deliberately short: only the two
+// online editors are listed, because those are the roles whose addresses the
+// footer already publishes from config.js. Section editors, writers,
+// photography and the faculty adviser are NOT listed yet — add them from the
+// Staff tab rather than inventing entries here. The groups below are the
+// headings they will file under.
 window.WL_STAFF_GROUPS = [
   "Leadership",
   "Section Editors",
@@ -16,23 +18,23 @@ window.WL_STAFF_GROUPS = [
 
 window.WL_STAFF = [
   {
-    id: "jordan-marsh",
-    name: "Jordan Marsh",
+    id: "ariel-pollard",
+    name: "Ariel Pollard",
     role: "Online Editor-in-Chief",
     year: "Class of 2027",
     group: "Leadership",
-    email: "jordan.marsh@example.org",
-    slug: "jordan-marsh",
+    email: "arielp2027@maret.org",
+    slug: "ariel-pollard",
     photo: ""
   },
   {
-    id: "harper-l",
-    name: "Harper L.",
+    id: "farryn-b",
+    name: "the Online Managing Editor",
     role: "Online Managing Editor",
     year: "Class of 2027",
     group: "Leadership",
-    email: "harper.l@example.org",
-    slug: "harper-l",
+    email: "farrynb2027@maret.org",
+    slug: "farryn-b",
     photo: ""
   }
 ];
