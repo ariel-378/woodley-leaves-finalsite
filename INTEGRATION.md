@@ -145,7 +145,6 @@ refuses to enable preview when hosted.
 - [ ] Set the page audience for who may read the paper
 - [ ] Decide on content: option A, B or C above
 - [ ] Edit `config.js` — masthead, school name, colours, logo, footer contacts
-- [ ] Optional: set `submissions.endpoint` for reader forms (below)
 - [ ] Set the Content-Security-Policy (see the CSP section below)
 
 ### Branding
@@ -158,16 +157,6 @@ and footer contacts across every page. Editors can also adjust design in the
 dashboard's **Brand design** tab, but those changes are per-browser previews —
 `config.js` is what every reader sees.
 
-### Reader forms (optional)
-
-Newsletter signups, staff signups and story pitches post to a Google Apps Script
-web app, so a static site can still deliver mail. Set
-`config.js → submissions.endpoint`; see `setup/README.md`. Until it is set, the
-forms tell the reader they are not configured and offer a `mailto:` fallback —
-they never claim a pitch was received when it was not.
-
-If the school would rather these went to a Finalsite form endpoint, that is a
-one-line change in `submissions.js`.
 
 ---
 
@@ -178,8 +167,6 @@ one-line change in `submissions.js`.
 - **Editor-pasted code is sandboxed.** Sections may hold custom HTML/JS written
   by an editor. It runs in an `<iframe sandbox="allow-scripts">` with no
   same-origin access, so it cannot read the page, cookies or storage.
-- **The submissions endpoint is public** by nature — it ships in page source.
-  Validation happens in the Apps Script; client checks only save a round trip.
 - **Reader input is never trusted.** All dynamic values are escaped before
   rendering.
 
@@ -188,8 +175,8 @@ one-line change in `submissions.js`.
 ## Content-Security-Policy
 
 The site is friendly to a strict CSP. It makes **no external requests except**
-video embeds/thumbnails (YouTube, Vimeo) and — if you enable reader forms — the
-Google Apps Script endpoint. Fonts are **self-hosted** (no font CDN). There are
+video embeds/thumbnails (YouTube, Vimeo). Fonts are **self-hosted** (no font
+CDN). There are
 **no inline event handlers** (`onclick=` etc.) and **no `eval`/`new Function`**
 in the shipped code, so the only inline surface is per-page `<script>`/`<style>`
 blocks.
@@ -234,7 +221,7 @@ and needs no CSP allowance.
 
 ```bash
 npm install   # once — jsdom, used only by the tests
-npm test      # 650 checks across 12 suites
+npm test      # 646 checks across 12 suites
 npm run brand # after changing `name`/`school` in config.js
 ```
 
@@ -249,5 +236,4 @@ alone; the site itself ships as-is.
 
 1. Content: option **A**, **B** or **C**?
 2. Which Finalsite role should map to `role: "editor"`?
-3. Should reader forms go to Finalsite instead of Google Apps Script?
-4. Is the paper public, or restricted to the school community?
+3. Is the paper public, or restricted to the school community?

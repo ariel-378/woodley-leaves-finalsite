@@ -295,7 +295,7 @@
       }).join(" &nbsp;·&nbsp; ");
       foot.innerHTML =
         "© " + year + " " + esc(cfg.name || "") + " · " + esc(cfg.school || "") + " " + esc(cfg.footerNote || "") +
-        ' · <a href="staff.html">Staff</a> · <a href="tip.html">Pitch a story</a>' +
+        ' · <a href="staff.html">Staff</a>' +
         (contacts ? "<br>" + contacts : "");
     }
   }

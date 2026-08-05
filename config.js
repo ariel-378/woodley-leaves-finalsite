@@ -48,13 +48,4 @@ window.WL_CONFIG = {
   //  Our team's name as it appears in the bracket data (teams.js).
   homeTeam: "Maret",
 
-  // ── Where reader submissions go ──────────────────────────────────────────
-  //  Newsletter signups, staff signups, and story pitches go to a Google Sheet
-  //  via a Google Apps Script web app. Follow setup/README.md, then paste the
-  //  web-app URL here. Until it's filled in, those forms tell readers
-  //  submissions aren't set up and offer email instead — nothing is discarded.
-  submissions: {
-    endpoint: "",                          // ← paste the Apps Script web-app URL
-    fallbackEmail: "arielp2027@maret.org", // used if a send fails
-  },
 };

@@ -128,27 +128,6 @@ Nothing in the Brand design tab can break the site permanently: it only ever lay
 on top of `config.js`. **Reset everything** puts it back exactly as the code
 says.
 
-## Where reader submissions go
-
-Newsletter signups, staff signups, and story pitches are sent to a **Google
-Sheet** through a small Google Apps Script. See **[setup/README.md](setup/README.md)**
-for the one-time setup (about 10 minutes), then paste the web-app URL into
-`config.js`:
-
-```js
-submissions: {
-  endpoint: "https://script.google.com/macros/s/AKfycb.../exec",
-  fallbackEmail: "editor@yourschool.org",
-},
-```
-
-Until that's filled in, those forms **don't pretend to work** — they say
-submissions aren't set up and offer an email link, so nothing a student writes
-is thrown away. The same is true if the send ever fails.
-
-The endpoint is deliberately **not** in the Brand design tab: Design changes are
-per-browser, and where the paper's mail goes has to be the same for everyone.
-
 ### Adding content
 Stories, ads, sports, videos, puzzles, and the centerspread are managed from the
 **Editor dashboard** (`editor.html`). The paper ships blank — add your own. In a

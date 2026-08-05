@@ -170,7 +170,7 @@ because they only ever talk to `WLArticles`, `WLSections`, etc.
 
 Stores to wire: `articles-store`, `sections-store`, `writers-store`, `teams-store`,
 `ads-store`, `videos-store`, `centerspread-store`, `puzzles-store`, `views-store`,
-`brand-store`, plus the editable static text (`wl_text_custom`) and subscribers.
+`brand-store`, plus the editable static text (`wl_text_custom`).
 
 ### 4.3 Three integration models
 
