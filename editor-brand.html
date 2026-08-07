@@ -42,6 +42,18 @@
   /* Author styles beat the UA's [hidden] rule, so display must be undone by
      hand or `hidden` on the Sheet link would do nothing. */
   a.btn-ghost[hidden] { display: none; }
+  /* Tab icon */
+  .fav-preview { display: flex; align-items: center; gap: 14px; background: var(--paper);
+    border: 1px dashed var(--rule); padding: 14px 16px; margin-bottom: 14px; }
+  .fav-preview img { display: block; width: 48px; height: 48px; object-fit: contain; background: none; }
+  .fav-preview-note { display: flex; flex-direction: column; gap: 3px; font-size: 13px; }
+  .fav-preview-note .field-note { margin-top: 0; }
+  .fav-actions { margin: -6px 0 14px; }
+  .fav-actions[hidden] { display: none; }
+  /* Letters are what the icon IS until an upload replaces it; dimming says so
+     without hiding the values an editor would get back on Remove. */
+  #fav-letters.is-replaced { opacity: 0.45; }
+
   /* How-to, folded away until asked for. */
   .sub-guide { border: 1px solid var(--rule); background: var(--cream); margin-bottom: 18px; }
   .sub-guide > summary { cursor: pointer; padding: 10px 14px; font-size: 13px; font-weight: 600; color: var(--ink); }
@@ -283,26 +295,49 @@
       <!-- ── Favicon ───────────────────────────────────────────────────── -->
       <section class="bp">
         <h3>Tab icon</h3>
-        <p class="bp-hint">The small badge in the browser tab. Letters on a colored square.</p>
-        <div class="row-2">
-          <label>Letters
-            <input type="text" id="f-fav-initials" maxlength="2" placeholder="RR">
-            <span class="field-note">One or two.</span>
-          </label>
-          <div>
-            <label for="f-fav-bg">Background</label>
-            <span class="swatch-row">
-              <input type="color" id="f-fav-bg-picker" aria-label="Pick tab icon background">
-              <input type="text" id="f-fav-bg" placeholder="#1d4e89" spellcheck="false">
-            </span>
+        <p class="bp-hint">
+          The small badge in the browser tab. Letters on a colored square by default —
+          or upload your own image, a crest or a logo. SVG stays sharpest at 16 pixels;
+          PNG, JPG and WEBP also work.
+        </p>
+
+        <div class="fav-preview">
+          <img id="fav-preview-img" alt="" width="48" height="48">
+          <div class="fav-preview-note">
+            <span id="fav-preview-label"></span>
+            <span class="field-note">Browsers draw this at about 16 pixels. Anything fiddly disappears at that size.</span>
           </div>
         </div>
-        <div style="margin-top:8px;max-width:calc(50% - 5px);">
-          <label for="f-fav-fg">Letters color</label>
-          <span class="swatch-row">
-            <input type="color" id="f-fav-fg-picker" aria-label="Pick tab icon letters color">
-            <input type="text" id="f-fav-fg" placeholder="#ffffff" spellcheck="false">
-          </span>
+
+        <label>Upload an icon
+          <input type="file" id="f-fav-file" accept="image/svg+xml,image/png,image/jpeg,image/webp,image/avif">
+          <span class="field-note">Square works best. Keep it under 100 KB if you can — it's stored in your browser until you download the config.</span>
+        </label>
+        <div class="fav-actions" id="fav-actions" hidden>
+          <button class="btn-ghost" type="button" id="fav-remove">Remove the image, go back to letters</button>
+        </div>
+
+        <div id="fav-letters">
+          <div class="row-2">
+            <label>Letters
+              <input type="text" id="f-fav-initials" maxlength="2" placeholder="RR">
+              <span class="field-note">One or two. Left blank, the paper's initials are used.</span>
+            </label>
+            <div>
+              <label for="f-fav-bg">Background</label>
+              <span class="swatch-row">
+                <input type="color" id="f-fav-bg-picker" aria-label="Pick tab icon background">
+                <input type="text" id="f-fav-bg" placeholder="#1d4e89" spellcheck="false">
+              </span>
+            </div>
+          </div>
+          <div style="margin-top:8px;max-width:calc(50% - 5px);">
+            <label for="f-fav-fg">Letters color</label>
+            <span class="swatch-row">
+              <input type="color" id="f-fav-fg-picker" aria-label="Pick tab icon letters color">
+              <input type="text" id="f-fav-fg" placeholder="#ffffff" spellcheck="false">
+            </span>
+          </div>
         </div>
       </section>
 
@@ -506,6 +541,9 @@
   // ── Form state ──────────────────────────────────────────────────────────
   //  Held here so the preview can update without saving on every keystroke.
   let ornament = null;
+  // An uploaded tab icon, or a path a school set in config.js. Empty means the
+  // icon is the drawn letters, and the fields below are what draw it.
+  let faviconImage = "";
   let dirty = false;   // unsaved edits in this tab
 
   const el = id => document.getElementById(id);
@@ -672,6 +710,12 @@
     el("f-accent").value = accent;
     syncPicker("f-accent-picker", accent);
 
+    // A string favicon is an image — an upload, or a path config.js set. The
+    // letter fields keep their defaults underneath, so Remove has something to
+    // fall back to rather than a blank square.
+    faviconImage = typeof cfg.favicon === "string" ? cfg.favicon : "";
+    el("f-fav-file").value = "";
+
     const fav = (cfg.favicon && typeof cfg.favicon === "object") ? cfg.favicon : {};
     el("f-fav-initials").value = fav.initials || "";
     const favBg = fav.bg || accent;
@@ -715,6 +759,7 @@
     el("f-sub-sheet").value = sub.sheetUrl || "";
     renderSheetLink();
     renderSubStatus();
+    renderFaviconPreview();   // last: it reads the letter colors set above
 
     dirty = false;
   }
@@ -794,6 +839,64 @@
   renderNamePicker();
   // Keep the name-font previews showing the real paper name as it's typed.
   el("f-name").addEventListener("input", renderNamePicker);
+
+  // ── Tab icon ────────────────────────────────────────────────────────────
+  //  The favicon is either an image (an upload, or a path from config.js) or
+  //  letters drawn on a square. One value carries both: a string is an image,
+  //  an object is letters — which is what brand.js already reads.
+  function faviconValue() {
+    return faviconImage || {
+      initials: el("f-fav-initials").value.trim().toUpperCase(),
+      bg: el("f-fav-bg").value.trim() || undefined,
+      fg: el("f-fav-fg").value.trim() || "#ffffff",
+    };
+  }
+
+  function renderFaviconPreview() {
+    const usingImage = !!faviconImage;
+    el("fav-actions").hidden = !usingImage;
+    el("fav-letters").classList.toggle("is-replaced", usingImage);
+    el("fav-preview-label").textContent = usingImage
+      ? "Your uploaded icon is in use."
+      : "Drawn from the letters below.";
+
+    // Built by brand.js, not by a copy of it — the preview and the real tab
+    // icon cannot drift apart.
+    const colors = { accent: el("f-accent").value.trim() };
+    const href = WLBrandIcon.href(faviconValue(), colors, el("f-name").value.trim());
+    el("fav-preview-img").src = href || "";
+  }
+
+  el("f-fav-file").addEventListener("change", () => {
+    const f = el("f-fav-file").files[0];
+    if (!f) return;
+    if (f.size > MAX_UPLOAD) {
+      if (!confirm("That file is over 2 MB. Browser storage may fill up fast. Continue?")) {
+        el("f-fav-file").value = ""; return;
+      }
+    }
+    const reader = new FileReader();
+    reader.onload = e => {
+      faviconImage = e.target.result;      // base64 data URL
+      renderFaviconPreview();
+      say("Tab icon loaded — click Save design to keep it.", "");
+    };
+    reader.onerror = () => say("Could not read that file.", "err");
+    reader.readAsDataURL(f);
+  });
+
+  el("fav-remove").addEventListener("click", () => {
+    faviconImage = "";
+    el("f-fav-file").value = "";
+    renderFaviconPreview();
+    say("Back to letters — click Save design to keep it.", "");
+  });
+
+  // The drawn icon follows the letters, their colors, the accent it falls back
+  // to, and the paper name it takes initials from.
+  ["f-fav-initials", "f-fav-bg", "f-fav-fg", "f-accent", "f-name"].forEach(id => {
+    el(id).addEventListener("input", renderFaviconPreview);
+  });
 
   // ── Flourish controls ───────────────────────────────────────────────────
   el("f-orn-file").addEventListener("change", () => {
@@ -990,11 +1093,7 @@
         return Object.keys(f).length ? f : undefined;
       })(),
       ornament: Object.assign({}, ornament),
-      favicon: {
-        initials: el("f-fav-initials").value.trim().toUpperCase(),
-        bg: el("f-fav-bg").value.trim() || undefined,
-        fg: el("f-fav-fg").value.trim() || "#ffffff",
-      },
+      favicon: faviconValue(),
       contacts: readContacts(),
       // Storing a copy identical to config.js would be a redundant override
       // that outlives a later change to the shipped file. Clear it instead.
@@ -1056,10 +1155,11 @@
     // page cheerfully reported success.
     if (!commit()) return;
     download("config.js", new Blob([WLBrand.exportConfigSource()], { type: "text/javascript" }));
-    const art = WLBrand.exportArtwork();
-    if (art) download(art.name, dataUrlToBlob(art.dataUrl));
-    say(art
-      ? `Saved, and downloaded config.js and ${art.name}. Send both to whoever manages your site.`
+    const uploads = WLBrand.exportUploads();
+    uploads.forEach(u => download(u.name, dataUrlToBlob(u.dataUrl)));
+    say(uploads.length
+      ? `Saved, and downloaded config.js and ${uploads.map(u => u.name).join(", ")}. ` +
+        `Send them all to whoever manages your site — the images go in media/.`
       : "Saved, and downloaded config.js. Send it to whoever manages your site.", "ok");
   });
 

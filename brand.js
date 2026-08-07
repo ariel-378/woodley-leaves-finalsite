@@ -46,19 +46,24 @@
     });
   }
 
-  function autoInitials() {
-    return (cfg.name || "")
+  function autoInitials(name) {
+    return String(name == null ? "" : name)
       .replace(/^The\s+/i, "")
       .split(/\s+/).map(function (w) { return w[0] || ""; }).join("")
       .slice(0, 2).toUpperCase() || "N";
   }
 
-  function faviconHref() {
-    var f = cfg.favicon;
+  // Takes its values rather than reading cfg, so the Design tab can preview an
+  // unsaved icon through this exact function instead of a copy of it.
+  //   f       the favicon value: { initials, bg, fg }, or a string that is a
+  //           file path or an uploaded data: URL
+  //   colors  the palette, for the accent fallback
+  //   name    the paper name, for initials nobody typed
+  function faviconHref(f, colors, name) {
     if (!f) return null;
-    if (typeof f === "string") return f;                       // a file path
-    var initials = f.initials || autoInitials();
-    var bg = f.bg || (cfg.colors && cfg.colors.accent) || "#2e7d32";
+    if (typeof f === "string") return f;                       // a path or an upload
+    var initials = f.initials || autoInitials(name);
+    var bg = f.bg || (colors && colors.accent) || "#2e7d32";
     var fg = f.fg || "#ffffff";
     var svg = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">' +
       '<rect width="64" height="64" fill="' + esc(bg) + '"/>' +
@@ -80,7 +85,7 @@
   }
 
   function setFavicon() {
-    var href = faviconHref();
+    var href = faviconHref(cfg.favicon, cfg.colors, cfg.name);
     if (!href) return;
     var link = document.querySelector('link[rel="icon"]');
     if (!link) { link = document.createElement("link"); link.setAttribute("rel", "icon"); document.head.appendChild(link); }
@@ -299,6 +304,12 @@
         (contacts ? "<br>" + contacts : "");
     }
   }
+
+  // The Design tab previews the tab icon before it is saved, and has to build
+  // it the way the real one is built — a second copy of the SVG here would
+  // drift from what readers get. This is the only reason brand.js exposes
+  // anything.
+  window.WLBrandIcon = { href: faviconHref, type: faviconType };
 
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", apply);
   else apply();

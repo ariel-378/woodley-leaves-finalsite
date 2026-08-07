@@ -28,7 +28,7 @@ In `config.js` you can set:
 | Your school color (masthead rule, links, favicon) | `colors.accent` | `"#1d4e89"` |
 | Other colors (text, borders, backgrounds) | `colors.*` | usually leave as-is |
 | The flourish beside the masthead | `ornament` | your own artwork — see [Using your own flourish](#using-your-own-flourish) below |
-| The tab icon (favicon) | `favicon` | `{ initials: "RR", bg: "#1d4e89", fg: "#fff" }` — or a file path like `"logo.svg"` |
+| The tab icon (favicon) | `favicon` | `{ initials: "RR", bg: "#1d4e89", fg: "#fff" }` — or your own image, see [Using your own tab icon](#using-your-own-tab-icon) below |
 | Footer contacts | `contacts` | `[{ title: "Editor-in-Chief", email: "eic@riverside.edu" }]` |
 
 Colors and the favicon update instantly; the name, dateline, flourish, and
@@ -84,6 +84,30 @@ A few things worth knowing:
 The flourish is hidden below 880px wide, so it never crowds the masthead on
 phones.
 
+### Using your own tab icon
+
+The tab icon (the favicon) is drawn as letters on a colored square by default —
+no file needed, and it follows your school color. To use your own image
+instead, upload it in **Brand design → Tab icon**, or set `favicon` to a path:
+
+```js
+favicon: "media/school-crest.svg",          // your file, in media/
+// or, for the drawn version:
+favicon: { initials: "RR", bg: "#1d4e89", fg: "#ffffff" },
+```
+
+A string is an image; an object is letters. Worth knowing:
+
+- **Browsers draw it at about 16 pixels.** Anything fiddly — thin lines, a full
+  wordmark, fine detail — turns to mush at that size. A single letter, a
+  monogram, or a simple shape reads best.
+- **SVG stays sharpest**, but PNG, JPG, WEBP and AVIF all work.
+- **Square works best.** A wide image is letterboxed into a square tab slot.
+- **Leaving `initials` blank** derives them from the paper name, so
+  *The Riverside Register* becomes **RR**.
+- **Uploading replaces the letters.** The letter settings stay put underneath,
+  so removing the image gets them back rather than leaving a blank square.
+
 ## The Brand design tab (no code needed)
 
 Sign in as an editor and open the **Brand design** tab (`editor-brand.html`). You can
@@ -104,12 +128,15 @@ reader on another computer still sees the original design.
 When the design looks right, click **Download config**. You get:
 
 - **`config.js`** — your settings as a real config file.
-- **`masthead-flourish.svg`** (or `.png`, etc.) — your uploaded artwork, only
-  if you uploaded some.
+- **`masthead-flourish.svg`** (or `.png`, etc.) — your uploaded flourish, only
+  if you uploaded one.
+- **`favicon.png`** (or `.svg`, etc.) — your uploaded tab icon, only if you
+  uploaded one.
 
-Send both to whoever manages your site. They replace the existing `config.js`
-and drop the artwork into `media/`. That's a one-time step, and from then on
-every reader sees your design.
+Send them all to whoever manages your site. They replace the existing
+`config.js` and drop any images into `media/`. The exported config already
+names the files exactly as they download, so the two can't disagree. That's a
+one-time step, and from then on every reader sees your design.
 
 > The download is also a good backup. Browser storage can be cleared by
 > clearing your history, or by using a different computer.
@@ -122,6 +149,7 @@ every reader sees your design.
 | **Download config** | Exports the files that make it permanent for readers. |
 | **Back to the default** | Restores the flourish that `config.js` ships. |
 | **Remove flourish** | Masthead shows just the paper's name. |
+| **Remove the image, go back to letters** | Drops an uploaded tab icon; the letter settings underneath come back. |
 | **Reset everything** | Discards all Design changes and returns to `config.js`. |
 
 Nothing in the Brand design tab can break the site permanently: it only ever layers

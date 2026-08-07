@@ -127,32 +127,51 @@ window.WLBrand = (function () {
   //  Turns the live merged config back into a config.js a developer can commit.
   //  Uploaded artwork is a data URL (huge, and unreadable in a diff), so it is
   //  exported as a separate file and referenced by name.
-  function ornamentFileName(dataUrl) {
+  // media/<base>.<ext>, with the extension read off the data URL's own MIME
+  // type. The extension matters: brand.js decides the favicon's `type` from it,
+  // and a name without one used to be exported for uploaded icons — pointing
+  // the config at a file that was never written and had no discernible format.
+  function uploadName(dataUrl, base) {
     var m = /^data:image\/([a-z0-9.+-]+)/i.exec(dataUrl || "");
     var ext = m ? m[1].toLowerCase() : "png";
     if (ext === "svg+xml") ext = "svg";
     if (ext === "jpeg") ext = "jpg";
-    return "media/masthead-flourish." + ext;
+    return "media/" + base + "." + ext;
   }
 
   function isDataUrl(s) { return typeof s === "string" && /^data:/i.test(s); }
 
-  function exportConfigSource() {
-    var cfg = fullConfig();          // not get() — the export must be complete
-    var orn = cfg.ornament;
-    var artNote = "";
+  // Uploaded artwork is stored as a data URL: enormous, and unreadable in a
+  // diff. The export swaps each one for a real filename and ships the file
+  // beside it. Returning both together is what keeps the config and the
+  // downloads from ever disagreeing about a name.
+  function withUploadsExtracted(cfg) {
+    var out = cfg;
+    var files = [];
 
+    var orn = out.ornament;
     if (orn && typeof orn === "object" && isDataUrl(orn.file)) {
-      var fname = ornamentFileName(orn.file);
-      cfg = Object.assign({}, cfg, { ornament: Object.assign({}, orn, { file: fname }) });
-      artNote =
-        "//  NOTE: this config expects the uploaded artwork to be saved as\n" +
-        "//        " + fname + "\n" +
-        "//        (downloaded alongside this file).\n";
+      var ornPath = uploadName(orn.file, "masthead-flourish");
+      files.push({ name: ornPath.replace(/^media\//, ""), dataUrl: orn.file });
+      out = Object.assign({}, out, { ornament: Object.assign({}, orn, { file: ornPath }) });
     }
-    if (isDataUrl(cfg.favicon)) {
-      cfg = Object.assign({}, cfg, { favicon: "media/favicon-upload" });
+
+    if (isDataUrl(out.favicon)) {
+      var favPath = uploadName(out.favicon, "favicon");
+      files.push({ name: favPath.replace(/^media\//, ""), dataUrl: out.favicon });
+      out = Object.assign({}, out, { favicon: favPath });
     }
+
+    return { cfg: out, files: files };
+  }
+
+  function exportConfigSource() {
+    var x = withUploadsExtracted(fullConfig());   // not get() — the export must be complete
+    var artNote = x.files.length
+      ? "//  NOTE: this config expects the uploaded file(s) to be saved as\n" +
+        x.files.map(function (f) { return "//        media/" + f.name + "\n"; }).join("") +
+        "//        (downloaded alongside this file).\n"
+      : "";
 
     return "// ============================================================================\n" +
       "//  BRAND CONFIG — exported from the Design dashboard.\n" +
@@ -160,15 +179,13 @@ window.WLBrand = (function () {
       "//  every reader (the Design tab only changes the editor's own browser).\n" +
       artNote +
       "// ============================================================================\n" +
-      "window.WL_CONFIG = " + JSON.stringify(cfg, null, 2) + ";\n";
+      "window.WL_CONFIG = " + JSON.stringify(x.cfg, null, 2) + ";\n";
   }
 
-  // The uploaded artwork, ready to save into media/. null when the flourish is
-  // a plain path (already a real file) or absent.
-  function exportArtwork() {
-    var orn = fullConfig().ornament;
-    if (!orn || typeof orn !== "object" || !isDataUrl(orn.file)) return null;
-    return { name: ornamentFileName(orn.file).replace(/^media\//, ""), dataUrl: orn.file };
+  // Every uploaded file, ready to save into media/. Empty when the flourish and
+  // the icon are plain paths (already real files) or absent.
+  function exportUploads() {
+    return withUploadsExtracted(fullConfig()).files;
   }
 
   return {
@@ -179,7 +196,7 @@ window.WLBrand = (function () {
     resetField: resetField,
     reset: reset,
     exportConfigSource: exportConfigSource,
-    exportArtwork: exportArtwork,
+    exportUploads: exportUploads,
     isDataUrl: isDataUrl,
   };
 })();
