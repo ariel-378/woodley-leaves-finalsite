@@ -219,7 +219,7 @@ school login (see the notes in `auth.js`); in the standalone template, use the
 ### The Centerspread tab
 The **Centerspread** tab controls the centerspread page:
 
-- **Print pieces** — the poems, prose, and images at the top of the page. Each
+- **Centerspread pieces** — the poems, prose, and images at the top of the page. Each
   piece is one of three types: a **poem** (laid out in stanzas), **prose**
   (paragraphs), or an **image** (a painting or photo, not tied to any article —
   paste a URL or upload a file). Any piece can hide an answer behind a **reveal

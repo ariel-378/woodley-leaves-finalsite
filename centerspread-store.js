@@ -1,5 +1,5 @@
 // ============================================================================
-//  CENTERSPREAD STORE — the print-edition pieces (poems, prose-with-reveal,
+//  CENTERSPREAD STORE — the centerspread pieces (poems, prose-with-reveal,
 //  standalone images) and which interactive puzzles appear on centerspread.html.
 //
 //  Defaults live in centerspread.js (window.WL_CENTERSPREAD); editor changes

@@ -18,7 +18,7 @@
 <script src="sections-store.js"></script>
 <script src="nav.js"></script>
 <style>
-  /* ===== Print edition centerspread pieces ===== */
+  /* ===== Centerspread pieces ===== */
   .print-edition {
     margin-bottom: 48px;
     padding-bottom: 40px;
@@ -864,11 +864,10 @@
 
 <main id="main-content" class="container">
   <header class="section-hero">
-    <div class="kicker" data-wl-text="cs-hero-kicker">April 2026 · Print Edition</div>
     <h2 id="print-heading" data-wl-text="cs-hero-title">The Centerspread</h2>
   </header>
   <div data-move-group="centerspread-main">
-  <section class="print-edition" aria-labelledby="print-heading" data-move-key="pieces" data-move-label="Print pieces">
+  <section class="print-edition" aria-labelledby="print-heading" data-move-key="pieces" data-move-label="Centerspread pieces">
 
    <div class="print-pieces" id="cs-pieces" aria-live="polite"></div>
    <p id="cs-pieces-empty" class="print-edition-deck" style="text-align:center;display:none;">No centerspread pieces yet. Add poems, prose, or images from the <b>Centerspread</b> tab in the editor dashboard.</p>
@@ -1952,7 +1951,7 @@ document.addEventListener("keydown", (e) => {
 
 </script>
 
-<!-- Centerspread print pieces + puzzle visibility, from WLCenterspread -->
+<!-- Centerspread pieces + puzzle visibility, from WLCenterspread -->
 <script>
 (function () {
   if (!window.WLCenterspread) return;

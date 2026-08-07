@@ -1,5 +1,5 @@
 // ============================================================================
-//  CENTERSPREAD CONTENT (The Woodley Leaves) — the print-edition pieces shown
+//  CENTERSPREAD CONTENT (The Woodley Leaves) — the centerspread pieces shown
 //  on centerspread.html. Editors manage these from the "Centerspread" tab in
 //  the editor dashboard; this file is the shipped default (like articles.js).
 //
@@ -85,11 +85,11 @@ window.WL_CENTERSPREAD = {
       title: "Clue to the Code",
       byline: "By Devon Marsh",
       image: "media/riddle-2.png",
-      alt: "Clue to the Code riddle, from the April print edition",
+      alt: "Clue to the Code riddle",
     },
   ],
 
-  // Which interactive puzzles appear below the print pieces. Omit or set true
+  // Which interactive puzzles appear below the centerspread pieces. Omit or set true
   // to show; false to hide. Editors toggle these from the Centerspread tab.
   puzzles: {
     crossword: true,
