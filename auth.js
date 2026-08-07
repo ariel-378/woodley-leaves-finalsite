@@ -1,5 +1,8 @@
-// Student Times — identity adapter. Renders the account bar and decides
-// who sees editor tools; the host platform does the authenticating.
+// Student Times — identity adapter + the newsletter signup.
+//
+// Identity: renders the account bar and decides who sees editor tools; the
+// host platform does the authenticating. Signup: the Subscribe link in the
+// utility bar opens a modal that posts to the Google Sheet via WLSubmit.
 //
 // IDENTITY MODEL
 //  • HOSTED (production): the host platform (e.g. Finalsite) authenticates the
@@ -113,8 +116,154 @@
     return String(s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
   }
 
+  // ===== Modal =====
+  let modalLastFocused = null;
+
+  function createModal() {
+    const overlay = document.createElement("div");
+    overlay.className = "wl-modal-overlay";
+    overlay.id = "wl-modal-overlay";
+    overlay.setAttribute("role", "dialog");
+    overlay.setAttribute("aria-modal", "true");
+    overlay.setAttribute("aria-label", "Account");
+    overlay.innerHTML = `
+      <div class="wl-modal" role="document">
+        <button class="wl-modal-close" id="wl-modal-close" aria-label="Close dialog">×</button>
+        <div id="wl-modal-content"></div>
+      </div>
+    `;
+    document.body.appendChild(overlay);
+    overlay.addEventListener("click", (e) => { if (e.target === overlay) hideModal(); });
+    document.getElementById("wl-modal-close").addEventListener("click", hideModal);
+
+    // Focus trap + Escape to close
+    overlay.addEventListener("keydown", (e) => {
+      if (e.key === "Escape") { hideModal(); return; }
+      if (e.key !== "Tab") return;
+      const focusables = overlay.querySelectorAll(
+        'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])'
+      );
+      if (focusables.length === 0) return;
+      const first = focusables[0];
+      const last = focusables[focusables.length - 1];
+      if (e.shiftKey && document.activeElement === first) {
+        e.preventDefault(); last.focus();
+      } else if (!e.shiftKey && document.activeElement === last) {
+        e.preventDefault(); first.focus();
+      }
+    });
+  }
+
+  // Reader sign-in/sign-up has been removed: the host platform (Finalsite)
+  // authenticates readers in production. createModal()/hideModal() remain below
+  // because the newsletter subscribe modal still uses them.
+  function hideModal() {
+    const o = document.getElementById("wl-modal-overlay");
+    if (o) o.classList.remove("visible");
+    // Restore focus to the element that triggered the modal
+    if (modalLastFocused && modalLastFocused.focus) {
+      modalLastFocused.focus();
+      modalLastFocused = null;
+    }
+  }
+
+  // ===== Newsletter subscribe =====
+  const LS_SUBSCRIBERS = "wl_subscribers";
+
+  function getSubscribers() {
+    try { return JSON.parse(localStorage.getItem(LS_SUBSCRIBERS) || "[]"); }
+    catch { return []; }
+  }
+  function saveSubscriber(entry) {
+    const list = getSubscribers();
+    list.push(entry);
+    localStorage.setItem(LS_SUBSCRIBERS, JSON.stringify(list));
+  }
+
+  // Show why a send failed, with a mailto: escape hatch. Reader input must
+  // never be reported as received when it wasn't.
+  function showSendError(errEl, res) {
+    errEl.textContent = WLSubmit.explain(res) + " ";
+    if (res.mailto) {
+      const a = document.createElement("a");
+      a.href = res.mailto;
+      a.textContent = "Email us instead";
+      errEl.appendChild(a);
+    }
+  }
+
+  // The real paper name (from the Design tab / config), for strings this file
+  // injects after brand.js has already run its page-load rebrand pass.
+  function brandName() {
+    return (window.WLBrand && WLBrand.get && WLBrand.get().name) || "The Student Times";
+  }
+
+  function showSubscribeModal() {
+    if (!document.getElementById("wl-modal-overlay")) createModal();
+    const c = document.getElementById("wl-modal-content");
+    c.innerHTML = `
+      <h2>Weekly Newsletter</h2>
+      <p class="wl-demo-note">Get ${brandName()} delivered every Friday. Enter your email, phone, or both.</p>
+      <label>Email <input type="email" id="sub-email" placeholder="you@example.com" autocomplete="email"></label>
+      <label>Phone <input type="tel" id="sub-phone" placeholder="(202) 555-0123" autocomplete="tel"></label>
+      <div class="wl-hp" aria-hidden="true"><label>Leave this empty <input type="text" id="sub-hp" tabindex="-1" autocomplete="off"></label></div>
+      <div class="wl-error" id="sub-err"></div>
+      <button class="wl-submit" id="sub-go">Subscribe</button>
+    `;
+    document.getElementById("sub-go").addEventListener("click", async () => {
+      const email = document.getElementById("sub-email").value.trim();
+      const phone = document.getElementById("sub-phone").value.trim();
+      const errEl = document.getElementById("sub-err");
+      errEl.textContent = "";
+      if (!email && !phone) { errEl.textContent = "Please enter your email, phone, or both."; return; }
+      if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+        errEl.textContent = "That email doesn't look right."; return;
+      }
+      if (phone && phone.replace(/\D/g, "").length < 10) {
+        errEl.textContent = "Please enter a valid phone number."; return;
+      }
+      const btn = document.getElementById("sub-go");
+      btn.disabled = true; btn.textContent = "Sending…";
+      const res = await WLSubmit.send({ email, phone },
+        { honeypot: !!(document.getElementById("sub-hp") || {}).value });
+      btn.disabled = false; btn.textContent = "Subscribe";
+      if (!res.ok) { showSendError(errEl, res); return; }
+      saveSubscriber({ email, phone, joinedAt: Date.now() });
+      const delivery = email && phone ? "by email, with a text reminder"
+                      : phone ? "by text"
+                      : "by email";
+      c.innerHTML = `
+        <h2>You're on the list</h2>
+        <p style="color:#333; font-size:14px; margin: 6px 0 16px;">Thanks — you'll get the next Friday edition of ${brandName()} ${delivery}.</p>
+        <button class="wl-submit" id="sub-close">Close</button>
+      `;
+      document.getElementById("sub-close").addEventListener("click", hideModal);
+    });
+    ["sub-email", "sub-phone"].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.addEventListener("keydown", e => {
+        if (e.key === "Enter") document.getElementById("sub-go").click();
+      });
+    });
+    document.getElementById("wl-modal-overlay").classList.add("visible");
+    document.getElementById("sub-email").focus();
+  }
+
+  function wireSubscribeLinks() {
+    document.querySelectorAll(".topbar a").forEach(a => {
+      if (a.textContent.trim() === "Subscribe") {
+        a.setAttribute("href", "#");
+        a.addEventListener("click", (e) => { e.preventDefault(); showSubscribeModal(); });
+      }
+    });
+  }
+
+  WLAuth.showSubscribe = showSubscribeModal;
+  WLAuth.getSubscribers = getSubscribers;
+
   // ===== Init =====
   document.addEventListener("DOMContentLoaded", () => {
     renderTopbar();
+    wireSubscribeLinks();
   });
 })();

@@ -128,6 +128,30 @@ Nothing in the Brand design tab can break the site permanently: it only ever lay
 on top of `config.js`. **Reset everything** puts it back exactly as the code
 says.
 
+## Where newsletter signups go
+
+The **Subscribe** button at the top of every page collects an email address
+(and optionally a phone number) into a **Google Sheet**, through a small Google
+Apps Script. See **[setup/README.md](setup/README.md)** for the one-time setup
+(about 10 minutes), then paste the web-app URL into `config.js`:
+
+```js
+submissions: {
+  endpoint: "https://script.google.com/macros/s/AKfycb.../exec",
+  fallbackEmail: "editor@yourschool.org",
+},
+```
+
+Until that's filled in, the form **doesn't pretend to work** — it says signups
+aren't set up and offers an email link, so nobody's address is thrown away. The
+same is true if the send ever fails.
+
+The endpoint is deliberately **not** in the Brand design tab: Design changes are
+per-browser, and where the paper's mail goes has to be the same for everyone.
+
+Before you switch this on, check with your adviser. It collects contact details
+from students, and schools usually have rules about that.
+
 ### Adding content
 Stories, ads, sports, videos, puzzles, and the centerspread are managed from the
 **Editor dashboard** (`editor.html`). The paper ships blank — add your own. In a

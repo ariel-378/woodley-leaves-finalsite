@@ -48,4 +48,13 @@ window.WL_CONFIG = {
   //  Our team's name as it appears in the bracket data (teams.js).
   homeTeam: "Maret",
 
+  // ── Where newsletter signups go ──────────────────────────────────────────
+  //  The Subscribe link collects an email (and optional phone) into a Google
+  //  Sheet via a Google Apps Script web app. Follow setup/README.md, then paste
+  //  the web-app URL here. Until it's filled in, the form tells readers signups
+  //  aren't set up and offers email instead — nothing is discarded.
+  submissions: {
+    endpoint: "",                          // ← paste the Apps Script web-app URL
+    fallbackEmail: "arielp2027@maret.org", // used if a send fails
+  },
 };

@@ -34,6 +34,8 @@ window.WLBundle = (function () {
     "wl_article_views": 1,             // reader analytics, per browser
     "wl_preview_role": 1,             // which role this browser is previewing
     "wl_splash_seen": 1,              // "don't show the splash again" flag
+    "wl_subscribers": 1,             // local signup log (real ones go to the Sheet)
+    "wl_submit_last": 1,             // signup rate-limit timestamp
     "wl_sections_pages_migrated": 1,   // one-time data migration markers
     "wl_sections_custom_migrated": 1,
     "wl_published_hash": 1,           // which published version this browser has applied
