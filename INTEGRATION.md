@@ -145,7 +145,7 @@ refuses to enable preview when hosted.
 - [ ] Set the page audience for who may read the paper
 - [ ] Decide on content: option A, B or C above
 - [ ] Edit `config.js` — masthead, school name, colours, logo, footer contacts
-- [ ] Optional: set `submissions.endpoint` for the newsletter signup (below)
+- [ ] Optional: set `submissions` for the newsletter signup (below), or switch it off with `enabled: false`
 - [ ] Set the Content-Security-Policy (see the CSP section below)
 
 ### Branding
@@ -166,7 +166,14 @@ to a Google Apps Script web app, which appends it to a Google Sheet — that is
 how a static site collects a mailing list. Set `config.js → submissions.endpoint`;
 see `setup/README.md`. Until it is set, the form tells the reader signups are not
 configured and offers a `mailto:` fallback — it never claims an address was
-recorded when it was not.
+recorded when it was not. `submissions.enabled: false` removes the button
+entirely.
+
+Editors manage all of this from **Brand design → Newsletter signups**. Note that
+the *endpoint* is read from `config.js` directly and never from the per-browser
+Design overrides: where the paper's mail goes has to be identical for every
+reader. The panel therefore reports reader-facing state from the deployed
+`config.js` and warns whenever an editor's entries have not been deployed yet.
 
 If the school would rather this went to a Finalsite form endpoint, that is a
 one-line change in `submissions.js`.

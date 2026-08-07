@@ -24,8 +24,15 @@
 }
 
 /* editor-content.html scoped this to input[type=text] only, so date, file and
-   select controls kept their intrinsic width and overflowed the modal. */
-.ed-form input,
+   select controls kept their intrinsic width and overflowed the modal.
+
+   Checkboxes and radios are exempt. A tickbox has no useful 100% width, and
+   stretching one pushes its own label to the far side of the panel — which is
+   what it did to "Mirror the right-hand copy" and to the Subscribe switch. The
+   per-panel `.checkbox-row input { width: auto }` could not undo it: this file
+   loads after each page's inline <style>, and at equal specificity the later
+   rule wins. */
+.ed-form input:not([type="checkbox"]):not([type="radio"]),
 .ed-form textarea,
 .ed-form select {
   width: 100%;

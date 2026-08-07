@@ -133,21 +133,50 @@ says.
 The **Subscribe** button at the top of every page collects an email address
 (and optionally a phone number) into a **Google Sheet**, through a small Google
 Apps Script. See **[setup/README.md](setup/README.md)** for the one-time setup
-(about 10 minutes), then paste the web-app URL into `config.js`:
+of the Sheet — about 10 minutes.
+
+Manage it from the **Newsletter signups** panel at the bottom of the Brand
+design tab:
+
+| Field | What it's for |
+|-------|---------------|
+| **Show the Subscribe button** | Off removes the button from every page. Use this if the paper isn't collecting addresses. |
+| **Google Apps Script web-app URL** | Where signups are sent. Ends in `/exec`. |
+| **Fallback email** | Offered to a reader if a signup ever fails to send. |
+| **Subscriber Sheet** | A link to your list, for editors. Never shown to readers. |
+| **Send a test signup** | Posts a real row to the Sheet using the fallback address, and tells you exactly what came back. |
+
+You can also edit `config.js` by hand instead:
 
 ```js
 submissions: {
+  enabled: true,
   endpoint: "https://script.google.com/macros/s/AKfycb.../exec",
   fallbackEmail: "editor@yourschool.org",
+  sheetUrl: "https://docs.google.com/spreadsheets/d/.../edit",
 },
 ```
 
-Until that's filled in, the form **doesn't pretend to work** — it says signups
-aren't set up and offers an email link, so nobody's address is thrown away. The
-same is true if the send ever fails.
+Until the endpoint is filled in, the form **doesn't pretend to work** — it says
+signups aren't set up and offers an email link, so nobody's address is thrown
+away. The same is true if the send ever fails.
 
-The endpoint is deliberately **not** in the Brand design tab: Design changes are
-per-browser, and where the paper's mail goes has to be the same for everyone.
+### Why the panel keeps nagging you to download
+
+Like everything else in the Brand design tab, what you type is saved **in your
+browser only**. For colors that just means a private preview. For *where the
+paper's mail goes* it would be a trap: you could paste a URL, watch a test
+signup land in the Sheet, and leave every reader still getting "signups aren't
+set up".
+
+So the panel never decides what readers get — the deployed `config.js` does.
+The panel reads that file and tells you plainly:
+
+> **Readers right now:** the Subscribe button is there, but signups aren't set
+> up — readers are told so and offered email instead.
+
+and warns you whenever what you've entered hasn't been deployed yet. **Download
+config** and hand the file over is what actually makes it live.
 
 Before you switch this on, check with your adviser. It collects contact details
 from students, and schools usually have rules about that.

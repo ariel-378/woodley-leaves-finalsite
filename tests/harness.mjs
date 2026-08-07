@@ -23,6 +23,19 @@ export function inlineScripts(file) {
   });
 }
 
+/**
+ * Read a page and inline its stylesheets, in the order the page links them, so
+ * jsdom resolves the real cascade. Scripts are left alone — this is for asking
+ * "which rule won?", not for driving the page.
+ */
+export function inlineStyles(file) {
+  const html = fs.readFileSync(path.join(SITE, file), "utf8");
+  return html.replace(/<link rel="stylesheet" href="([^"/:]+\.css)"[^>]*\/?>/g, (match, href) => {
+    const p = path.join(SITE, href);
+    return fs.existsSync(p) ? `<style>\n${fs.readFileSync(p, "utf8")}\n</style>` : "";
+  });
+}
+
 /** Every .html file in the site root. */
 export function pages() {
   return fs.readdirSync(SITE).filter(f => f.endsWith(".html")).sort();

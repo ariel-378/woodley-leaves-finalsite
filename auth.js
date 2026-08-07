@@ -249,12 +249,18 @@
     document.getElementById("sub-email").focus();
   }
 
+  // The Subscribe link is markup in every page, so switching it off means
+  // removing it here. A school that isn't collecting addresses — no Sheet yet,
+  // or an adviser who said no — must not be left with a button that opens a
+  // form. Removed, not hidden: a display:none link is still in the tab order
+  // and still read out by a screen reader.
   function wireSubscribeLinks() {
+    const enabled = WLSubmit.isEnabled();
     document.querySelectorAll(".topbar a").forEach(a => {
-      if (a.textContent.trim() === "Subscribe") {
-        a.setAttribute("href", "#");
-        a.addEventListener("click", (e) => { e.preventDefault(); showSubscribeModal(); });
-      }
+      if (a.textContent.trim() !== "Subscribe") return;
+      if (!enabled) { a.remove(); return; }
+      a.setAttribute("href", "#");
+      a.addEventListener("click", (e) => { e.preventDefault(); showSubscribeModal(); });
     });
   }
 

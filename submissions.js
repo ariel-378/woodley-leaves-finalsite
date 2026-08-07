@@ -6,8 +6,9 @@
 //  the signup form would write to the reader's own browser and no editor would
 //  ever see it — an address that looked collected and went nowhere.
 //
-//  SET IT UP: see setup/README.md, then paste your web-app URL into
-//  config.js → submissions.endpoint.
+//  SET IT UP: see setup/README.md, then paste your web-app URL into the
+//  Newsletter panel of the Brand design tab (which writes it into a config.js
+//  you download), or straight into config.js → submissions.endpoint.
 //
 //  DESIGN RULES (please keep these):
 //   • Never report success we didn't get. If the send fails, say so and offer
@@ -34,18 +35,33 @@ window.WLSubmit = (function () {
 
   function endpoint() { return String(config().sub.endpoint || "").trim(); }
 
+  // Whether the Subscribe link appears at all. Unlike the endpoint, this is
+  // presentation, so it DOES follow the Design tab (WLBrand) like every other
+  // brand control — an editor toggling it sees the change immediately. The
+  // Design tab's own status line is what tells them readers still need a
+  // deployed config.js. Unset means on, so a config.js predating this key
+  // keeps its Subscribe button.
+  function isEnabled() {
+    var c = config();
+    var pref = (c.cfg.submissions || {}).enabled;
+    if (pref === undefined) pref = c.sub.enabled;
+    return pref !== false;
+  }
+
   var APPS_SCRIPT = /^https:\/\/script\.google\.com\/macros\/s\/[\w-]+\/exec/;
 
-  // "Configured" means someone put a usable https URL here. It deliberately
-  // does NOT require the Apps Script shape: a mistyped URL should fail on send
-  // and offer the reader the email fallback, rather than be misreported as
-  // "not set up yet". http is refused because the form carries a personal
-  // address — localhost excepted, so setup can be tested before deploying.
-  function isConfigured() {
-    var e = endpoint();
+  // "Usable" means someone put a usable https URL here. It deliberately does
+  // NOT require the Apps Script shape: a mistyped URL should fail on send and
+  // offer the reader the email fallback, rather than be misreported as "not
+  // set up yet". http is refused because the form carries a personal address —
+  // localhost excepted, so setup can be tested before deploying.
+  function isUsable(url) {
+    var e = String(url || "").trim();
     if (!e) return false;
     return /^https:\/\/.+/i.test(e) || /^http:\/\/(localhost|127\.0\.0\.1)([:\/]|$)/i.test(e);
   }
+
+  function isConfigured() { return isUsable(endpoint()); }
 
   // A nudge at setup time, not a gate.
   function warnIfOdd() {
@@ -98,13 +114,20 @@ window.WLSubmit = (function () {
   }
 
   // send({ email, phone }) → Promise<{ok, reason?, mailto?, email?}>
+  //
+  // opts.endpoint sends to a URL other than the configured one, and
+  // opts.skipCooldown lifts the per-browser rate limit. Both exist for the
+  // Design tab's "Send a test": it checks the URL an editor just typed, which
+  // is by definition not the one readers are using yet.
   function send(data, opts) {
     data = data || {};
     opts = opts || {};
 
+    var url = opts.endpoint ? String(opts.endpoint).trim() : endpoint();
+
     if (opts.honeypot) return Promise.resolve({ ok: true, dropped: true });  // a bot filled the trap
-    if (!isConfigured()) return Promise.resolve(fail(data, "not-configured"));
-    if (tooSoon()) return Promise.resolve(fail(data, "too-soon"));
+    if (!isUsable(url)) return Promise.resolve(fail(data, "not-configured"));
+    if (!opts.skipCooldown && tooSoon()) return Promise.resolve(fail(data, "too-soon"));
 
     var body = JSON.stringify({
       kind: "subscribe",
@@ -114,7 +137,7 @@ window.WLSubmit = (function () {
 
     // text/plain keeps this a "simple" CORS request. An Apps Script web app
     // does not answer preflight (OPTIONS), so application/json would fail.
-    return fetch(endpoint(), {
+    return fetch(url, {
       method: "POST",
       headers: { "Content-Type": "text/plain;charset=utf-8" },
       body: body,
@@ -122,7 +145,7 @@ window.WLSubmit = (function () {
     }).then(function (res) {
       if (!res.ok) return fail(data, "http-" + res.status);
       return res.json().then(function (out) {
-        if (out && out.result === "ok") { stamp(); return { ok: true }; }
+        if (out && out.result === "ok") { if (!opts.skipCooldown) stamp(); return { ok: true }; }
         return fail(data, (out && out.error) || "rejected");
       }, function () {
         return fail(data, "bad-response");
@@ -152,6 +175,8 @@ window.WLSubmit = (function () {
     send: send,
     explain: explain,
     isConfigured: isConfigured,
+    isUsable: isUsable,
+    isEnabled: isEnabled,
     contactEmail: contactEmail,
     mailtoFor: mailtoFor,
   };

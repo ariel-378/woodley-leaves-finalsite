@@ -53,8 +53,13 @@ window.WL_CONFIG = {
   //  Sheet via a Google Apps Script web app. Follow setup/README.md, then paste
   //  the web-app URL here. Until it's filled in, the form tells readers signups
   //  aren't set up and offers email instead — nothing is discarded.
+  //
+  //  Editors can fill all of this in from the Newsletter panel of the Brand
+  //  design tab and download the resulting config.js, rather than editing here.
   submissions: {
+    enabled: true,                         // false removes the Subscribe link entirely
     endpoint: "",                          // ← paste the Apps Script web-app URL
     fallbackEmail: "arielp2027@maret.org", // used if a send fails
+    sheetUrl: "",                          // the Subscribers Sheet — editors only, never shown to readers
   },
 };

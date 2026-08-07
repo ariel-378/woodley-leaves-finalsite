@@ -36,6 +36,34 @@
   .bp > h3 { font-family: Georgia, serif; font-size: 19px; margin: 0 0 4px; }
   .bp > .bp-hint { font-size: 12px; color: var(--muted); margin: 0 0 16px; line-height: 1.5; }
 
+  /* Newsletter panel */
+  .sub-actions { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; margin-top: 4px; }
+  a.btn-ghost { display: inline-block; text-decoration: none; }
+  /* Author styles beat the UA's [hidden] rule, so display must be undone by
+     hand or `hidden` on the Sheet link would do nothing. */
+  a.btn-ghost[hidden] { display: none; }
+  /* How-to, folded away until asked for. */
+  .sub-guide { border: 1px solid var(--rule); background: var(--cream); margin-bottom: 18px; }
+  .sub-guide > summary { cursor: pointer; padding: 10px 14px; font-size: 13px; font-weight: 600; color: var(--ink); }
+  .sub-guide > summary:hover { text-decoration: underline; }
+  .sub-guide > summary:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; }
+  .sub-guide-body { padding: 0 16px 14px; font-size: 13px; line-height: 1.6; }
+  .sub-guide-body ol { margin: 0 0 14px; padding-left: 20px; }
+  .sub-guide-body ol ol { margin: 6px 0 0; }
+  .sub-guide-body li { margin-bottom: 5px; }
+  .sub-guide-body h4 { font-family: Georgia, serif; font-size: 15px; margin: 16px 0 6px; }
+  .sub-guide-body h4:first-child { margin-top: 0; }
+  .sub-guide-body code { background: var(--paper); border: 1px solid var(--rule); padding: 1px 5px; font-size: 12px; word-break: break-all; }
+  .sub-guide-note { border-left: 3px solid var(--accent); padding: 8px 12px; margin: 12px 0; background: var(--paper); }
+  .sub-guide-warn { border-left: 3px solid #b8002a; padding: 8px 12px; margin: 12px 0; background: var(--paper); }
+  .sub-status { margin-top: 16px; border-top: 1px solid var(--rule); padding-top: 12px; font-size: 13px; line-height: 1.55; }
+  .sub-status p { margin: 0 0 6px; }
+  .sub-status p:last-child { margin-bottom: 0; }
+  /* Drift = the form says one thing, the deployed config.js says another. */
+  .sub-drift { color: #b8002a; }
+  .sub-msg.ok { color: var(--accent); }
+  .sub-msg.err { color: #b8002a; }
+
   /* Scope warning — the single most important thing on this page. */
   .scope-note { border: 1px solid var(--rule); border-left: 4px solid #b8002a; background: var(--cream);
     padding: 14px 16px; margin-bottom: 18px; font-family: "Helvetica Neue", Arial, sans-serif;
@@ -288,6 +316,141 @@
           <input type="text" id="f-footernote" placeholder="Student Publication">
           <span class="field-note">A short line after the school name (e.g. "Student Publication").</span>
         </label>
+      </section>
+
+      <!-- ── Newsletter ────────────────────────────────────────────────── -->
+      <section class="bp">
+        <h3>Newsletter signups</h3>
+        <p class="bp-hint">
+          The <b>Subscribe</b> button in the bar at the top of every page. It collects
+          an email address, and optionally a phone number, into a Google Sheet you own.
+        </p>
+
+        <details class="sub-guide">
+          <summary>How to make the Sheet that collects the emails (about 10 minutes, once)</summary>
+          <div class="sub-guide-body">
+            <p style="margin-top:0;">
+              This site has no server, so it can't write to a spreadsheet by itself. A
+              small Google Apps Script sits in the middle: the page sends the signup to
+              the script, and the script adds a row to your Sheet.
+            </p>
+
+            <div class="sub-guide-warn">
+              <b>Do this from the paper's Google account, not your own.</b> When an editor
+              graduates, a personally-owned Sheet leaves with them and next year's staff
+              inherits a dead link. And check with your adviser first — this collects
+              contact details from students, and your school probably has rules about that.
+            </div>
+
+            <h4>1. Make the Sheet</h4>
+            <ol>
+              <li>Go to <b>sheets.new</b> to create a spreadsheet.</li>
+              <li>Name it something like <i>The Paper — Newsletter</i>.</li>
+              <li>Don't add tabs or headers. The script makes a <b>Subscribers</b> tab,
+                  with headers, on the first signup.</li>
+            </ol>
+
+            <h4>2. Add the script</h4>
+            <ol>
+              <li>In the Sheet, go to <b>Extensions → Apps Script</b>.</li>
+              <li>Delete whatever is already in the editor.</li>
+              <li>Paste in the whole of <code>setup/google-sheet-endpoint.gs</code>,
+                  which ships with the site files.</li>
+              <li>Click the <b>Save</b> icon.</li>
+            </ol>
+
+            <h4>3. Publish it</h4>
+            <ol>
+              <li>Click <b>Deploy → New deployment</b>.</li>
+              <li>Click the gear next to "Select type" and choose <b>Web app</b>.</li>
+              <li>Set <b>Execute as: Me</b> and <b>Who has access: Anyone</b>.</li>
+              <li>Click <b>Deploy</b>, and authorize when Google asks. It will warn that
+                  the app "isn't verified" — expected for a script you wrote yourself.
+                  Click <b>Advanced → Go to (your project)</b> and allow it.</li>
+              <li>Copy the <b>Web app URL</b>. It looks like
+                  <code>https://script.google.com/macros/s/AKfycb…/exec</code>.</li>
+            </ol>
+
+            <div class="sub-guide-note">
+              <b>"Who has access: Anyone" is required.</b> Readers aren't signed into your
+              Google account, so the script has to accept anonymous requests. That does
+              make the URL public — it ships in the page source, and there's no way around
+              that without a real server. The script itself is the gatekeeper: it validates
+              every field, caps every length, and drops anything that trips the honeypot.
+            </div>
+
+            <h4>4. Paste it in below</h4>
+            <ol>
+              <li>Put the Web app URL in <b>Google Apps Script web-app URL</b>, and add a
+                  <b>fallback email</b>.</li>
+              <li>Paste your Sheet's address into <b>Subscriber Sheet</b> so you can get
+                  back to the list in one click.</li>
+              <li>Click <b>Save design</b>, then <b>Send a test signup</b> to check it.</li>
+              <li>Click <b>Download config</b> and send the file to whoever manages the
+                  site. <b>Nothing reaches readers until that file is deployed.</b></li>
+            </ol>
+
+            <h4>5. Share the Sheet</h4>
+            <p><b>Share →</b> add the editor-in-chief, with <b>Editor</b> access so they
+               can work the list. Update that sharing each year.</p>
+
+            <h4>If signups stop arriving</h4>
+            <ol>
+              <li><b>All at once, right after launch:</b> the school site's
+                  Content-Security-Policy may be blocking <code>script.google.com</code>.
+                  Check the browser console for a CSP error.</li>
+              <li><b>"Signups aren't set up yet":</b> the URL is missing or malformed. It
+                  starts with <code>https://script.google.com/macros/s/</code> and ends in
+                  <code>/exec</code>.</li>
+              <li><b>You edited the script:</b> editing doesn't change what's live. Go to
+                  <b>Deploy → Manage deployments →</b> pencil <b>→ Version: New version →
+                  Deploy</b>. The URL stays the same.</li>
+              <li><b>Someone is filling it with junk:</b> <b>Deploy → Manage deployments →
+                  Archive</b> kills the endpoint instantly. Then deploy a new one and paste
+                  the new URL here.</li>
+            </ol>
+
+            <p style="margin-bottom:0;">
+              The full version of this, including what readers should be told about the
+              list, is in <code>setup/README.md</code>.
+            </p>
+          </div>
+        </details>
+
+        <div class="checkbox-row">
+          <input type="checkbox" id="f-sub-enabled">
+          <label for="f-sub-enabled">Show the Subscribe button</label>
+        </div>
+        <p class="field-note" style="margin: 0 0 16px;">
+          Turn this off if the paper isn't collecting addresses. The button is removed
+          from the page, not just hidden.
+        </p>
+
+        <label>Google Apps Script web-app URL
+          <input type="text" id="f-sub-endpoint" placeholder="https://script.google.com/macros/s/AKfycb.../exec">
+          <span class="field-note">Where signups are sent. It ends in <code>/exec</code>.</span>
+        </label>
+        <div class="row-2">
+          <label>Fallback email
+            <input type="email" id="f-sub-fallback" placeholder="editor@yourschool.org">
+            <span class="field-note">Offered to a reader if a signup ever fails to send, so their address isn't lost.</span>
+          </label>
+          <label>Subscriber Sheet
+            <input type="text" id="f-sub-sheet" placeholder="https://docs.google.com/spreadsheets/d/...">
+            <span class="field-note">Your copy of the list. Editors only — this is never shown to readers.</span>
+          </label>
+        </div>
+
+        <div class="sub-actions">
+          <a class="btn-ghost" id="sub-open-sheet" target="_blank" rel="noopener" hidden>Open the subscriber Sheet</a>
+          <button class="btn-ghost" type="button" id="sub-test">Send a test signup</button>
+        </div>
+        <p class="field-note" style="margin-top:8px;">
+          A test adds a real row to the <b>Subscribers</b> tab, using the fallback
+          address above. Delete the row afterwards if you like.
+        </p>
+
+        <div class="sub-status" id="sub-status" role="status" aria-live="polite"></div>
       </section>
 
       <div class="save-bar">
@@ -545,6 +708,14 @@
     renderFontPicker();
     renderNamePicker();
 
+    const sub = (cfg.submissions && typeof cfg.submissions === "object") ? cfg.submissions : {};
+    el("f-sub-enabled").checked = sub.enabled !== false;
+    el("f-sub-endpoint").value = sub.endpoint || "";
+    el("f-sub-fallback").value = sub.fallbackEmail || "";
+    el("f-sub-sheet").value = sub.sheetUrl || "";
+    renderSheetLink();
+    renderSubStatus();
+
     dirty = false;
   }
 
@@ -675,6 +846,107 @@
     renderContacts(readContacts().concat([{ title: "", email: "" }]));
   });
 
+  // ── Newsletter ──────────────────────────────────────────────────────────
+  //  What READERS get is decided by the deployed config.js, never by this
+  //  browser's Design overrides — submissions.js reads the endpoint from
+  //  WL_CONFIG directly and deliberately, because where the paper's mail goes
+  //  has to be the same for everyone. So the status line is computed from
+  //  config.js, and the panel says so out loud whenever the form has drifted
+  //  from it. An editor must never be able to paste a URL here, be told it is
+  //  set up, and leave every reader with nothing.
+  function shippedSubmissions() {
+    const s = (window.WL_CONFIG && window.WL_CONFIG.submissions) || {};
+    return {
+      enabled: s.enabled !== false,          // unset means on
+      endpoint: String(s.endpoint || "").trim(),
+      fallbackEmail: String(s.fallbackEmail || "").trim(),
+      sheetUrl: String(s.sheetUrl || "").trim(),
+    };
+  }
+
+  function formSubmissions() {
+    return {
+      enabled: el("f-sub-enabled").checked,
+      endpoint: el("f-sub-endpoint").value.trim(),
+      fallbackEmail: el("f-sub-fallback").value.trim(),
+      sheetUrl: el("f-sub-sheet").value.trim(),
+    };
+  }
+
+  function renderSheetLink() {
+    const link = el("sub-open-sheet");
+    const url = el("f-sub-sheet").value.trim();
+    // Only ever hand the browser an https link an editor typed — a javascript:
+    // or data: URL in this box would run on click.
+    if (/^https:\/\//i.test(url)) { link.href = url; link.hidden = false; }
+    else { link.removeAttribute("href"); link.hidden = true; }
+  }
+
+  function readersGet(live) {
+    if (!live.enabled) return "there is no Subscribe button on the site.";
+    if (!WLSubmit.isUsable(live.endpoint)) {
+      return "the Subscribe button is there, but signups aren't set up — readers are told so and offered email instead.";
+    }
+    return "signups are going to your Sheet.";
+  }
+
+  function statusLine(cls, boldText, rest) {
+    const p = document.createElement("p");
+    if (cls) p.className = cls;
+    if (boldText) {
+      const b = document.createElement("b");
+      b.textContent = boldText;
+      p.appendChild(b);
+    }
+    p.appendChild(document.createTextNode(rest));
+    return p;
+  }
+
+  // msg is the outcome of a test send, shown under the status until the next render.
+  function renderSubStatus(msg) {
+    const box = el("sub-status");
+    const live = shippedSubmissions();
+    box.innerHTML = "";
+    box.appendChild(statusLine("", "Readers right now: ", readersGet(live)));
+
+    if (JSON.stringify(live) !== JSON.stringify(formSubmissions())) {
+      box.appendChild(statusLine("sub-drift", "",
+        "What's entered above isn't live yet. Click Download config below and send the " +
+        "file to whoever manages your site — until then, readers get what's described above."));
+    }
+    if (msg) box.appendChild(statusLine("sub-msg " + msg.tone, "", msg.text));
+  }
+
+  el("sub-test").addEventListener("click", async () => {
+    const now = formSubmissions();
+    if (!WLSubmit.isUsable(now.endpoint)) {
+      renderSubStatus({ tone: "err", text: "Paste your web-app URL first — it starts with https:// and ends in /exec." });
+      return;
+    }
+    const to = now.fallbackEmail || WLSubmit.contactEmail();
+    if (!to) {
+      renderSubStatus({ tone: "err", text: "Add a fallback email first — the test needs an address to send." });
+      return;
+    }
+    const btn = el("sub-test");
+    btn.disabled = true; btn.textContent = "Sending…";
+    // skipCooldown: the 15s limit is anti-abuse for readers, and this is a
+    // deliberate check by an editor. endpoint: test the URL that was typed,
+    // which by definition isn't the one readers are on yet.
+    const res = await WLSubmit.send({ email: to }, { endpoint: now.endpoint, skipCooldown: true });
+    btn.disabled = false; btn.textContent = "Send a test signup";
+
+    // Same rule as the reader-facing form: never report a success we didn't get.
+    renderSubStatus(res.ok
+      ? { tone: "ok", text: `Sent. A row for ${to} should appear in the Subscribers tab within a few seconds.` }
+      : { tone: "err", text: `That didn't go through (${res.reason}). Check the URL, and that the web app is deployed with access set to "Anyone".` });
+  });
+
+  ["f-sub-enabled", "f-sub-endpoint", "f-sub-fallback", "f-sub-sheet"].forEach(id => {
+    el(id).addEventListener("input", () => { renderSheetLink(); renderSubStatus(); });
+    el(id).addEventListener("change", () => { renderSheetLink(); renderSubStatus(); });
+  });
+
   // ── Save ────────────────────────────────────────────────────────────────
   function validate() {
     const accent = el("f-accent").value.trim();
@@ -683,6 +955,17 @@
     if (favBg && !/^#[0-9a-f]{3,8}$/i.test(favBg)) return "That tab icon color isn't a valid hex code (like #1d4e89).";
     const bad = readContacts().find(c => c.email && !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(c.email));
     if (bad) return `"${bad.email}" doesn't look like an email address.`;
+
+    const sub = formSubmissions();
+    if (sub.endpoint && !WLSubmit.isUsable(sub.endpoint)) {
+      return "That signup URL can't be used — it has to start with https:// (readers' addresses travel over it).";
+    }
+    if (sub.fallbackEmail && !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(sub.fallbackEmail)) {
+      return `"${sub.fallbackEmail}" doesn't look like an email address.`;
+    }
+    if (sub.sheetUrl && !/^https:\/\//i.test(sub.sheetUrl)) {
+      return "The subscriber Sheet link has to start with https://.";
+    }
     return null;
   }
 
@@ -713,6 +996,12 @@
         fg: el("f-fav-fg").value.trim() || "#ffffff",
       },
       contacts: readContacts(),
+      // Storing a copy identical to config.js would be a redundant override
+      // that outlives a later change to the shipped file. Clear it instead.
+      submissions: (function () {
+        const s = formSubmissions();
+        return JSON.stringify(s) === JSON.stringify(shippedSubmissions()) ? undefined : s;
+      })(),
     };
   }
 

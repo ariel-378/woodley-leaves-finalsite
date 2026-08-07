@@ -57,17 +57,28 @@ Do this from the **paper's Google account**, not a personal one — see
 
 ### 4. Tell the site about it
 
-Open **`config.js`** and paste the URL in:
+In the dashboard, open **Brand design → Newsletter signups**, paste the URL into
+**Google Apps Script web-app URL**, fill in a **fallback email**, and click
+**Save design**.
+
+That saves it in your browser. To make it real for readers, click **Download
+config** and send the `config.js` it gives you to whoever manages the site — the
+panel says as much, and keeps saying it until the file is deployed. If you'd
+rather edit the file directly, it's the same four settings:
 
 ```js
 submissions: {
+  enabled: true,
   endpoint: "https://script.google.com/macros/s/AKfycb.../exec",
   fallbackEmail: "editor@yourschool.org",
+  sheetUrl: "https://docs.google.com/spreadsheets/d/.../edit",
 },
 ```
 
 `fallbackEmail` is who a reader is offered if the send ever fails. If you leave
-it blank, the first address in `contacts` is used.
+it blank, the first address in `contacts` is used. `sheetUrl` is just a
+convenience link for editors — readers never see it. Setting `enabled: false`
+removes the Subscribe button from every page.
 
 ### 5. Share the Sheet
 
@@ -76,8 +87,13 @@ can work the list.
 
 ### 6. Test it
 
-Open any page, click **Subscribe**, enter a real address, and confirm a row
-appears in the **Subscribers** tab within a few seconds.
+In **Brand design → Newsletter signups**, click **Send a test signup**. It posts
+to the URL in the box and reports exactly what came back; a row should appear in
+the **Subscribers** tab within a few seconds. Delete the test row afterwards if
+you like.
+
+Once the config is deployed, do it once more the reader's way: open any page,
+click **Subscribe**, and enter a real address.
 
 ---
 
