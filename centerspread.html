@@ -129,30 +129,6 @@
     color: var(--accent);
   }
 
-  /* Play section hero (between print edition and interactive puzzles) */
-  .play-hero {
-    text-align: left;
-    padding: 20px 0 14px;
-    border-bottom: 1px solid var(--ink);
-    margin-bottom: 28px;
-  }
-  .play-hero .kicker { color: var(--muted); letter-spacing: 1px; font-size: 11px; }
-  .play-hero-flourish {
-    display: none;
-  }
-  .play-hero-flourish svg {
-    width: 160px;
-    height: auto;
-    display: block;
-  }
-  .play-hero-title {
-    font-family: "Old Standard TT", Georgia, serif;
-    font-size: clamp(34px, 5.5vw, 54px);
-    font-weight: 700;
-    line-height: 1.04;
-    margin: 4px 0 6px;
-    letter-spacing: -0.5px;
-  }
   /* Poem styling */
   .poem-body {
     font-family: Georgia, serif;
@@ -849,7 +825,6 @@
   html.wl-embed-puzzles footer,
   html.wl-embed-puzzles .section-hero,
   html.wl-embed-puzzles .print-edition,
-  html.wl-embed-puzzles .play-hero,
   html.wl-embed-puzzles #cs-custom-games { display: none !important; }
   html.wl-embed-puzzles .container { padding: 0 20px 24px; }
 </style>
@@ -897,17 +872,6 @@
 
    <div class="print-pieces" id="cs-pieces" aria-live="polite"></div>
    <p id="cs-pieces-empty" class="print-edition-deck" style="text-align:center;display:none;">No centerspread pieces yet. Add poems, prose, or images from the <b>Centerspread</b> tab in the editor dashboard.</p>
-  </section>
-
-  <section class="play-hero" aria-labelledby="play-heading" data-move-key="play-intro" data-move-label="Play intro">
-    <div class="play-hero-flourish" aria-hidden="true">
-      <svg viewBox="0 0 160 24" xmlns="http://www.w3.org/2000/svg">
-        <path d="M 4 12 Q 25 2 45 12 Q 60 20 75 12 Q 95 2 115 12 Q 130 20 145 12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-        <circle cx="80" cy="12" r="3" fill="currentColor"/>
-      </svg>
-    </div>
-    <div class="kicker" data-wl-text="cs-play-kicker">Interactive</div>
-    <h2 id="play-heading" class="play-hero-title" data-wl-text="cs-play-title">Play</h2>
   </section>
 
   <section class="cw-section" data-cs-puzzle="crossword" data-move-key="crossword" data-move-label="Mini crossword">
@@ -999,10 +963,6 @@
     </div>
   </section>
 
-       The puzzle pool (puzzles-store.js), the editor UI (editor-puzzles.html),
-       the CSS (.cn-* rules above), and the game IIFE below are all still
-       present, so un-commenting the block restores the feature with no other
-       changes needed.
   <section class="cn-section" data-cs-puzzle="connections" aria-labelledby="cn-heading" data-move-key="connections" data-move-label="Connections">
     <div class="cn-hero">
       <div class="kicker" data-wl-text="cs-cn-kicker">Centerspread · Puzzles</div>
