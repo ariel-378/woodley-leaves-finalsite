@@ -79,6 +79,9 @@ in a private window) to get back to the shipped version.
   for hosting, authentication, and content persistence.
 - **[CUSTOMIZE.md](CUSTOMIZE.md)** — rebrand the paper for your school (the Brand
   design tab, or editing `config.js`).
+- **[EDITORIAL.md](EDITORIAL.md)** — who publishes, how corrections work, when a
+  story comes down, and who holds the accounts. The half of running a paper that
+  isn't software.
 
 ## Project layout
 
@@ -98,4 +101,4 @@ and photographs remain their student authors' work, and republishing one needs
 that author's permission. See [LICENSE](LICENSE) for the split.
 
 Want the platform without the journalism? That's the
-[template](https://github.com/ariel-378/finalsite-newspaper-template).
+[template](https://github.com/ariel-378/student-newspaper-template).
