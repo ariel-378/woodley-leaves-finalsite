@@ -21,7 +21,12 @@
 window.WLSubmit = (function () {
   var COOLDOWN_MS = 15000;         // one signup per 15s, per browser
   var LS_LAST = "wl_submit_last";
-  var MAX = { email: 254, phone: 40 };
+  // Email only, deliberately. An earlier version also took a phone number,
+  // which meant a student publication holding other students' phone numbers —
+  // a bigger promise to keep than a newsletter needs, and one that drags in
+  // rules about texting minors. The newsletter goes out by email; the field
+  // that isn't collected can't leak.
+  var MAX = { email: 254 };
 
   // The endpoint is read from config.js DIRECTLY, never through WLBrand: brand
   // overrides are per-browser (see brand-store.js), and where the paper's mail
@@ -84,12 +89,9 @@ window.WLSubmit = (function () {
   function mailtoFor(data) {
     var to = contactEmail();
     if (!to) return null;
-    var lines = [];
-    if (data.email) lines.push("Email: " + data.email);
-    if (data.phone) lines.push("Phone: " + data.phone);
     return "mailto:" + encodeURIComponent(to) +
       "?subject=" + encodeURIComponent("Newsletter signup") +
-      "&body=" + encodeURIComponent(lines.join("\n"));
+      "&body=" + encodeURIComponent(data.email ? "Email: " + data.email : "");
   }
 
   function tooSoon() {
@@ -113,7 +115,7 @@ window.WLSubmit = (function () {
     return { ok: false, reason: reason, mailto: mailtoFor(data), email: contactEmail() };
   }
 
-  // send({ email, phone }) → Promise<{ok, reason?, mailto?, email?}>
+  // send({ email }) → Promise<{ok, reason?, mailto?, email?}>
   //
   // opts.endpoint sends to a URL other than the configured one, and
   // opts.skipCooldown lifts the per-browser rate limit. Both exist for the
@@ -132,7 +134,6 @@ window.WLSubmit = (function () {
     var body = JSON.stringify({
       kind: "subscribe",
       email: clip(data.email, MAX.email),
-      phone: clip(data.phone, MAX.phone),
     });
 
     // text/plain keeps this a "simple" CORS request. An Apps Script web app

@@ -159,7 +159,7 @@ says.
 ## Where newsletter signups go
 
 The **Subscribe** button at the top of every page collects an email address
-(and optionally a phone number) into a **Google Sheet**, through a small Google
+into a **Google Sheet**, through a small Google
 Apps Script. See **[setup/README.md](setup/README.md)** for the one-time setup
 of the Sheet — about 10 minutes.
 

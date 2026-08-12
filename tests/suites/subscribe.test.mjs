@@ -6,6 +6,7 @@
 // what the reader is told in each case — configured, unconfigured, and failing.
 import { loadPage, inlineStyles, Check } from "../harness.mjs";
 import jsdomPkg from "jsdom";
+import { readFileSync } from "node:fs";
 
 /** Open a page with a pretend endpoint and a stubbed fetch. */
 async function withEndpoint(reply, { endpoint = "https://script.google.com/macros/s/TEST/exec" } = {}) {
@@ -46,8 +47,37 @@ export async function run() {
     const link = openModal(ctx);
     check.ok("every page has a Subscribe link in the utility bar", !!link);
     check.ok("clicking it opens the signup", !!$(ctx, "sub-email"));
-    check.ok("it asks for an address", !!$(ctx, "sub-email") && !!$(ctx, "sub-phone"));
     check.clean("no errors opening the signup", ctx);
+  }
+
+  // ===== It asks for an email address and nothing else =====
+  //  A student paper holding other students' phone numbers is a bigger promise
+  //  than a newsletter needs, and it drags in rules about texting minors. The
+  //  field that isn't collected can't leak, so these pin its absence rather
+  //  than trusting that nobody adds it back.
+  {
+    const { ctx, calls } = await withEndpoint(okReply);
+    openModal(ctx);
+    check.ok("there is no phone field on the form", !$(ctx, "sub-phone"));
+    check.ok("and nothing in the form mentions a phone number",
+      !/phone/i.test(ctx.window.document.getElementById("wl-modal-content").textContent),
+      ctx.window.document.getElementById("wl-modal-content").textContent);
+
+    $(ctx, "sub-email").value = "reader@example.org";
+    $(ctx, "sub-go").click();
+    await tick();
+    check.ok("and no phone key is ever posted",
+      calls[0] && !("phone" in calls[0].body), JSON.stringify(calls[0] && calls[0].body));
+  }
+
+  // The Apps Script is the only real gatekeeper — the browser's checks just save
+  // a round trip — so its refusal is pinned here too, read from the file that
+  // gets pasted into the Sheet.
+  {
+    const src = readFileSync(new URL("../../setup/google-sheet-endpoint.gs", import.meta.url), "utf8");
+    check.ok("the endpoint script records no Phone column", !/'Phone'/.test(src));
+    check.ok("and refuses a payload carrying a phone number",
+      /data\.phone.*not collected/s.test(src) || /if \(data\.phone\)/.test(src));
   }
 
   // ===== A good address is sent to the endpoint =====
@@ -79,10 +109,11 @@ export async function run() {
     check.ok("and the reader is told why", /doesn't look right/i.test($(ctx, "sub-err").textContent));
 
     $(ctx, "sub-email").value = "";
-    $(ctx, "sub-phone").value = "";
     $(ctx, "sub-go").click();
     await tick();
     check.equal("an empty form is not sent", calls.length, 0);
+    check.ok("and the reader is asked for an address",
+      /enter your email/i.test($(ctx, "sub-err").textContent), $(ctx, "sub-err").textContent);
   }
 
   // ===== Nothing configured: say so, never claim success =====

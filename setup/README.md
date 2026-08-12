@@ -1,8 +1,13 @@
 # Sending newsletter signups to a Google Sheet
 
-The **Subscribe** button at the top of every page collects an email address
-(and, optionally, a phone number). Those go to a **Subscribers** tab in a Google
-Sheet you own.
+The **Subscribe** button at the top of every page collects an email address —
+and nothing else. It goes to a **Subscribers** tab in a Google Sheet you own.
+
+> **Email only, on purpose.** An earlier version also took a phone number. A
+> student paper holding other students' phone numbers is a bigger promise than
+> a newsletter needs, and texting minors carries rules nobody on a student
+> masthead should have to know. The endpoint now *rejects* anything carrying a
+> phone number rather than quietly ignoring it. Please don't add the field back.
 
 The site has no server, so it can't write to a spreadsheet by itself. A small
 Google Apps Script sits in the middle: the page sends the signup to the script,
@@ -107,11 +112,15 @@ The URL stays the same, so `config.js` doesn't need touching.
 
 ## Who should own this
 
-The Sheet will hold student email addresses and phone numbers.
+The Sheet will hold student email addresses.
 
-- **Use the paper's or school's Google account, not a personal one.** When an
-  editor graduates, a personally-owned Sheet and script leave with them, and
-  next year's staff inherits a dead endpoint.
+- **Use a school-owned Google account, not a student's personal one.** This is
+  the most important line in this file. A list of students' addresses sitting in
+  an account the school does not control is a problem for the school whatever
+  the intent, and when the editor who made it graduates, the Sheet and the
+  script leave with them — next year's staff inherits a dead endpoint and the
+  old list is unreachable. Set this up in the paper's or school's account from
+  the start; moving it later means moving the data too.
 - **Share with the current EIC**, and update that sharing each year.
 - **Check with your adviser before collecting contact details from students.**
   Your school may have rules about this — for a mailing list of minors it very

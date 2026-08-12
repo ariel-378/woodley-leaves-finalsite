@@ -1,0 +1,50 @@
+The code in this repository is MIT-licensed. The journalism is not.
+
+────────────────────────────────────────────────────────────────────────────
+EDITORIAL CONTENT IS NOT COVERED BY THIS LICENSE
+────────────────────────────────────────────────────────────────────────────
+
+This repository holds both a piece of software and the published work of
+student journalists. They are not licensed the same way, and the distinction
+matters more here than the software licence does.
+
+NOT covered by the MIT licence below — all rights reserved by their authors:
+
+  • Articles, poems, prose, headlines, decks and bylined writing of any kind,
+    including the contents of `articles.js`, `centerspread.js` and any
+    `published-content.js` or `content-bundle.json`
+  • Photographs, illustrations and artwork, including everything in `media/`
+  • The names "The Woodley Leaves" and "Maret School", the masthead, the leaf
+    device, and the paper's visual identity
+
+Student writers and artists retain copyright in their own work. Republishing a
+student's article or artwork requires that student's permission, not this
+licence. If you want the platform, take the template instead:
+
+    https://github.com/ariel-378/finalsite-newspaper-template
+
+It is the same code with none of the journalism, MIT-licensed in full.
+
+────────────────────────────────────────────────────────────────────────────
+MIT License — applies to the source code only
+────────────────────────────────────────────────────────────────────────────
+
+Copyright (c) 2026 Ariel Pollard and the editors of The Woodley Leaves
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.

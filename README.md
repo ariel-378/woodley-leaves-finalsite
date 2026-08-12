@@ -33,7 +33,7 @@ npm install   # once — pulls jsdom, the only dependency
 npm test
 ```
 
-757 checks across 14 suites: every page loads clean, every editor control is
+762 checks across 14 suites: every page loads clean, every editor control is
 pressed without throwing, and content added in the editor reaches the reader
 pages. See [tests/README.md](tests/README.md).
 
@@ -90,3 +90,12 @@ in a private window) to get back to the shipped version.
 | `*-store.js` | CRUD / data layer — the seam for server-backed persistence |
 | `auth.js` | Identity adapter (`window.WLAuth`; reads `WL_CONTEXT`) |
 | `nav.js`, `brand.js`, `section.js`, … | Shared rendering |
+
+## Licence
+
+The **code** is [MIT](LICENSE). The **journalism is not** — articles, artwork
+and photographs remain their student authors' work, and republishing one needs
+that author's permission. See [LICENSE](LICENSE) for the split.
+
+Want the platform without the journalism? That's the
+[template](https://github.com/ariel-378/finalsite-newspaper-template).

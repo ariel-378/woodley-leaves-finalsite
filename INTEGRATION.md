@@ -161,13 +161,17 @@ dashboard's **Brand design** tab, but those changes are per-browser previews —
 
 ### Newsletter signup (optional)
 
-The **Subscribe** button in the utility bar posts an email (and optional phone)
-to a Google Apps Script web app, which appends it to a Google Sheet — that is
-how a static site collects a mailing list. Set `config.js → submissions.endpoint`;
-see `setup/README.md`. Until it is set, the form tells the reader signups are not
-configured and offers a `mailto:` fallback — it never claims an address was
-recorded when it was not. `submissions.enabled: false` removes the button
-entirely.
+The **Subscribe** button in the utility bar posts an email address to a Google
+Apps Script web app, which appends it to a Google Sheet — that is how a static
+site collects a mailing list. **An email address is the only thing collected**;
+the endpoint rejects a payload carrying a phone number rather than ignoring it,
+so a student publication never ends up holding students' phone numbers. The
+Sheet should live in a school-owned Google account, not a student's.
+
+Set `config.js → submissions.endpoint`; see `setup/README.md`. Until it is set,
+the form tells the reader signups are not configured and offers a `mailto:`
+fallback — it never claims an address was recorded when it was not.
+`submissions.enabled: false` removes the button entirely.
 
 Editors manage all of this from **Brand design → Newsletter signups**. Note that
 the *endpoint* is read from `config.js` directly and never from the per-browser
@@ -247,7 +251,7 @@ and needs no CSP allowance.
 
 ```bash
 npm install   # once — jsdom, used only by the tests
-npm test      # 757 checks across 14 suites
+npm test      # 762 checks across 14 suites
 npm run brand # after changing `name`/`school` in config.js
 ```
 

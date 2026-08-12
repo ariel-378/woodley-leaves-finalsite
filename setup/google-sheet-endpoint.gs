@@ -17,8 +17,14 @@
  */
 
 var SHEET = 'Subscribers';
-var HEADERS = ['Received', 'Email', 'Phone'];
-var MAX = { email: 254, phone: 40 };
+var HEADERS = ['Received', 'Email'];
+
+//  Email only. A phone number is a bigger promise than a newsletter needs, and
+//  a student publication holding other students' phone numbers invites rules
+//  about texting minors that nobody here wants to be responsible for. The
+//  script rejects a phone field outright rather than quietly ignoring it, so a
+//  stale copy of the page cannot start filling a column nobody is watching.
+var MAX = { email: 254 };
 
 function doPost(e) {
   try {
@@ -37,14 +43,17 @@ function doPost(e) {
       return json({ result: 'error', error: 'unknown form' });
     }
 
-    var email = clip(data.email, MAX.email);
-    var phone = clip(data.phone, MAX.phone);
+    // Refuse anything carrying a phone number instead of silently dropping it,
+    // so an old cached page fails loudly rather than half-working.
+    if (data.phone) return json({ result: 'error', error: 'phone numbers are not collected' });
 
-    if (email && !isEmail(email)) return json({ result: 'error', error: 'invalid email' });
-    if (!email && !phone) return json({ result: 'error', error: 'email or phone required' });
+    var email = clip(data.email, MAX.email);
+
+    if (!email) return json({ result: 'error', error: 'email required' });
+    if (!isEmail(email)) return json({ result: 'error', error: 'invalid email' });
 
     // Server time — never trust the browser's clock.
-    appendRow_([new Date(), email, phone]);
+    appendRow_([new Date(), email]);
     return json({ result: 'ok' });
 
   } catch (err) {

@@ -203,43 +203,35 @@
     const c = document.getElementById("wl-modal-content");
     c.innerHTML = `
       <h2>Weekly Newsletter</h2>
-      <p class="wl-demo-note">Get ${brandName()} delivered every Friday. Enter your email, phone, or both.</p>
+      <p class="wl-demo-note">Get ${brandName()} delivered every Friday.</p>
       <label>Email <input type="email" id="sub-email" placeholder="you@example.com" autocomplete="email"></label>
-      <label>Phone <input type="tel" id="sub-phone" placeholder="(202) 555-0123" autocomplete="tel"></label>
       <div class="wl-hp" aria-hidden="true"><label>Leave this empty <input type="text" id="sub-hp" tabindex="-1" autocomplete="off"></label></div>
       <div class="wl-error" id="sub-err"></div>
       <button class="wl-submit" id="sub-go">Subscribe</button>
     `;
     document.getElementById("sub-go").addEventListener("click", async () => {
       const email = document.getElementById("sub-email").value.trim();
-      const phone = document.getElementById("sub-phone").value.trim();
       const errEl = document.getElementById("sub-err");
       errEl.textContent = "";
-      if (!email && !phone) { errEl.textContent = "Please enter your email, phone, or both."; return; }
-      if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      if (!email) { errEl.textContent = "Please enter your email address."; return; }
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
         errEl.textContent = "That email doesn't look right."; return;
-      }
-      if (phone && phone.replace(/\D/g, "").length < 10) {
-        errEl.textContent = "Please enter a valid phone number."; return;
       }
       const btn = document.getElementById("sub-go");
       btn.disabled = true; btn.textContent = "Sending…";
-      const res = await WLSubmit.send({ email, phone },
+      const res = await WLSubmit.send({ email },
         { honeypot: !!(document.getElementById("sub-hp") || {}).value });
       btn.disabled = false; btn.textContent = "Subscribe";
       if (!res.ok) { showSendError(errEl, res); return; }
-      saveSubscriber({ email, phone, joinedAt: Date.now() });
-      const delivery = email && phone ? "by email, with a text reminder"
-                      : phone ? "by text"
-                      : "by email";
+      saveSubscriber({ email, joinedAt: Date.now() });
       c.innerHTML = `
         <h2>You're on the list</h2>
-        <p style="color:#333; font-size:14px; margin: 6px 0 16px;">Thanks — you'll get the next Friday edition of ${brandName()} ${delivery}.</p>
+        <p style="color:#333; font-size:14px; margin: 6px 0 16px;">Thanks — you'll get the next Friday edition of ${brandName()} by email.</p>
         <button class="wl-submit" id="sub-close">Close</button>
       `;
       document.getElementById("sub-close").addEventListener("click", hideModal);
     });
-    ["sub-email", "sub-phone"].forEach(id => {
+    ["sub-email"].forEach(id => {
       const el = document.getElementById(id);
       if (el) el.addEventListener("keydown", e => {
         if (e.key === "Enter") document.getElementById("sub-go").click();
