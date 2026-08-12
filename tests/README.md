@@ -22,10 +22,17 @@ passes, that click path genuinely works.
 | `sports` | Teams, brackets, scheduled games, per-block visibility |
 | `content` | Sections, content types, puzzles, poems, art, reveal items, videos |
 | `reader` | Editor changes reaching public pages — and staying off them when hidden or scheduled |
+| `a11y` | Keyboard and screen-reader paths through the core tasks: reading an article, and filing one |
+| `layout` | The in-place layout editor on every page that offers it, driven for real rather than asserted from markup |
+| `security` | Editor-pasted HTML/CSS/JS cannot reach the host page — no cookies, no storage, no DOM — plus escaping of reader-visible text |
+| `bundle` | The content bundle: it captures content, ignores per-device keys, and reloads to the same state |
+| `custom` | Custom games and custom features share one form but must never share a destination |
+| `subscribe` | The Subscribe button end to end, and the Newsletter panel — including never reporting a signup that wasn't recorded |
+| `favicon` | The tab icon: drawn letters, an uploaded image, and an export whose filenames match the files it downloads |
 
 ## Why these exist
 
-Each suite grew out of a real bug that shipped unnoticed, because all three only
+Several suites grew out of a real bug that shipped unnoticed, because each only
 broke on a path nobody had clicked:
 
 - **`lint`** — `articles-store.js` called `localStorage.removeItem(LS_FEATURED)`,
@@ -39,6 +46,10 @@ broke on a path nobody had clicked:
 - **`articles`** — an article whose section was renamed away belonged to no
   card and vanished from the dashboard. There is now an "Unfiled" card, and a
   test that keeps it honest.
+- **`favicon`** — an uploaded tab icon was exported into `config.js` as
+  `media/favicon-upload`, with no extension for `brand.js` to read a type from,
+  and the image was never downloaded at all. Every step reported success; a
+  school following it got a config pointing at a file that did not exist.
 
 ## Adding a suite
 

@@ -33,7 +33,7 @@ npm install   # once — pulls jsdom, the only dependency
 npm test
 ```
 
-669 checks across 13 suites: every page loads clean, every editor control is
+757 checks across 14 suites: every page loads clean, every editor control is
 pressed without throwing, and content added in the editor reaches the reader
 pages. See [tests/README.md](tests/README.md).
 
