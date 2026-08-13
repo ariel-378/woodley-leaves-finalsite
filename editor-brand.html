@@ -6,6 +6,7 @@
 <title>Brand design — The Woodley Leaves</title>
 <link rel="icon" type="image/svg+xml" href="favicon.svg">
 <link rel="stylesheet" href="styles.css" />
+<script src="storage.js"></script>
 <script src="config.js"></script>
 <script src="brand-store.js"></script>
 <script src="published-content.js"></script>
@@ -875,14 +876,13 @@
         el("f-fav-file").value = ""; return;
       }
     }
-    const reader = new FileReader();
-    reader.onload = e => {
-      faviconImage = e.target.result;      // base64 data URL
+    // A favicon is drawn at ~16-64px, so 256 is generous. keepAlpha because a
+    // crest with a knocked-out background must not gain a white square.
+    WLStorage.shrinkImage(f, { maxDim: 256, keepAlpha: true }).then(dataUrl => {
+      faviconImage = dataUrl;
       renderFaviconPreview();
       say("Tab icon loaded — click Save design to keep it.", "");
-    };
-    reader.onerror = () => say("Could not read that file.", "err");
-    reader.readAsDataURL(f);
+    }, () => say("Could not read that file.", "err"));
   });
 
   el("fav-remove").addEventListener("click", () => {
@@ -907,14 +907,14 @@
         el("f-orn-file").value = ""; return;
       }
     }
-    const reader = new FileReader();
-    reader.onload = e => {
-      ornament.file = e.target.result;      // base64 data URL
+    // The flourish renders at ~72px beside the masthead, so 512 is plenty at
+    // 2x. keepAlpha because the artwork sits on the page background — a white
+    // box behind a leaf would be obvious.
+    WLStorage.shrinkImage(f, { maxDim: 512, keepAlpha: true }).then(dataUrl => {
+      ornament.file = dataUrl;
       renderOrnamentPreview();
       say("Artwork loaded — click Save design to keep it.", "");
-    };
-    reader.onerror = () => say("Could not read that file.", "err");
-    reader.readAsDataURL(f);
+    }, () => say("Could not read that file.", "err"));
   });
 
   el("f-orn-width").addEventListener("input", () => {

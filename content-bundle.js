@@ -39,6 +39,7 @@ window.WLBundle = (function () {
     "wl_sections_pages_migrated": 1,   // one-time data migration markers
     "wl_sections_custom_migrated": 1,
     "wl_published_hash": 1,           // which published version this browser has applied
+    "wl_last_backup": 1,              // when THIS browser last downloaded one
   };
 
   // Every store's change event — fired after a load so all pages re-render.
@@ -186,22 +187,82 @@ window.WLBundle = (function () {
     if (!pub && !dl && !file) return;
 
     function setStatus(msg) { if (status) status.textContent = msg; }
+
+    // ── The backup nudge ────────────────────────────────────────────────────
+    //  Drafts live in one browser. Clearing site data, a school laptop reimage,
+    //  or a full quota all end the same way, and the writer finds out last. The
+    //  bundle download already existed; nothing ever asked anyone to use it.
+    var LAST_BACKUP = "wl_last_backup";
+    var DAY_MS = 24 * 60 * 60 * 1000;
+    var NAG_AFTER_DAYS = 7;
+
+    function markBackedUp() {
+      try { localStorage.setItem(LAST_BACKUP, String(Date.now())); } catch (e) { /* nudge is a nicety */ }
+      renderNag();
+    }
+    function daysSinceBackup() {
+      var raw;
+      try { raw = localStorage.getItem(LAST_BACKUP); } catch (e) { return null; }
+      if (!raw) return null;
+      var t = parseInt(raw, 10);
+      return isNaN(t) ? null : Math.floor((Date.now() - t) / DAY_MS);
+    }
+
+    function renderNag() {
+      var host = document.getElementById("wl-publish-panel");
+      if (!host) return;
+      var el = document.getElementById("wl-backup-nag");
+      if (!el) {
+        el = document.createElement("p");
+        el.id = "wl-backup-nag";
+        el.style.cssText = "margin:10px 0 0;font-size:13px;line-height:1.5;";
+        host.appendChild(el);
+      }
+      if (!summary().keys) { el.textContent = ""; return; }   // nothing to lose
+
+      var days = daysSinceBackup();
+      var stale = days === null || days >= NAG_AFTER_DAYS;
+      el.style.color = stale ? "#b8002a" : "var(--muted)";
+      el.textContent = days === null
+        ? "You have never downloaded a backup. Drafts live in this browser only — if it is cleared, they are gone."
+        : days === 0 ? "Last backup: today."
+        : days === 1 ? "Last backup: yesterday."
+        : "Last backup: " + days + " days ago." + (stale ? " Worth taking another." : "");
+    }
+
     function refresh() {
       var s = summary();
       setStatus(s.keys
         ? (s.keys + " draft item group" + (s.keys === 1 ? "" : "s") + " in this browser. Publish to make them live for readers, or download to transfer.")
         : "No local edits — this browser shows the published content.");
+      renderNag();
     }
     refresh();
 
+    // Only record a backup that actually happened, and never fail quietly:
+    // a click that produces no file and no message is how someone concludes
+    // they are backed up when they are not.
+    function attemptDownload(run, okMsg) {
+      try {
+        run();
+      } catch (e) {
+        setStatus("That download didn't start — your browser may be blocking it. " +
+                  "Try again, or use a different browser before relying on this as a backup.");
+        return;
+      }
+      markBackedUp();
+      setStatus(okMsg);
+    }
+
     if (pub) pub.addEventListener("click", function () {
-      downloadPublished();
-      setStatus("Downloaded published-content.js. Commit it to the site to publish these edits to every reader.");
+      // The published file is a complete snapshot, so it counts as a backup.
+      attemptDownload(downloadPublished,
+        "Downloaded published-content.js. Commit it to the site to publish these edits to every reader.");
     });
 
     if (dl) dl.addEventListener("click", function () {
-      download("content-bundle.json");
-      setStatus("Downloaded content-bundle.json — send it to a co-editor to load, or keep it as a backup.");
+      attemptDownload(function () { download("content-bundle.json"); },
+        "Downloaded content-bundle.json — send it to a co-editor to load, or keep it as a backup.");
     });
 
     if (file) file.addEventListener("change", function (e) {

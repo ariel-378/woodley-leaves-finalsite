@@ -2352,3 +2352,6 @@ footer a:hover { opacity: 0.85; }
   max-width: 60ch;
   line-height: 1.4;
 }
+
+/* Date beside a front-page byline. Muted: it's orientation, not the story. */
+.ha-date { color: var(--muted); white-space: nowrap; }

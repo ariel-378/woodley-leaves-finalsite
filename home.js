@@ -18,6 +18,14 @@
   function href(a) { return `article.html?id=${encodeURIComponent(a.id)}`; }
   function byline(a) { return window.WL_bylineTagsHtml ? WL_bylineTagsHtml(a) : escapeHtml(a.byline); }
 
+  // Byline plus date. A reader who can't tell whether a story is from this week
+  // or last March can't decide whether to trust it or pass it on — and the
+  // front page was the one place the date wasn't shown.
+  function credit(a) {
+    var by = byline(a);
+    return a.date ? by + ' <span class="ha-date">· ' + escapeHtml(a.date) + "</span>" : by;
+  }
+
   // Media slot: a photo, a video thumbnail, or a placeholder box that reserves
   // the space where the photo will go.
   function mediaImg(a, cls) {
@@ -46,7 +54,7 @@
         <div class="kicker">${escapeHtml(a.section)}</div>
         <h2 class="ha-hero-title"><a href="${href(a)}">${escapeHtml(a.title)}</a></h2>
         ${a.deck ? `<p class="ha-hero-deck">${escapeHtml(a.deck)}</p>` : ""}
-        <div class="ha-byline">${byline(a)}</div>
+        <div class="ha-byline">${credit(a)}</div>
       </div>`;
   }
 
@@ -55,7 +63,7 @@
       <article class="ha-left-story" data-home-id="${escapeHtml(a.id)}">
         <a class="ha-left-media" href="${href(a)}">${mediaImg(a, "ha-left-img")}</a>
         <h3 class="ha-left-title"><a href="${href(a)}">${escapeHtml(a.title)}</a></h3>
-        <div class="ha-byline">${byline(a)}</div>
+        <div class="ha-byline">${credit(a)}</div>
       </article>`;
   }
 
@@ -64,7 +72,7 @@
       <article class="ha-right-item" data-home-id="${escapeHtml(a.id)}">
         <div class="ha-right-text">
           <h4 class="ha-right-title"><a href="${href(a)}">${escapeHtml(a.title)}</a></h4>
-          <div class="ha-byline">${byline(a)}</div>
+          <div class="ha-byline">${credit(a)}</div>
         </div>
         <a class="ha-right-thumb" href="${href(a)}">${mediaImg(a, "ha-right-img")}</a>
       </article>`;
@@ -93,7 +101,7 @@
     return `
       <article class="hsb-lead">
         <a class="hsb-lead-media" href="${href(a)}">${imgTag(a, "hsb-lead-img")}</a>
-        <div class="sec-eyebrow">${byline(a)}</div>
+        <div class="sec-eyebrow">${credit(a)}</div>
         <h3><a href="${href(a)}">${escapeHtml(a.title)}</a></h3>
         ${a.deck ? `<p class="sec-deck">${escapeHtml(a.deck)}</p>` : ""}
       </article>`;
@@ -104,7 +112,7 @@
       <article class="hsb-mini">
         <div class="hsb-mini-text">
           <h4><a href="${href(a)}">${escapeHtml(a.title)}</a></h4>
-          <div class="sec-eyebrow">${byline(a)}</div>
+          <div class="sec-eyebrow">${credit(a)}</div>
         </div>
         <a class="hsb-mini-thumb" href="${href(a)}">${imgTag(a, "hsb-mini-img")}</a>
       </article>`;

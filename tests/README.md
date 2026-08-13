@@ -29,6 +29,8 @@ passes, that click path genuinely works.
 | `custom` | Custom games and custom features share one form but must never share a destination |
 | `subscribe` | The Subscribe button end to end, and the Newsletter panel — including never reporting a signup that wasn't recorded |
 | `favicon` | The tab icon: drawn letters, an uploaded image, and an export whose filenames match the files it downloads |
+| `storage` | Uploads are shrunk before they are stored, and a full browser says so instead of losing the change silently |
+| `publish` | The whole point: a story with a photo goes editor → published file → a stranger's browser, and renders |
 
 ## Why these exist
 
@@ -46,6 +48,13 @@ broke on a path nobody had clicked:
 - **`articles`** — an article whose section was renamed away belonged to no
   card and vanished from the dashboard. There is now an "Unfiled" card, and a
   test that keeps it honest.
+- **`storage`** — uploads were stored at full size as base64. One phone photo
+  is ~5.4MB encoded, more than the entire ~5MB budget, and of the twenty-one
+  files that wrote to storage exactly one handled the quota error. Everywhere
+  else the write threw into nothing and the change was gone.
+- **`publish`** — the editor and the reader were only ever tested in the same
+  browser, where `localStorage` does the work. The step between them — the file
+  an editor downloads and commits — had never been run at all.
 - **`favicon`** — an uploaded tab icon was exported into `config.js` as
   `media/favicon-upload`, with no extension for `brand.js` to read a type from,
   and the image was never downloaded at all. Every step reported success; a

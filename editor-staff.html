@@ -7,6 +7,7 @@
 <meta name="description" content="Manage the masthead, staff list, and writers for The Woodley Leaves.">
 <link rel="icon" type="image/svg+xml" href="favicon.svg">
 <link rel="stylesheet" href="styles.css" />
+<script src="storage.js"></script>
 <script src="config.js"></script>
 <script src="brand-store.js"></script>
 <script src="published-content.js"></script>
@@ -377,9 +378,11 @@
   document.getElementById("st-photo-file").addEventListener("change", (e) => {
     const file = e.target.files[0];
     if (!file) return;
-    const reader = new FileReader();
-    reader.onload = () => { document.getElementById("st-photo").value = reader.result; refreshPhotoPreview(); };
-    reader.readAsDataURL(file);
+    // A headshot renders at ~200px. Storing the camera original wastes the
+    // budget every other editor shares.
+    WLStorage.shrinkImage(file, { maxDim: 800 }).then(dataUrl => {
+      document.getElementById("st-photo").value = dataUrl; refreshPhotoPreview();
+    });
   });
 
   document.getElementById("staff-add").addEventListener("click", () => openModal());

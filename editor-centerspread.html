@@ -6,6 +6,7 @@
 <title>Centerspread Editor — The Woodley Leaves</title>
 <link rel="icon" type="image/svg+xml" href="favicon.svg">
 <link rel="stylesheet" href="styles.css" />
+<script src="storage.js"></script>
 <script src="config.js"></script>
 <script src="brand-store.js"></script>
 <script src="published-content.js"></script>
@@ -355,9 +356,11 @@
     if (f.size > MAX_UPLOAD && !confirm("That file is over 2 MB. Browser storage may fill up. Continue?")) {
       el("p-image-file").value = ""; return;
     }
-    const reader = new FileReader();
-    reader.onload = e => { el("p-image").value = e.target.result; refreshImagePreview(); };
-    reader.readAsDataURL(f);
+    // Artwork keeps its transparency; a scanned drawing with a knocked-out
+    // background would come out on a black square as JPEG.
+    WLStorage.shrinkImage(f, { keepAlpha: true }).then(dataUrl => {
+      el("p-image").value = dataUrl; refreshImagePreview();
+    });
   });
 
   function slugify(s) {

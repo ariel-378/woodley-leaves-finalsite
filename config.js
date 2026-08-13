@@ -48,6 +48,12 @@ window.WL_CONFIG = {
   //  Our team's name as it appears in the bracket data (teams.js).
   homeTeam: "Maret",
 
+  // ── Where the site lives ─────────────────────────────────────────────────
+  //  Used by `npm run brand` to generate sitemap.xml and robots.txt, which
+  //  need absolute URLs. Leave blank until you know the address; no sitemap is
+  //  better than one pointing at somebody else's site.
+  siteUrl: "",
+
   // ── Where newsletter signups go ──────────────────────────────────────────
   //  The Subscribe link collects an email address (no phone numbers) into a Google
   //  Sheet via a Google Apps Script web app. Follow setup/README.md, then paste

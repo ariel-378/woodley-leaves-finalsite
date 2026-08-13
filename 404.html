@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en" data-wl-name="The Woodley Leaves" data-wl-school="Maret School">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Page not found — The Woodley Leaves</title>
+<meta name="robots" content="noindex">
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<link rel="stylesheet" href="styles.css" />
+<script src="storage.js"></script>
+<script src="config.js"></script>
+<script src="brand-store.js"></script>
+<script src="published-content.js"></script>
+<script src="content-bundle.js"></script>
+<script src="brand.js"></script>
+<script src="sections-store.js"></script>
+<script src="nav.js"></script>
+<style>
+  .nf { max-width: 640px; margin: 0 auto; padding: 60px 20px 80px; text-align: center;
+        font-family: "Helvetica Neue", Arial, sans-serif; }
+  .nf-num { font-family: Georgia, serif; font-size: 76px; line-height: 1; color: var(--accent); margin: 0; }
+  .nf h2 { font-family: Georgia, serif; font-size: 28px; margin: 12px 0 10px; }
+  .nf p { color: var(--muted); font-size: 15px; line-height: 1.6; margin: 0 0 22px; }
+  .nf-links { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; }
+  .nf-links a { display: inline-block; border: 1px solid var(--ink); padding: 9px 16px;
+                text-decoration: none; color: var(--ink); font-size: 13px; font-weight: 600; }
+  .nf-links a:hover { background: var(--cream); }
+  .nf-links a.primary { background: var(--accent); border-color: var(--accent); color: #fff; }
+  .nf-search { margin: 26px auto 0; display: flex; gap: 8px; max-width: 380px; }
+  .nf-search input { flex: 1; padding: 9px 12px; border: 1px solid var(--rule); font: inherit; font-size: 14px; }
+</style>
+<link rel="stylesheet" href="responsive.css" />
+</head>
+<body>
+
+<a href="#main-content" class="skip-link">Skip to main content</a>
+
+<div class="topbar"><div class="topbar-inner"><div><a href="#" class="topbar-cta">Subscribe</a></div><div></div></div></div>
+
+<div class="masthead">
+  <div class="masthead-ornament left" aria-hidden="true"><img src="media/leaf.svg" alt="" width="60" height="30"></div>
+  <div class="masthead-ornament right" aria-hidden="true"><img src="media/leaf.svg" alt="" width="60" height="30"></div>
+  <h1><a href="index.html">The Student Times</a></h1>
+  <div class="dateline">YOUR SCHOOL</div>
+</div>
+
+<nav class="sectionnav">
+  <div class="sectionnav-inner"></div>
+</nav>
+
+<main id="main-content" class="nf">
+  <p class="nf-num">404</p>
+  <h2>We can't find that page</h2>
+  <p>
+    The link may be out of date, or the story may have moved. Nothing has been
+    deleted just because a link broke — try a search, or start from the front page.
+  </p>
+
+  <form class="nf-search" role="search" action="search.html" method="get">
+    <label for="nf-q" class="sr-only">Search the paper</label>
+    <input type="search" id="nf-q" name="q" placeholder="Search the paper">
+    <button type="submit" class="nf-go">Search</button>
+  </form>
+
+  <div class="nf-links" style="margin-top:22px;">
+    <a class="primary" href="index.html">Front page</a>
+    <a href="search.html">Search</a>
+    <a href="staff.html">Staff</a>
+  </div>
+</main>
+
+<footer></footer>
+
+<!-- The section nav and masthead are built from the editor's own config, so a
+     404 still offers the paper's real navigation rather than a dead end. -->
+<script src="submissions.js"></script>
+<script src="auth.js"></script>
+</body>
+</html>

@@ -6,6 +6,7 @@
 <title>Ads Editor — The Woodley Leaves</title>
 <link rel="icon" type="image/svg+xml" href="favicon.svg">
 <link rel="stylesheet" href="styles.css" />
+<script src="storage.js"></script>
 <script src="config.js"></script>
 <script src="brand-store.js"></script>
 <script src="published-content.js"></script>
@@ -247,9 +248,9 @@
         posterFileEl.value = ""; return;
       }
     }
-    const reader = new FileReader();
-    reader.onload = e => { posterEl.value = e.target.result; refreshPosterPreview(); };
-    reader.readAsDataURL(f);
+    // Shrunk before storing — a poster photo off a phone would otherwise fill
+    // the whole browser budget on its own.
+    WLStorage.shrinkImage(f).then(dataUrl => { posterEl.value = dataUrl; refreshPosterPreview(); });
   });
 
   function openModal(id) {

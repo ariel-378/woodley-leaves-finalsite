@@ -104,5 +104,63 @@ export async function run() {
     }
   }
 
+  // ===== A mistyped link lands somewhere useful =====
+  //  GitHub Pages and most static hosts serve /404.html automatically. Without
+  //  one, a stale link — and student papers accumulate those — is a blank host
+  //  error page with no way back into the paper.
+  {
+    check.ok("the site ships a 404 page", fs.existsSync(path.join(SITE, "404.html")));
+
+    const ctx = await loadPage("404.html", { editor: false });
+    const text = ctx.document.body.textContent;
+    check.ok("it explains what happened in plain words", /can't find that page/i.test(text), text.slice(0, 80));
+    check.ok("it offers the front page", !!ctx.$('a[href="index.html"]'));
+    check.ok("and a search box rather than a dead end", !!ctx.$('form[action="search.html"] input[type="search"]'));
+    check.ok("it keeps itself out of the index", /name="robots"[^>]*noindex/i.test(
+      fs.readFileSync(path.join(SITE, "404.html"), "utf8")));
+    check.clean("the 404 page renders without errors", ctx);
+  }
+
+  // ===== robots.txt and the sitemap describe the real site =====
+  {
+    const cfg = readConfig(SITE);
+    const robotsPath = path.join(SITE, "robots.txt");
+    check.ok("robots.txt is present", fs.existsSync(robotsPath));
+
+    const robots = fs.existsSync(robotsPath) ? fs.readFileSync(robotsPath, "utf8") : "";
+    check.ok("it keeps crawlers out of the dashboards", /Disallow: \/editor-content\.html/.test(robots));
+    check.ok("without blocking the paper itself", /^Allow: \/$/m.test(robots));
+
+    const sitemapPath = path.join(SITE, "sitemap.xml");
+    if (cfg.siteUrl) {
+      check.ok("a configured siteUrl produces a sitemap", fs.existsSync(sitemapPath));
+      const xml = fs.existsSync(sitemapPath) ? fs.readFileSync(sitemapPath, "utf8") : "";
+      check.ok("listing the front page", xml.includes("<loc>" + cfg.siteUrl.replace(/\/+$/, "") + "/</loc>"));
+      // A bare article.html renders an empty shell — exactly the thin content a
+      // crawler is penalised for offering.
+      check.ok("and no page that needs a query string to mean anything",
+        !/\/(article|section|tag|team|writer|video)\.html<\/loc>/.test(xml),
+        (xml.match(/\/(article|section|tag|team|writer|video)\.html<\/loc>/) || [""])[0]);
+      check.ok("every listed page actually exists",
+        [...xml.matchAll(/<loc>[^<]*?\/([a-z0-9-]+\.html)<\/loc>/g)]
+          .every(m => fs.existsSync(path.join(SITE, m[1]))));
+    } else {
+      check.ok("with no siteUrl set, no sitemap is invented", !fs.existsSync(sitemapPath));
+    }
+  }
+
+  // ===== The front page says when each story ran =====
+  //  A reader who can't tell this week from last March can't decide whether to
+  //  trust a story or pass it on. Every other surface showed the date already;
+  //  the front page was the one that didn't.
+  {
+    const ctx = await loadPage("index.html", { editor: false });
+    const dated = ctx.$$(".ha-byline, .sec-eyebrow").filter(el => el.querySelector(".ha-date"));
+    const credited = ctx.$$(".ha-byline, .sec-eyebrow");
+    check.ok("front-page stories carry a date beside the byline",
+      credited.length > 0 && dated.length > 0,
+      `${dated.length} of ${credited.length} credits showed a date`);
+  }
+
   return check;
 }

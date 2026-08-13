@@ -267,12 +267,13 @@ window.WLArticleEditor = (function () {
         photoFileEl.value = ""; return;
       }
     }
-    const reader = new FileReader();
-    reader.onload = e => {
-      photoEl.value = e.target.result; // base64 data URL
+    // Shrunk before it is stored. A phone photo is ~4MB, and base64 makes it
+    // ~5.4MB — more than the whole browser budget, for an image the page never
+    // renders above ~700px.
+    WLStorage.shrinkImage(file).then(dataUrl => {
+      photoEl.value = dataUrl;
       refreshPhotoPreview();
-    };
-    reader.readAsDataURL(file);
+    });
   }
 
   function populateSectionSelect() {
