@@ -178,6 +178,91 @@ export async function run() {
     check.clean("no errors using the controls", p.ctx);
   }
 
+  // ===== It is playable on a phone =====
+  //  Input arrived as `keydown` on a <div tabindex="0">. Focusing a div does
+  //  not open the on-screen keyboard on iOS or Android, so a reader on a phone
+  //  could tap squares, watch the clue change, and never enter a letter. Every
+  //  other puzzle here is tap- or drag-driven; the crossword was the one that
+  //  assumed a physical keyboard.
+  //
+  //  The fix is a real, focusable <input> kept out of sight. These drive it the
+  //  way a phone does — an `input` event, with no usable `key` on keydown,
+  //  which is what Android's keyboard actually sends.
+  {
+    const p = await setup();
+    const box = p.ctx.$("#cw-input");
+    check.ok("there is a real input for the keyboard to attach to", !!box);
+    if (box) {
+      check.equal("it is a text field, so a keyboard opens", box.tagName, "INPUT");
+      check.ok("it is not display:none or hidden — those cannot be focused",
+        !box.hasAttribute("hidden") && !/display:\s*none/.test(box.getAttribute("style") || ""),
+        box.outerHTML.slice(0, 120));
+      check.ok("autocorrect and autocapitalise are set for letter entry",
+        (box.getAttribute("autocapitalize") || "") !== "" && box.getAttribute("autocomplete") === "off",
+        box.outerHTML.slice(0, 160));
+      check.ok("it is kept out of the tab order, so the grid stays the tab stop",
+        box.getAttribute("tabindex") === "-1");
+    }
+  }
+
+  {
+    const p = await setup();
+    p.ctx.click(p.cell(0, 0));
+    check.equal("tapping a square focuses the input, which is what opens the keyboard",
+      p.ctx.document.activeElement && p.ctx.document.activeElement.id, "cw-input");
+  }
+
+  {
+    // A phone: no usable `key` on keydown, just an input event.
+    const p = await setup();
+    const box = p.ctx.$("#cw-input");
+    p.ctx.click(p.cell(0, 0));
+
+    box.value = box.value + "B";
+    box.dispatchEvent(new p.ctx.window.Event("input", { bubbles: true }));
+    check.ok("a letter typed on a phone keyboard reaches the grid",
+      p.row(0).startsWith("B"), `row 0 is "${p.row(0)}"`);
+    check.equal("exactly once", (p.row(0).match(/B/g) || []).length, 1);
+    check.equal("and the cursor moves on", p.selected(), "0,1");
+  }
+
+  {
+    // Deleting on a phone arrives as an input event too, not a Backspace key.
+    const p = await setup();
+    const box = p.ctx.$("#cw-input");
+    p.ctx.click(p.cell(0, 0));
+
+    box.value = box.value + "B";
+    box.dispatchEvent(new p.ctx.window.Event("input", { bubbles: true }));
+    check.ok("a letter went in", /B/.test(p.row(0)), p.row(0));
+
+    box.value = "";                       // the keyboard ate the sentinel
+    box.dispatchEvent(new p.ctx.window.Event("input", { bubbles: true }));
+    check.ok("deleting on a phone clears a square", !/B/.test(p.row(0)), p.row(0));
+  }
+
+  {
+    // The desktop path must survive: a hardware keyboard with the input focused
+    // must not enter the letter twice — once from keydown, once from input.
+    const p = await setup();
+    const box = p.ctx.$("#cw-input");
+    p.ctx.click(p.cell(0, 0));
+
+    box.dispatchEvent(new p.ctx.window.KeyboardEvent("keydown", { key: "B", bubbles: true, cancelable: true }));
+    box.value = box.value + "B";
+    box.dispatchEvent(new p.ctx.window.Event("input", { bubbles: true }));
+    check.equal("a hardware keypress still fills exactly one square", p.row(0), "B____");
+  }
+
+  {
+    // Arrows come through keydown on the focused input.
+    const p = await setup();
+    const box = p.ctx.$("#cw-input");
+    p.ctx.click(p.cell(0, 0));
+    box.dispatchEvent(new p.ctx.window.KeyboardEvent("keydown", { key: "ArrowRight", bubbles: true, cancelable: true }));
+    check.equal("arrow keys still move while the input has focus", p.selected(), "0,1");
+  }
+
   opened.forEach(c => c.close());
   return check;
 }

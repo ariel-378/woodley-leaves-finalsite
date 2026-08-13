@@ -359,6 +359,27 @@
     font-weight: 600;
   }
 
+  /* Holds the grid and the invisible input that opens a phone keyboard. */
+  .cw-grid-wrap { position: relative; }
+
+  /* Invisible, but focusable — the whole point. It sits over the top-left of
+     the grid rather than off-screen, because iOS scrolls a focused field into
+     view and we want that scroll to land on the puzzle. font-size:16px stops
+     iOS zooming the page in the moment it takes focus. pointer-events:none so
+     it never swallows a tap meant for a square. */
+  .cw-input {
+    position: absolute;
+    top: 0; left: 0;
+    width: 1px; height: 1px;
+    padding: 0; border: 0; margin: 0;
+    font-size: 16px;
+    opacity: 0;
+    background: transparent;
+    caret-color: transparent;
+    pointer-events: none;
+    z-index: 1;
+  }
+
   .cw-grid {
     display: grid;
     grid-template-columns: repeat(5, 1fr);
@@ -890,7 +911,19 @@
         <div class="cw-timer" id="timer">0:00</div>
       </div>
 
-      <div class="cw-grid" id="grid" tabindex="0" role="grid" aria-label="Mini crossword, 5 by 5 grid. Use arrow keys to navigate and type letters to fill in."></div>
+      <!-- The grid is made of divs, and focusing a div does not open a phone's
+           on-screen keyboard — so on a phone you could tap squares and never
+           type a letter. Tapping a square focuses this real input instead,
+           which is what summons the keyboard. It is invisible but genuinely
+           focusable: display:none or hidden would take the keyboard away
+           again. Kept out of the tab order so the grid stays the tab stop for
+           anyone using a physical keyboard. -->
+      <div class="cw-grid-wrap">
+        <input id="cw-input" class="cw-input" type="text"
+               autocomplete="off" autocorrect="off" autocapitalize="characters"
+               spellcheck="false" tabindex="-1" aria-label="Type a letter for the selected square">
+        <div class="cw-grid" id="grid" tabindex="0" role="grid" aria-label="Mini crossword, 5 by 5 grid. Use arrow keys to navigate and type letters to fill in."></div>
+      </div>
 
       <div class="cw-current" id="current-clue" aria-live="polite" aria-atomic="true">
         <span class="label">Clue</span><span id="current-clue-text">Tap a square to begin.</span>
@@ -1411,7 +1444,54 @@ function onCellClick(r, c) {
   selectionPlacedByReader = true;
   startTimerIfNeeded();
   updateUI();
-  gridEl.focus();
+  focusEntry();
+}
+
+// ===== Entry, including on a phone =====
+//  A phone keyboard only appears for a focusable form field, so tapping a
+//  square focuses the hidden input rather than the grid. Letters then arrive
+//  as `input` events — Android's keyboard sends keydown with key
+//  "Unidentified", so reading `key` there is not an option.
+//
+//  The input carries a single sentinel space. Typing makes it " X" and
+//  deleting makes it "" — which is how a backspace is recognised on a keyboard
+//  that never sends a Backspace key.
+const entryEl = document.getElementById("cw-input");
+const SENTINEL = " ";
+
+function resetEntry() {
+  if (entryEl) entryEl.value = SENTINEL;
+}
+
+function focusEntry() {
+  if (!entryEl) { gridEl.focus(); return; }
+  resetEntry();
+  // preventScroll keeps a tap on a square from jumping the page; iOS ignores
+  // it and scrolls the field into view, which is why the input sits on the grid.
+  try { entryEl.focus({ preventScroll: true }); } catch (e) { entryEl.focus(); }
+}
+
+if (entryEl) {
+  resetEntry();
+
+  entryEl.addEventListener("input", () => {
+    const v = entryEl.value;
+    if (v.length > SENTINEL.length) {
+      const ch = v.slice(-1);
+      if (/^[a-zA-Z]$/.test(ch)) typeLetter(ch);
+    } else if (v.length < SENTINEL.length) {
+      backspace();                 // the sentinel was eaten: that was a delete
+    }
+    resetEntry();
+  });
+
+  // Arrows, space and Enter still come through as real keys, even on a phone
+  // keyboard that has them. Letters and Backspace are deliberately left to the
+  // input event above, so nothing is applied twice.
+  entryEl.addEventListener("keydown", (e) => {
+    if (/^[a-zA-Z]$/.test(e.key) || e.key === "Backspace") return;
+    handleKey(e);
+  });
 }
 
 function advance() {
@@ -1429,27 +1509,40 @@ function retreat() {
   }
 }
 
+// Putting a letter in and taking one out, independent of how the reader did
+// it. The keyboard path and the phone's input path both come through here, so
+// the two can't drift apart.
+function typeLetter(ch) {
+  if (solved) return;
+  grid[selected.row][selected.col] = ch.toUpperCase();
+  startTimerIfNeeded();
+  // clear any "wrong" state on this cell
+  const cell = gridEl.children[selected.row * SIZE + selected.col];
+  if (cell) cell.classList.remove("wrong");
+  advance();
+  updateUI();
+  checkWin();
+}
+
+function backspace() {
+  if (solved) return;
+  if (grid[selected.row][selected.col]) {
+    grid[selected.row][selected.col] = "";
+  } else {
+    retreat();
+    grid[selected.row][selected.col] = "";
+  }
+  updateUI();
+}
+
 function handleKey(e) {
   if (solved) return;
   const k = e.key;
   if (/^[a-zA-Z]$/.test(k)) {
-    grid[selected.row][selected.col] = k.toUpperCase();
-    startTimerIfNeeded();
-    // clear any "wrong" state on this cell
-    const cell = gridEl.children[selected.row * SIZE + selected.col];
-    cell.classList.remove("wrong");
-    advance();
-    updateUI();
-    checkWin();
+    typeLetter(k);
     e.preventDefault();
   } else if (k === "Backspace") {
-    if (grid[selected.row][selected.col]) {
-      grid[selected.row][selected.col] = "";
-    } else {
-      retreat();
-      grid[selected.row][selected.col] = "";
-    }
-    updateUI();
+    backspace();
     e.preventDefault();
   } else if (k === "ArrowRight") {
     if (direction !== "across") direction = "across";
@@ -1581,10 +1674,11 @@ document.addEventListener("keydown", (e) => {
   const ae = document.activeElement;
   if (ae && (ae.tagName === "INPUT" || ae.tagName === "TEXTAREA" || ae.isContentEditable)) return;
   if (activeGame !== "cw") return;
-  // The grid has its own keydown listener, and this one sees the same event
-  // again as it bubbles. Without this guard every keypress was handled twice:
-  // one letter typed put two in the grid, and an arrow key jumped two squares.
-  if (gridEl.contains(e.target)) return;
+  // The grid and the hidden entry field have their own keydown listeners, and
+  // this one sees the same event again as it bubbles. Without this guard every
+  // keypress was handled twice: one letter typed put two in the grid, and an
+  // arrow key jumped two squares.
+  if (gridEl.contains(e.target) || e.target === entryEl) return;
   handleKey(e);
 });
 

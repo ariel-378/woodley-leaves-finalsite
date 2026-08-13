@@ -31,7 +31,7 @@ passes, that click path genuinely works.
 | `favicon` | The tab icon: drawn letters, an uploaded image, and an export whose filenames match the files it downloads |
 | `storage` | Uploads are shrunk before they are stored, and a full browser says so instead of losing the change silently |
 | `publish` | The whole point: a story with a photo goes editor → published file → a stranger's browser, and renders |
-| `crossword` | Actually playing the mini: direction on click, one letter per keypress, arrows, backspace, the controls |
+| `crossword` | Actually playing the mini, on a keyboard and on a phone: direction on click, one letter per keypress, arrows, backspace, the controls |
 
 ## Why these exist
 
@@ -60,7 +60,9 @@ broke on a path nobody had clicked:
   And the grid and the document both listened for `keydown` and both called the
   same handler, so a bubbled event was handled twice: one letter typed put two
   in the grid. Every other suite loaded the centerspread and checked it didn't
-  throw, which it never did.
+  throw, which it never did. A third followed: the grid is made of divs, and
+  focusing a div opens no keyboard on a phone — so every square could be tapped
+  and no letter could ever be typed.
 - **`publish`** — the editor and the reader were only ever tested in the same
   browser, where `localStorage` does the work. The step between them — the file
   an editor downloads and commits — had never been run at all.
