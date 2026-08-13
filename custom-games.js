@@ -71,7 +71,9 @@
     const host = document.getElementById("cs-custom-games");
     if (!host) return;
     host.innerHTML = "";
-    const stored = window.WLGamesStore ? WLGamesStore.getAll() : [];
+    let stored = window.WLGamesStore ? WLGamesStore.getAll() : [];
+    // A game dated forward is finished but not yet published.
+    if (window.WLSchedule) stored = stored.filter(WLSchedule.isLive);
     stored.forEach(g => host.appendChild(buildStoreGame(g)));
     registered.forEach(g => host.appendChild(buildDevGame(g)));
   }

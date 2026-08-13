@@ -26,11 +26,11 @@ window.WLArticles = (function () {
   function getById(id) { return getAll()[id]; }
 
   // An article with a future publishAt stays hidden from the public site until
-  // that moment arrives. No publishAt (or a past one) means it is live.
+  // that moment arrives. The rule lives in schedule.js, shared with every other
+  // kind of content, so scheduling cannot mean one thing for articles and
+  // something else for a poem.
   function isPublished(a) {
-    if (!a || !a.publishAt) return true;
-    const t = Date.parse(a.publishAt);
-    return isNaN(t) || t <= Date.now();
+    return window.WLSchedule ? WLSchedule.isLive(a) : true;
   }
 
   // A section can be hidden from readers (editor toggle). Its articles then drop

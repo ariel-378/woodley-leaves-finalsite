@@ -11,6 +11,7 @@
 <link rel="icon" type="image/svg+xml" href="favicon.svg">
 <link rel="stylesheet" href="styles.css" />
 <script src="storage.js"></script>
+<script src="schedule.js"></script>
 <script src="config.js"></script>
 <script src="brand-store.js"></script>
 <script src="published-content.js"></script>
@@ -2121,7 +2122,10 @@ document.addEventListener("keydown", (e) => {
   }
 
   function renderPieces() {
-    const pieces = WLCenterspread.list();
+    // Anything dated forward is finished but not yet published.
+    const pieces = window.WLSchedule
+      ? WLCenterspread.list().filter(WLSchedule.isLive)
+      : WLCenterspread.list();
     wrap.innerHTML = "";
     if (empty) empty.style.display = pieces.length ? "none" : "block";
     // Two pieces per row, matching the original print layout.

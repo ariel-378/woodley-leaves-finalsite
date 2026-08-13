@@ -33,6 +33,7 @@ passes, that click path genuinely works.
 | `publish` | The whole point: a story with a photo goes editor → published file → a stranger's browser, and renders |
 | `crossword` | Actually playing the mini, on a keyboard and on a phone: direction on click, one letter per keypress, arrows, backspace, the controls |
 | `ownership` | A new section starts empty — content belongs to one section, in the dashboard and on the public page |
+| `schedule` | Every kind of content can be dated forward: hidden from readers, marked in the dashboard, one shared rule |
 
 ## Why these exist
 
@@ -69,6 +70,10 @@ broke on a path nobody had clicked:
   Puzzle games and the Centerspread's crossword, bee, Connections and word
   search appeared as yours, Delete buttons and all. Articles never had the
   problem because they carry their section and the dashboard filters on it.
+- **`schedule`** — articles could be dated forward and nothing else could, so
+  an edition could not be built ahead of time: a poem, a photo, a video or a
+  game went live the instant it was saved. Worse, the rule for "is this live?"
+  existed only inside articles-store, where nothing else could reach it.
 - **`publish`** — the editor and the reader were only ever tested in the same
   browser, where `localStorage` does the work. The step between them — the file
   an editor downloads and commits — had never been run at all.

@@ -216,6 +216,26 @@ Finalsite deployment, editor access is granted by an administrator through the
 school login (see the notes in `auth.js`); in the standalone template, use the
 "Editor preview" link to try the dashboards.
 
+## Planning ahead: publish dates
+
+Every kind of content takes an optional **publish date and time** — articles,
+poems, prose, art, reveal-answer items, videos, custom features and custom
+games. Leave it blank and the item goes live as soon as you save it. Set a time
+in the future and it is **finished and waiting**: it stays in your dashboard,
+marked with a ⏳ and the date, and no reader can see it until that moment.
+
+That is what lets you build next Friday's edition on Tuesday.
+
+Two things worth knowing:
+
+- **The time is your local time**, with no timezone attached. For one school
+  that is exactly right.
+- **It hides content; it does not embargo it.** This is a static site, so a
+  scheduled item's text still ships inside `published-content.js` — anyone who
+  opens the page source can read it early. That is fine for planning a poem.
+  For a story that genuinely must not leak, keep it out of the site until the
+  day you publish it.
+
 ### The Centerspread tab
 The **Centerspread** tab controls the centerspread page:
 

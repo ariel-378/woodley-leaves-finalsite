@@ -117,7 +117,7 @@
   function videosHtml(section) {
     if (!window.WLVideos) return "";
     const videos = Object.entries(WLVideos.getAll())
-      .filter(([, v]) => ownedHere(v, "Videos", section))
+      .filter(([, v]) => ownedHere(v, "Videos", section) && (!window.WLSchedule || WLSchedule.isLive(v)))
       .map(([id, v]) => ({ id, ...v }))
       .sort((a, b) => (Date.parse(b.date) || 0) - (Date.parse(a.date) || 0));
     if (!videos.length) return "";
@@ -179,7 +179,8 @@
   function piecesBlock(title, predicate, shown, type, section) {
     if (!window.WLCenterspread) return "";
     const pieces = WLCenterspread.list()
-      .filter(p => p && predicate(p) && !shown.has(p.id) && ownedHere(p, type, section));
+      .filter(p => p && predicate(p) && !shown.has(p.id) && ownedHere(p, type, section)
+                && (!window.WLSchedule || WLSchedule.isLive(p)));
     if (!pieces.length) return "";
     pieces.forEach(p => shown.add(p.id));
     return `<h3 class="sec-block-title">${escapeHtml(title)}</h3><div class="sec-pieces">${pieces.map(csPiece).join("")}</div>`;
@@ -246,7 +247,8 @@
     // same-origin access, so it cannot touch the page around it.
     if (types.includes("Custom feature") && window.WLFeatures) {
       const features = WLFeatures.getAll()
-        .filter(f => f && (f.code || "").trim() && ownedHere(f, "Custom feature", section));
+        .filter(f => f && (f.code || "").trim() && ownedHere(f, "Custom feature", section)
+                  && (!window.WLSchedule || WLSchedule.isLive(f)));
       if (features.length) {
         const heading = document.createElement("h3");
         heading.className = "sec-block-title";

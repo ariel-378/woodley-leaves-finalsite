@@ -8,6 +8,7 @@
 <link rel="icon" type="image/svg+xml" href="favicon.svg">
 <link rel="stylesheet" href="styles.css" />
 <script src="storage.js"></script>
+<script src="schedule.js"></script>
 <script src="config.js"></script>
 <script src="brand-store.js"></script>
 <script src="published-content.js"></script>
@@ -224,6 +225,10 @@
         </label>
       </div>
 
+      <label>Publish date &amp; time <span style="font-weight:400;text-transform:none;letter-spacing:0;color:var(--muted);">(leave blank to publish now; set a future time to schedule)</span>
+        <input type="datetime-local" id="pc-publish">
+      </label>
+
       <div id="pc-text-wrap">
         <label><span id="pc-body-label">Body</span>
           <textarea id="pc-body" rows="10"></textarea>
@@ -270,6 +275,9 @@
       </label>
       <label>Video link
         <input id="vd-url" type="text" placeholder="https://www.youtube.com/watch?v=…">
+      </label>
+      <label>Publish date &amp; time <span style="font-weight:400;text-transform:none;letter-spacing:0;color:var(--muted);">(leave blank to publish now; set a future time to schedule)</span>
+        <input type="datetime-local" id="v-publish">
       </label>
       <div class="ct-grid" style="grid-template-columns:1.2fr 1fr 0.8fr;gap:0 18px;">
         <label>Byline (optional)
@@ -511,10 +519,18 @@
     // new section arrived pre-filled with another section's work.
     const mine = item => !window.WLSections || WLSections.belongsTo(item, type, sectionName);
 
+    // Anything with a future publish time is finished and waiting. It belongs
+    // in the dashboard, marked, so an editor can see next week's edition taking
+    // shape — and nowhere a reader can reach.
+    const waiting = item =>
+      window.WLSchedule && WLSchedule.isScheduled(item)
+        ? ` · ⏳ ${WLSchedule.format(item.publishAt)}` : "";
+
     const pieceRows = (label, filter) => {
       if (!cs) return;
       cs.list().filter(pc => filter(pc) && mine(pc)).forEach(pc => out.push(reg(`piece:${pc.id}`, {
-        key: `piece:${pc.id}`, title: pc.title || pc.id, meta: pc.byline || label,
+        key: `piece:${pc.id}`, title: pc.title || pc.id,
+        meta: (pc.byline || label) + waiting(pc),
         edit: () => openPieceModal(type, pc.id),
         remove: () => { cs.remove(pc.id); renderSections(); },
       })));
@@ -527,7 +543,7 @@
     if (type === "Videos" && window.WLVideos) {
       Object.entries(WLVideos.getAll()).filter(([, v]) => mine(v)).forEach(([id, v]) => out.push(reg(`video:${id}`, {
         key: `video:${id}`, title: v.title || id,
-        meta: [v.byline, v.date, v.duration].filter(Boolean).join(" · "),
+        meta: [v.byline, v.date, v.duration].filter(Boolean).join(" · ") + waiting(v),
         edit: () => openVideoModal(id),
         remove: () => { WLVideos.remove(id); renderSections(); },
       })));
@@ -558,7 +574,7 @@
       });
       if (window.WLGamesStore) {
         WLGamesStore.getAll().filter(mine).forEach(g => out.push(reg(`game:${g.id}`, {
-          key: `game:${g.id}`, title: g.title || g.id, meta: g.description || "Custom game",
+          key: `game:${g.id}`, title: g.title || g.id, meta: (g.description || "Custom game") + waiting(g),
           edit: () => WLCodeEditor.open({ kind: "game", id: g.id, onSave: renderSections }),
           remove: () => { WLGamesStore.remove(g.id); renderSections(); },
         })));
@@ -567,7 +583,7 @@
 
     if (type === "Custom feature" && window.WLFeatures) {
       WLFeatures.getAll().filter(mine).forEach(f => out.push(reg(`feature:${f.id}`, {
-        key: `feature:${f.id}`, title: f.title || f.id, meta: f.description || "Custom feature",
+        key: `feature:${f.id}`, title: f.title || f.id, meta: (f.description || "Custom feature") + waiting(f),
         edit: () => WLCodeEditor.open({ kind: "feature", id: f.id, onSave: renderSections }),
         remove: () => { WLFeatures.remove(f.id); renderSections(); },
       })));
@@ -760,7 +776,7 @@
 
   const $ = id => document.getElementById(id);
   const PIECE_FIELDS = ["pc-title", "pc-kicker", "pc-byline", "pc-body",
-    "pc-image", "pc-alt", "pc-reveal-summary", "pc-reveal-answer"];
+    "pc-image", "pc-alt", "pc-reveal-summary", "pc-reveal-answer", "pc-publish"];
 
   function slugify(s) {
     return String(s).toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "").slice(0, 60);
@@ -797,6 +813,7 @@
         $("pc-body").value = pc.body || "";
         $("pc-image").value = pc.image || "";
         $("pc-alt").value = pc.alt || "";
+        $("pc-publish").value = pc.publishAt || "";
         if (pc.reveal) {
           $("pc-reveal-summary").value = pc.reveal.summary || "";
           $("pc-reveal-answer").value = pc.reveal.answer || "";
@@ -861,6 +878,9 @@
     const owner = (existing && existing.section) || addingToSection;
     if (owner) piece.section = owner;
 
+    const pubAt = $("pc-publish").value.trim();
+    if (pubAt) piece.publishAt = pubAt;
+
     const res = WLCenterspread.save(id, piece);
     if (!res || res.ok === false) {
       err.textContent = "Could not save. Your browser storage may be full.";
@@ -871,7 +891,7 @@
   }
 
   // ===== Add a video =====
-  const VIDEO_FIELDS = ["vd-title", "vd-url", "vd-byline", "vd-date", "vd-duration", "vd-desc"];
+  const VIDEO_FIELDS = ["vd-title", "vd-url", "vd-byline", "vd-date", "vd-duration", "vd-desc", "v-publish"];
   const MONTHS = ["January", "February", "March", "April", "May", "June",
     "July", "August", "September", "October", "November", "December"];
 
@@ -906,6 +926,7 @@
         $("vd-duration").value = v.duration || "";
         $("vd-desc").value = v.description || "";
         $("vd-date").value = isoFromPretty(v.date);
+        $("v-publish").value = v.publishAt || "";
       }
     }
     $("vd-error").textContent = "";
@@ -950,6 +971,9 @@
     const existingVideo = videoEditingId && WLVideos.getAll()[videoEditingId];
     const videoOwner = (existingVideo && existingVideo.section) || addingToSection;
     if (videoOwner) data.section = videoOwner;
+
+    const vPubAt = document.getElementById("v-publish").value.trim();
+    if (vPubAt) data.publishAt = vPubAt;
 
     WLVideos.save(id, data);
     closeModals();

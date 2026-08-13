@@ -174,6 +174,7 @@
     const wrap = document.getElementById("home-video-module");
     if (!wrap || !window.WLVideos) return;
     const videos = Object.entries(WLVideos.getAll())
+      .filter(([, v]) => !window.WLSchedule || WLSchedule.isLive(v))   // not yet published stays unpublished
       .map(([id, v]) => ({ id, ...v }))
       .sort((a, b) => (Date.parse(b.date) || 0) - (Date.parse(a.date) || 0));
     if (videos.length === 0) { wrap.hidden = true; return; }

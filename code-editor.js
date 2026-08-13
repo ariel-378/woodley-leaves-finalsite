@@ -96,6 +96,9 @@ window.WLCodeEditor = (function () {
           <label>Height on the page (pixels)
             <input type="text" id="code-height" maxlength="5" placeholder="500">
           </label>
+          <label>Publish date &amp; time <span style="font-weight:400;text-transform:none;letter-spacing:0;color:var(--muted);">(leave blank to publish now; set a future time to schedule)</span>
+            <input type="datetime-local" id="code-publish">
+          </label>
         </div>
         <label>Short description (optional)
           <input type="text" id="code-desc" maxlength="200">
@@ -180,6 +183,7 @@ window.WLCodeEditor = (function () {
     $("code-modal-title").textContent = existing ? `Edit ${spec.title}` : `Add a ${spec.title}`;
     $("code-where").textContent = spec.where;
     $("code-title").value = existing ? (existing.title || "") : "";
+    $("code-publish").value = existing ? (existing.publishAt || "") : "";
     $("code-kicker").value = existing ? (existing.kicker || "") : "";
     $("code-desc").value = existing ? (existing.description || "") : "";
     $("code-height").value = existing ? (existing.height || 500) : 500;
@@ -225,6 +229,9 @@ window.WLCodeEditor = (function () {
     const existingRecord = editingId ? store.get(editingId) : null;
     const owner = (existingRecord && existingRecord.section) || owningSection;
     if (owner) record.section = owner;
+
+    const pubAt = $("code-publish").value.trim();
+    if (pubAt) record.publishAt = pubAt;
     const kicker = $("code-kicker").value.trim();
     const desc = $("code-desc").value.trim();
     const height = parseInt($("code-height").value, 10);

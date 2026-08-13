@@ -7,6 +7,7 @@
 <link rel="icon" type="image/svg+xml" href="favicon.svg">
 <link rel="stylesheet" href="styles.css" />
 <script src="storage.js"></script>
+<script src="schedule.js"></script>
 <script src="config.js"></script>
 <script src="brand-store.js"></script>
 <script src="published-content.js"></script>
@@ -105,6 +106,7 @@
 
   // More video (other items)
   const others = Object.entries(WLVideos.getAll())
+    .filter(([, v]) => !window.WLSchedule || WLSchedule.isLive(v))   // not yet published stays unpublished
     .filter(([oid]) => oid !== id)
     .map(([oid, o]) => ({ id: oid, ...o }))
     .sort((a, b) => (Date.parse(b.date) || 0) - (Date.parse(a.date) || 0))
