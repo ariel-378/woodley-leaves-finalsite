@@ -161,6 +161,8 @@ window.WLCodeEditor = (function () {
     wrap.style.display = "block";
   }
 
+  let owningSection = null;
+
   function open(opts) {
     opts = opts || {};
     kind = KINDS[opts.kind] ? opts.kind : "feature";
@@ -170,6 +172,9 @@ window.WLCodeEditor = (function () {
 
     onSaveCallback = typeof opts.onSave === "function" ? opts.onSave : null;
     editingId = opts.id || null;
+    // Which section this belongs to. A new one belongs where it was added from;
+    // an edited one keeps whoever already owns it.
+    owningSection = opts.section || null;
 
     const existing = editingId ? spec.store().get(editingId) : null;
     $("code-modal-title").textContent = existing ? `Edit ${spec.title}` : `Add a ${spec.title}`;
@@ -217,6 +222,9 @@ window.WLCodeEditor = (function () {
     }
 
     const record = { id: id, title: title, code: code };
+    const existingRecord = editingId ? store.get(editingId) : null;
+    const owner = (existingRecord && existingRecord.section) || owningSection;
+    if (owner) record.section = owner;
     const kicker = $("code-kicker").value.trim();
     const desc = $("code-desc").value.trim();
     const height = parseInt($("code-height").value, 10);

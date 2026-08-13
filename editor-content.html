@@ -326,7 +326,7 @@
     { label: "Mini Crossword", hint: "A small grid with across and down clues", open: () => WLPuzzleEditor.openCrossword({ onSave: renderSections }) },
     { label: "Connections", hint: "Sixteen words in four hidden groups", open: () => WLPuzzleEditor.openConnections({ onSave: renderSections }) },
     { label: "Word Search", hint: "A list of words hidden in a letter grid", open: () => WLPuzzleEditor.openWordsearch({ onSave: renderSections }) },
-    { label: "Custom game", hint: "Your own game, written as a self-contained web page", open: () => WLCodeEditor.open({ kind: "game", onSave: renderSections }) }
+    { label: "Custom game", hint: "Your own game, written as a self-contained web page", open: () => WLCodeEditor.open({ kind: "game", section: addingToSection, onSave: renderSections }) }
   ];
 
   // Sports stats covers three different records, so it asks which one.
@@ -475,7 +475,7 @@
     let html = types.includes("Articles") ? articlesBlock(name) : "";
     types.forEach(t => {
       if (t === "Articles") return;
-      const items = itemsFor(t);
+      const items = itemsFor(t, name);
       html += `<div class="c-block">
           <div class="c-block-head">${esc(t)}<span class="c-block-count">${items.length}</span></div>
           ${items.length
@@ -502,13 +502,18 @@
 
   function reg(key, item) { itemActions[key] = item; return item; }
 
-  function itemsFor(type) {
+  function itemsFor(type, sectionName) {
     const out = [];
     const cs = window.WLCenterspread, pz = window.WLPuzzles;
 
+    // Everything below is filtered by which section owns it. Without this a
+    // section listed every item of its declared types in the whole paper, so a
+    // new section arrived pre-filled with another section's work.
+    const mine = item => !window.WLSections || WLSections.belongsTo(item, type, sectionName);
+
     const pieceRows = (label, filter) => {
       if (!cs) return;
-      cs.list().filter(filter).forEach(pc => out.push(reg(`piece:${pc.id}`, {
+      cs.list().filter(pc => filter(pc) && mine(pc)).forEach(pc => out.push(reg(`piece:${pc.id}`, {
         key: `piece:${pc.id}`, title: pc.title || pc.id, meta: pc.byline || label,
         edit: () => openPieceModal(type, pc.id),
         remove: () => { cs.remove(pc.id); renderSections(); },
@@ -520,7 +525,7 @@
     if (type === "Reveal-answer games") pieceRows("Reveal", pc => !!(pc.reveal && (pc.reveal.answer || "").trim()));
 
     if (type === "Videos" && window.WLVideos) {
-      Object.entries(WLVideos.getAll()).forEach(([id, v]) => out.push(reg(`video:${id}`, {
+      Object.entries(WLVideos.getAll()).filter(([, v]) => mine(v)).forEach(([id, v]) => out.push(reg(`video:${id}`, {
         key: `video:${id}`, title: v.title || id,
         meta: [v.byline, v.date, v.duration].filter(Boolean).join(" · "),
         edit: () => openVideoModal(id),
@@ -536,7 +541,7 @@
         ["Word Search", pz.getWordsearchPool(), (i) => WLPuzzleEditor.openWordsearch(i, { onSave: renderSections }), (i) => pz.removeWordsearchAt(i)],
       ];
       pools.forEach(([label, pool, openAt, removeAt]) => {
-        const list = pool || [];
+        const list = (pool || []).filter(mine);
         list.forEach((entry, i) => {
           const key = `puzzle:${label}:${i}`;
           // Emptying a pool makes the store fall back to the shipped puzzle, so
@@ -552,7 +557,7 @@
         });
       });
       if (window.WLGamesStore) {
-        WLGamesStore.getAll().forEach(g => out.push(reg(`game:${g.id}`, {
+        WLGamesStore.getAll().filter(mine).forEach(g => out.push(reg(`game:${g.id}`, {
           key: `game:${g.id}`, title: g.title || g.id, meta: g.description || "Custom game",
           edit: () => WLCodeEditor.open({ kind: "game", id: g.id, onSave: renderSections }),
           remove: () => { WLGamesStore.remove(g.id); renderSections(); },
@@ -561,7 +566,7 @@
     }
 
     if (type === "Custom feature" && window.WLFeatures) {
-      WLFeatures.getAll().forEach(f => out.push(reg(`feature:${f.id}`, {
+      WLFeatures.getAll().filter(mine).forEach(f => out.push(reg(`feature:${f.id}`, {
         key: `feature:${f.id}`, title: f.title || f.id, meta: f.description || "Custom feature",
         edit: () => WLCodeEditor.open({ kind: "feature", id: f.id, onSave: renderSections }),
         remove: () => { WLFeatures.remove(f.id); renderSections(); },
@@ -569,13 +574,13 @@
     }
 
     if (type === "Sports stats" && window.WLTeams) {
-      Object.entries(WLTeams.getAllTeams()).forEach(([slug, t]) => out.push(reg(`team:${slug}`, {
+      Object.entries(WLTeams.getAllTeams()).filter(([, t]) => mine(t)).forEach(([slug, t]) => out.push(reg(`team:${slug}`, {
         key: `team:${slug}`, title: t.name || slug,
         meta: `${t.sport || ""} · ${t.record ? `${t.record.w}-${t.record.l}` : ""}`.trim(),
         edit: () => WLSportsEditor.openTeam(slug, { onSave: renderSections }),
         remove: () => { WLTeams.removeTeam(slug); renderSections(); },
       })));
-      Object.entries(WLTeams.getAllBrackets()).forEach(([slug, b]) => out.push(reg(`bracket:${slug}`, {
+      Object.entries(WLTeams.getAllBrackets()).filter(([, b]) => mine(b)).forEach(([slug, b]) => out.push(reg(`bracket:${slug}`, {
         key: `bracket:${slug}`, title: b.title || slug, meta: "Playoff bracket",
         edit: () => WLSportsEditor.openBracket(slug, { onSave: renderSections }),
         remove: () => { WLTeams.removeBracket(slug); renderSections(); },
@@ -711,7 +716,8 @@
   }
 
   function goAddContent(name, type) {
-    if (type === "Custom feature") { WLCodeEditor.open({ kind: "feature", onSave: renderSections }); return; }
+    addingToSection = name;
+    if (type === "Custom feature") { WLCodeEditor.open({ kind: "feature", section: name, onSave: renderSections }); return; }
     if (PIECE_TYPES[type]) { openPieceModal(type); return; }
     if (type === "Videos") { openVideoModal(); return; }
     if (type === "Articles") { WLArticleEditor.open(null, { section: name, onSave: renderSections }); return; }
@@ -721,6 +727,11 @@
     // if a new type is added to the store without an editor to go with it.
     alert(`"${type}" doesn't have an editor yet.`);
   }
+
+  // The section an "Add new content" click came from. Every item created that
+  // way belongs to it — otherwise it would fall back to the first section
+  // declaring its type and appear under somebody else's card.
+  let addingToSection = null;
 
   // ===== Add a piece: poems, art/photos, reveal-answer items =====
   let pieceType = "poem";
@@ -844,6 +855,12 @@
       for (let n = 2; taken.indexOf(id) !== -1; n++) id = base + "-" + n;
     }
 
+    // A new piece belongs to the section it was added from; an edited one keeps
+    // whoever already owns it.
+    const existing = pieceEditingId && WLCenterspread.list().find(p => p.id === pieceEditingId);
+    const owner = (existing && existing.section) || addingToSection;
+    if (owner) piece.section = owner;
+
     const res = WLCenterspread.save(id, piece);
     if (!res || res.ok === false) {
       err.textContent = "Could not save. Your browser storage may be full.";
@@ -928,6 +945,12 @@
       for (let n = 2; taken.indexOf(id) !== -1; n++) id = base + "-" + n;
     }
 
+    // A new video belongs to the section it was added from; an edited one keeps
+    // whoever already owns it.
+    const existingVideo = videoEditingId && WLVideos.getAll()[videoEditingId];
+    const videoOwner = (existingVideo && existingVideo.section) || addingToSection;
+    if (videoOwner) data.section = videoOwner;
+
     WLVideos.save(id, data);
     closeModals();
     renderSections();
@@ -959,9 +982,15 @@
 
   document.getElementById("prompt-preview").addEventListener("click", (e) => { e.preventDefault(); WLAuth.enableEditorPreview(); });
 
-  document.addEventListener("wl-articles-change", renderSections);
-  document.addEventListener("wl-auth-change", renderSections);
-  document.addEventListener("wl-sections-change", renderSections);
+  // Section cards list every kind of content, so they have to redraw when any
+  // kind changes — not just articles. The modals call renderSections directly
+  // on save, which hid this; a change from anywhere else (loading a content
+  // bundle, or another tab) left the cards showing stale contents.
+  [
+    "wl-articles-change", "wl-auth-change", "wl-sections-change",
+    "wl-centerspread-change", "wl-videos-change", "wl-puzzles-change",
+    "wl-features-change", "wl-games-change", "wl-teams-change",
+  ].forEach(evt => document.addEventListener(evt, renderSections));
   renderSections();
 })();
 </script>

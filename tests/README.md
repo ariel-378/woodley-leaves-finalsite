@@ -32,6 +32,7 @@ passes, that click path genuinely works.
 | `storage` | Uploads are shrunk before they are stored, and a full browser says so instead of losing the change silently |
 | `publish` | The whole point: a story with a photo goes editor → published file → a stranger's browser, and renders |
 | `crossword` | Actually playing the mini, on a keyboard and on a phone: direction on click, one letter per keypress, arrows, backspace, the controls |
+| `ownership` | A new section starts empty — content belongs to one section, in the dashboard and on the public page |
 
 ## Why these exist
 
@@ -63,6 +64,11 @@ broke on a path nobody had clicked:
   throw, which it never did. A third followed: the grid is made of divs, and
   focusing a div opens no keyboard on a phone — so every square could be tapped
   and no letter could ever be typed.
+- **`ownership`** — sections listed everything of a declared type in the whole
+  paper, so a new section arrived pre-filled with another section's work: tick
+  Puzzle games and the Centerspread's crossword, bee, Connections and word
+  search appeared as yours, Delete buttons and all. Articles never had the
+  problem because they carry their section and the dashboard filters on it.
 - **`publish`** — the editor and the reader were only ever tested in the same
   browser, where `localStorage` does the work. The step between them — the file
   an editor downloads and commits — had never been run at all.

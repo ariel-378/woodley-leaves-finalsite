@@ -262,11 +262,43 @@ window.WLSections = (function () {
     document.dispatchEvent(new CustomEvent("wl-sections-change"));
   }
 
+  // ===== Who owns a piece of content =====
+  //
+  //  Every item belongs to exactly one section, the way an article always has.
+  //  Without this the dashboard listed everything of a type under every section
+  //  declaring that type, so a brand-new section arrived pre-filled with
+  //  another section's work — the Centerspread's crossword and poems showing up
+  //  as a new "Arcade" section's contents, Delete buttons and all.
+  //
+  //  Ownership is resolved at read time rather than written into stored data.
+  //  Items made before sections owned content carry no `section`, and they
+  //  belong exactly where they have always appeared: the first section that
+  //  declares their type. So nothing moves, nothing needs migrating, and only
+  //  newly created items record a section of their own.
+
+  /** The first section declaring `type`, which is where untagged items live. */
+  function firstWithType(type) {
+    const s = read().find(x => Array.isArray(x.contentTypes) && x.contentTypes.includes(type));
+    return s ? s.name : null;
+  }
+
+  /** Which section an item belongs to. */
+  function ownerOf(item, type) {
+    const own = item && typeof item.section === "string" ? item.section.trim() : "";
+    return own || firstWithType(type);
+  }
+
+  /** Does this item belong to this section? */
+  function belongsTo(item, type, sectionName) {
+    return ownerOf(item, type) === sectionName;
+  }
+
   return {
     list, names, articleNames, navSections, find, pageFor, articleCount,
     isHidden, setHidden,
     CONTENT_TYPES, contentTypes, setContentTypes,
     add, rename, remove, move, reset,
     homeSlots, setHomeSlot,
+    firstWithType, ownerOf, belongsTo,
   };
 })();

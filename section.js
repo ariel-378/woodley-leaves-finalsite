@@ -114,9 +114,10 @@
         </div>
       </a>`;
   }
-  function videosHtml() {
+  function videosHtml(section) {
     if (!window.WLVideos) return "";
     const videos = Object.entries(WLVideos.getAll())
+      .filter(([, v]) => ownedHere(v, "Videos", section))
       .map(([id, v]) => ({ id, ...v }))
       .sort((a, b) => (Date.parse(b.date) || 0) - (Date.parse(a.date) || 0));
     if (!videos.length) return "";
@@ -170,9 +171,15 @@
   function csPiece(p) {
     return `<article class="print-piece${p.type === "poem" ? " poem-piece" : ""}">${csHead(p)}${csBody(p)}${csReveal(p)}</article>`;
   }
-  function piecesBlock(title, predicate, shown) {
+  // Which section a reader is looking at, for the ownership filter below.
+  function ownedHere(item, type, section) {
+    return !window.WLSections || WLSections.belongsTo(item, type, section);
+  }
+
+  function piecesBlock(title, predicate, shown, type, section) {
     if (!window.WLCenterspread) return "";
-    const pieces = WLCenterspread.list().filter(p => p && predicate(p) && !shown.has(p.id));
+    const pieces = WLCenterspread.list()
+      .filter(p => p && predicate(p) && !shown.has(p.id) && ownedHere(p, type, section));
     if (!pieces.length) return "";
     pieces.forEach(p => shown.add(p.id));
     return `<h3 class="sec-block-title">${escapeHtml(title)}</h3><div class="sec-pieces">${pieces.map(csPiece).join("")}</div>`;
@@ -219,21 +226,27 @@
     list.innerHTML = "";
     if (wantsArticles) list.insertAdjacentHTML("beforeend", articlesHtml(section));
     if (types.includes("Sports stats") && window.WLTeams) list.insertAdjacentHTML("beforeend", sportsHtml());
-    if (types.includes("Videos") && window.WLVideos) list.insertAdjacentHTML("beforeend", videosHtml());
+    if (types.includes("Videos") && window.WLVideos) list.insertAdjacentHTML("beforeend", videosHtml(section));
 
-    if (types.includes("Puzzle games")) list.insertAdjacentHTML("beforeend", puzzlesHtml());
+    // The built-in puzzles live in one section. Another section that ticks
+    // Puzzle games starts empty and fills up with puzzles added to it, rather
+    // than mirroring somebody else's.
+    if (types.includes("Puzzle games") && WLSections.firstWithType("Puzzle games") === section) {
+      list.insertAdjacentHTML("beforeend", puzzlesHtml());
+    }
 
     const shownPieces = new Set();
-    if (types.includes("Poems")) list.insertAdjacentHTML("beforeend", piecesBlock("Poems", p => p.type === "poem", shownPieces));
-    if (types.includes("Art/photos")) list.insertAdjacentHTML("beforeend", piecesBlock("Art & photos", p => p.type === "image", shownPieces));
-    if (types.includes("Reveal-answer games")) list.insertAdjacentHTML("beforeend", piecesBlock("Reveal & answer", p => !!(p.reveal && (p.reveal.answer || "").trim()), shownPieces));
+    if (types.includes("Poems")) list.insertAdjacentHTML("beforeend", piecesBlock("Poems", p => p.type === "poem", shownPieces, "Poems", section));
+    if (types.includes("Art/photos")) list.insertAdjacentHTML("beforeend", piecesBlock("Art & photos", p => p.type === "image", shownPieces, "Art/photos", section));
+    if (types.includes("Reveal-answer games")) list.insertAdjacentHTML("beforeend", piecesBlock("Reveal & answer", p => !!(p.reveal && (p.reveal.answer || "").trim()), shownPieces, "Reveal-answer games", section));
 
     // Custom features: editor-written content that is not a game — a comic
     // strip, a photo essay, an embedded map. Each is its own piece, so a
     // section can hold several. Every one runs in a sandbox with no
     // same-origin access, so it cannot touch the page around it.
     if (types.includes("Custom feature") && window.WLFeatures) {
-      const features = WLFeatures.getAll().filter(f => f && (f.code || "").trim());
+      const features = WLFeatures.getAll()
+        .filter(f => f && (f.code || "").trim() && ownedHere(f, "Custom feature", section));
       if (features.length) {
         const heading = document.createElement("h3");
         heading.className = "sec-block-title";
