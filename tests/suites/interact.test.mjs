@@ -14,6 +14,24 @@ const JSDOM_GAP = /createObjectURL|revokeObjectURL/;
 
 const SKIP = new Set(["editor.html", "editor-puzzles.html", "editor-writers.html"]);
 
+// The Schedule tab lists what is waiting to publish, so with an empty browser
+// it correctly shows an empty state and has nothing to press. Give it one
+// scheduled item and its controls appear — which is the state worth sweeping.
+function seedFor(page) {
+  if (page !== "editor-schedule.html") return {};
+  const soon = new Date(Date.now() + 36 * 3600 * 1000);
+  const p = n => String(n).padStart(2, "0");
+  const at = `${soon.getFullYear()}-${p(soon.getMonth() + 1)}-${p(soon.getDate())}T${p(soon.getHours())}:${p(soon.getMinutes())}`;
+  return {
+    wl_articles_custom: JSON.stringify({
+      "sweep-scheduled": {
+        title: "Scheduled for the sweep", section: "News", byline: "By A Reporter",
+        date: "September 4, 2026", body: ["Waiting."], publishAt: at,
+      },
+    }),
+  };
+}
+
 function realErrors(errors) {
   return errors.filter(e => !NAVIGATES.test(e) && !JSDOM_GAP.test(e));
 }
@@ -23,7 +41,7 @@ export async function run() {
   const targets = pages().filter(p => p.startsWith("editor") && !SKIP.has(p));
 
   for (const page of targets) {
-    const ctx = await loadPage(page, { editor: true });
+    const ctx = await loadPage(page, { editor: true, storage: seedFor(page) });
     const { document, window, click } = ctx;
     const pressed = new Set();
 

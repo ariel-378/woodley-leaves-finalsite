@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en" data-wl-name="The Woodley Leaves" data-wl-school="Maret School">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Schedule — The Woodley Leaves</title>
+<meta name="description" content="Everything the paper has waiting to publish, in the order it goes out.">
+<meta name="robots" content="noindex">
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<link rel="stylesheet" href="styles.css" />
+<script src="storage.js"></script>
+<script src="schedule.js"></script>
+<script src="config.js"></script>
+<script src="brand-store.js"></script>
+<script src="published-content.js"></script>
+<script src="content-bundle.js"></script>
+<script src="brand.js"></script>
+<script src="sections-store.js"></script>
+<script src="nav.js"></script>
+<style>
+  .ed-tabs { display: flex; gap: 4px; margin-bottom: 18px; border-bottom: 1px solid var(--rule); flex-wrap: wrap; }
+  .ed-tabs a { font-family: "Helvetica Neue", Arial, sans-serif; font-size: 13px; font-weight: 600; padding: 10px 16px; color: var(--muted); text-decoration: none; border-bottom: 3px solid transparent; }
+  .ed-tabs a.active { color: var(--ink); border-bottom-color: var(--accent); }
+
+  .c-intro { font-size: 13px; color: var(--muted); line-height: 1.5; margin: 0 0 20px; max-width: 640px; }
+
+  /* One heading per day, then its items in the order they go out. */
+  .sched-day {
+    font-family: Georgia, serif; font-size: 17px; font-weight: 700;
+    margin: 26px 0 0; padding-bottom: 7px; border-bottom: 2px solid var(--ink);
+  }
+  .sched-day:first-child { margin-top: 0; }
+  .sched-day-when { font-family: "Helvetica Neue", Arial, sans-serif; font-size: 12px;
+    font-weight: 400; color: var(--muted); margin-left: 8px; letter-spacing: 0; }
+
+  .sched-item {
+    display: flex; align-items: baseline; gap: 14px; flex-wrap: wrap;
+    padding: 11px 2px; border-bottom: 1px solid var(--rule);
+    font-family: "Helvetica Neue", Arial, sans-serif;
+  }
+  .sched-time {
+    flex: 0 0 78px; font-variant-numeric: tabular-nums;
+    font-size: 13px; font-weight: 700; color: var(--ink);
+  }
+  .sched-main { flex: 1 1 260px; min-width: 0; }
+  .sched-title { font-family: Georgia, serif; font-size: 16px; color: var(--ink); }
+  .sched-meta { font-size: 12px; color: var(--muted); margin-top: 2px; }
+  .sched-kind {
+    display: inline-block; font-size: 10px; font-weight: 700; letter-spacing: 0.5px;
+    text-transform: uppercase; padding: 2px 7px; border: 1px solid var(--rule);
+    background: var(--cream); color: var(--ink); border-radius: 999px; vertical-align: middle;
+  }
+  .sched-countdown { flex: 0 0 auto; font-size: 12px; color: var(--muted); }
+  .sched-now {
+    flex: 0 0 auto; background: #fff; color: var(--ink); border: 1px solid var(--ink);
+    padding: 5px 10px; font-family: inherit; font-weight: 600; font-size: 12px; cursor: pointer;
+  }
+  .sched-now:hover { background: var(--cream); }
+
+  .sched-empty {
+    border: 1px dashed var(--rule); padding: 28px 20px; text-align: center;
+    color: var(--muted); font-family: "Helvetica Neue", Arial, sans-serif; font-size: 14px;
+    line-height: 1.6;
+  }
+  .sched-count { font-family: "Helvetica Neue", Arial, sans-serif; font-size: 13px;
+    color: var(--muted); margin: 0 0 4px; }
+
+  .account-prompt { font-family: "Helvetica Neue", Arial, sans-serif; font-size: 14px;
+    border: 1px solid var(--rule); background: var(--cream); padding: 16px 18px; }
+</style>
+<link rel="stylesheet" href="responsive.css" />
+</head>
+<body>
+
+<a href="#main-content" class="skip-link">Skip to main content</a>
+
+<div class="topbar"><div class="topbar-inner"><div><a href="#" class="topbar-cta">Subscribe</a></div><div></div></div></div>
+
+<div class="masthead">
+  <div class="masthead-ornament left" aria-hidden="true"><img src="media/leaf.svg" alt="" width="60" height="30"></div>
+  <div class="masthead-ornament right" aria-hidden="true"><img src="media/leaf.svg" alt="" width="60" height="30"></div>
+  <h1><a href="index.html">The Student Times</a></h1>
+  <div class="dateline">YOUR SCHOOL</div>
+</div>
+
+<nav class="sectionnav">
+  <div class="sectionnav-inner"></div>
+</nav>
+
+<main id="main-content" class="container">
+  <div class="section-header">
+    <h2>Editor Dashboard</h2>
+    <span class="see-all" id="welcome"></span>
+  </div>
+
+  <div id="no-access" class="account-prompt" style="display:none;">
+    You need <strong>editor</strong> access to see the schedule.
+    <a href="#" id="prompt-preview">Enter editor preview.</a>
+  </div>
+
+  <div id="editor-view" style="display:none;">
+    <div class="ed-tabs">
+      <a href="editor-content.html">Content</a>
+      <a href="editor-schedule.html" class="active">Schedule</a>
+      <a href="editor-staff.html">Staff &amp; Writers</a>
+      <a href="editor-ads.html">Ads</a>
+      <a href="editor-brand.html" class="ed-tab-brand">Brand design</a>
+    </div>
+
+    <p class="c-intro">
+      Everything with a publish time still to come, in the order it goes out —
+      articles, poems, art, videos, features and games together. Give any piece
+      a date and time in its own editor and it appears here. Anything already
+      published has left this list; it is on the site.
+    </p>
+
+    <p class="sched-count" id="sched-count"></p>
+    <div id="sched-list"></div>
+  </div>
+</main>
+
+<footer></footer>
+
+<script src="articles-store.js"></script>
+<script src="centerspread-store.js"></script>
+<script src="videos-store.js"></script>
+<script src="features-store.js"></script>
+<script src="games-store.js"></script>
+<script src="submissions.js"></script>
+<script src="auth.js"></script>
+<script>
+(function () {
+  const view = document.getElementById("editor-view");
+  const noAccess = document.getElementById("no-access");
+  const welcome = document.getElementById("welcome");
+  const list = document.getElementById("sched-list");
+  const countEl = document.getElementById("sched-count");
+
+  function gate() {
+    const user = WLAuth.currentUser();
+    if (!user || !WLAuth.isEditor()) {
+      view.style.display = "none"; noAccess.style.display = "block"; welcome.textContent = "";
+      return false;
+    }
+    noAccess.style.display = "none"; view.style.display = "block";
+    welcome.textContent = `Signed in as ${user}`;
+    return true;
+  }
+
+  const esc = s => String(s == null ? "" : s)
+    .replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+
+  const DAY_MS = 24 * 60 * 60 * 1000;
+
+  /** Midnight of the day a timestamp falls on, for grouping. */
+  const dayStart = t => { const d = new Date(t); d.setHours(0, 0, 0, 0); return d.getTime(); };
+
+  /** "Today", "Tomorrow", or "Friday, September 4". */
+  function dayLabel(t) {
+    const today = dayStart(Date.now());
+    const days = Math.round((dayStart(t) - today) / DAY_MS);
+    if (days === 0) return "Today";
+    if (days === 1) return "Tomorrow";
+    return new Date(t).toLocaleDateString(undefined, { weekday: "long", month: "long", day: "numeric" });
+  }
+
+  /** "in 3 hours", "in 6 days" — the thing an editor is actually judging. */
+  function countdown(t) {
+    const ms = t - Date.now();
+    if (ms <= 0) return "any moment";
+    const mins = Math.round(ms / 60000);
+    if (mins < 60) return `in ${mins} minute${mins === 1 ? "" : "s"}`;
+    const hours = Math.round(mins / 60);
+    if (hours < 36) return `in ${hours} hour${hours === 1 ? "" : "s"}`;
+    const days = Math.round(hours / 24);
+    return `in ${days} day${days === 1 ? "" : "s"}`;
+  }
+
+  const timeOf = t => new Date(t).toLocaleTimeString(undefined, { hour: "numeric", minute: "2-digit" });
+
+  function render() {
+    if (!gate()) return;
+    const plan = window.WLSchedule ? WLSchedule.collect() : [];
+
+    if (!plan.length) {
+      countEl.textContent = "";
+      list.innerHTML = `<div class="sched-empty">
+        <strong>Nothing scheduled.</strong><br>
+        Everything written so far is already published. To plan ahead, open any
+        piece in the <a href="editor-content.html">Content</a> tab and give it a
+        publish date and time in the future.
+      </div>`;
+      return;
+    }
+
+    countEl.textContent = plan.length === 1
+      ? "1 piece waiting to publish."
+      : `${plan.length} pieces waiting to publish.`;
+
+    let html = "";
+    let lastDay = null;
+    plan.forEach(item => {
+      const day = dayStart(item.at);
+      if (day !== lastDay) {
+        lastDay = day;
+        const onDay = plan.filter(x => dayStart(x.at) === day).length;
+        html += `<h3 class="sched-day">${esc(dayLabel(item.at))}
+          <span class="sched-day-when">${onDay} piece${onDay === 1 ? "" : "s"}</span></h3>`;
+      }
+      html += `<div class="sched-item">
+        <div class="sched-time">${esc(timeOf(item.at))}</div>
+        <div class="sched-main">
+          <span class="sched-kind">${esc(item.kind)}</span>
+          <span class="sched-title">${esc(item.title)}</span>
+          <div class="sched-meta">${item.section ? esc(item.section) : "No section"}</div>
+        </div>
+        <div class="sched-countdown">${esc(countdown(item.at))}</div>
+        <button class="sched-now" data-now="${esc(item.kind)}" data-id="${esc(item.id)}"
+                title="Publish this now instead of waiting">Publish now</button>
+      </div>`;
+    });
+    list.innerHTML = html;
+
+    // Plans change. Deciding to run something early shouldn't mean hunting for
+    // it in another tab and clearing a date field by hand.
+    list.querySelectorAll("[data-now]").forEach(btn => {
+      btn.addEventListener("click", () => {
+        const title = (btn.closest(".sched-item").querySelector(".sched-title") || {}).textContent || "this";
+        if (!confirm(`Publish “${title}” now? Readers will see it immediately.`)) return;
+        if (WLSchedule.publishNow(btn.dataset.now, btn.dataset.id)) render();
+      });
+    });
+  }
+
+  document.getElementById("prompt-preview").addEventListener("click", (e) => {
+    e.preventDefault(); WLAuth.enableEditorPreview();
+  });
+
+  // Anything that changes content can change the plan.
+  [
+    "wl-auth-change", "wl-sections-change", "wl-articles-change",
+    "wl-centerspread-change", "wl-videos-change", "wl-features-change", "wl-games-change",
+  ].forEach(evt => document.addEventListener(evt, render));
+
+  render();
+})();
+</script>
+</body>
+</html>

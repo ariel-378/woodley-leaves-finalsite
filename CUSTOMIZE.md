@@ -236,6 +236,21 @@ Two things worth knowing:
   For a story that genuinely must not leak, keep it out of the site until the
   day you publish it.
 
+### The Schedule tab
+
+The **Schedule** tab is the plan: everything with a publish time still to come,
+from every part of the paper, in the order it will go out. It answers the
+question the section cards can't — *what goes out this week, and when?*
+
+- Grouped by day, with **Today** and **Tomorrow** named, and a count per day.
+- Each row shows the time, what kind of thing it is (Article, Poem, Art, Video,
+  Feature, Game), its section, and how long until it lands.
+- **Publish now** on any row runs it immediately instead of waiting — for when
+  the plan changes.
+
+Anything already published has left the list; it is on the site. If the tab is
+empty, nothing is waiting.
+
 ### The Centerspread tab
 The **Centerspread** tab controls the centerspread page:
 

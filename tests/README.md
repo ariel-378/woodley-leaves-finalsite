@@ -34,6 +34,7 @@ passes, that click path genuinely works.
 | `crossword` | Actually playing the mini, on a keyboard and on a phone: direction on click, one letter per keypress, arrows, backspace, the controls |
 | `ownership` | A new section starts empty — content belongs to one section, in the dashboard and on the public page |
 | `schedule` | Every kind of content can be dated forward: hidden from readers, marked in the dashboard, one shared rule |
+| `upcoming` | The Schedule tab: every store gathered into one list, in the order it goes out, and publishing early |
 
 ## Why these exist
 

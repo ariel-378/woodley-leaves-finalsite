@@ -60,5 +60,130 @@ window.WLSchedule = (function () {
     return (items || []).filter(isLive);
   }
 
-  return { isLive: isLive, isScheduled: isScheduled, format: format, live: live, at: at };
+  // ── What the paper has waiting ────────────────────────────────────────────
+  //  A publish time on its own answers "is this out yet". It does not answer
+  //  the question an editor planning an edition actually has: what goes out
+  //  this week, in what order. That needs every store read at once.
+  //
+  //  Each store is optional. On a reader's page none of this runs; on a
+  //  dashboard the stores are all present. A store that isn't loaded is simply
+  //  skipped rather than throwing.
+  function sectionOf(item, type, fallback) {
+    if (item && typeof item.section === "string" && item.section.trim()) return item.section.trim();
+    if (window.WLSections && WLSections.firstWithType) {
+      return WLSections.firstWithType(type) || fallback || "";
+    }
+    return fallback || "";
+  }
+
+  var PIECE_KIND = { poem: "Poem", image: "Art", prose: "Prose" };
+  var PIECE_TYPE = { poem: "Poems", image: "Art/photos", prose: "Reveal-answer games" };
+
+  /**
+   * Everything still to come, soonest first. Each entry is
+   * { id, title, kind, section, publishAt, at }.
+   */
+  function collect() {
+    var out = [];
+
+    function push(item, id, kind, section) {
+      if (!isScheduled(item)) return;
+      out.push({
+        id: id,
+        title: (item.title || id || "Untitled").toString(),
+        kind: kind,
+        section: section || "",
+        publishAt: item.publishAt,
+        at: at(item),
+      });
+    }
+
+    if (window.WLArticles && WLArticles.getAll) {
+      var arts = WLArticles.getAll();
+      Object.keys(arts).forEach(function (id) {
+        push(arts[id], id, "Article", arts[id].section || "");
+      });
+    }
+
+    if (window.WLCenterspread && WLCenterspread.list) {
+      WLCenterspread.list().forEach(function (pc) {
+        var kind = PIECE_KIND[pc.type] || "Piece";
+        push(pc, pc.id, kind, sectionOf(pc, PIECE_TYPE[pc.type] || "Poems"));
+      });
+    }
+
+    if (window.WLVideos && WLVideos.getAll) {
+      var vids = WLVideos.getAll();
+      Object.keys(vids).forEach(function (id) {
+        push(vids[id], id, "Video", sectionOf(vids[id], "Videos"));
+      });
+    }
+
+    if (window.WLFeatures && WLFeatures.getAll) {
+      WLFeatures.getAll().forEach(function (f) {
+        push(f, f.id, "Feature", sectionOf(f, "Custom feature"));
+      });
+    }
+
+    if (window.WLGamesStore && WLGamesStore.getAll) {
+      WLGamesStore.getAll().forEach(function (g) {
+        push(g, g.id, "Game", sectionOf(g, "Puzzle games"));
+      });
+    }
+
+    return out.sort(function (a, b) { return a.at - b.at; });
+  }
+
+  /**
+   * Drop an item's publish time so it goes live now. The mirror of collect():
+   * the same five stores, addressed the same way, so the two cannot fall out of
+   * step about what kinds exist.
+   *
+   * Returns true when something was actually changed.
+   */
+  function publishNow(kind, id) {
+    function clear(obj) {
+      var copy = {};
+      Object.keys(obj || {}).forEach(function (k) { if (k !== "publishAt") copy[k] = obj[k]; });
+      return copy;
+    }
+
+    if (kind === "Article" && window.WLArticles) {
+      var a = WLArticles.getById(id);
+      if (!a) return false;
+      WLArticles.save(id, clear(a));
+      return true;
+    }
+    if (window.WLCenterspread && (kind === "Poem" || kind === "Art" || kind === "Prose" || kind === "Piece")) {
+      var pc = WLCenterspread.getById ? WLCenterspread.getById(id)
+             : WLCenterspread.list().find(function (x) { return x.id === id; });
+      if (!pc) return false;
+      WLCenterspread.save(id, clear(pc));
+      return true;
+    }
+    if (kind === "Video" && window.WLVideos) {
+      var v = WLVideos.getAll()[id];
+      if (!v) return false;
+      WLVideos.save(id, clear(v));
+      return true;
+    }
+    if (kind === "Feature" && window.WLFeatures) {
+      var f = WLFeatures.get(id);
+      if (!f) return false;
+      WLFeatures.save(clear(f));
+      return true;
+    }
+    if (kind === "Game" && window.WLGamesStore) {
+      var g = WLGamesStore.get(id);
+      if (!g) return false;
+      WLGamesStore.save(clear(g));
+      return true;
+    }
+    return false;
+  }
+
+  return {
+    isLive: isLive, isScheduled: isScheduled, format: format, live: live, at: at,
+    collect: collect, publishNow: publishNow,
+  };
 })();
