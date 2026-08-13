@@ -1,0 +1,24 @@
+# Shared content store for the paper. See README.md.
+name = "paper-content"
+main = "worker.js"
+compatibility_date = "2026-08-01"
+
+[vars]
+# Where the site is served from. "*" lets any page call this Worker; the editor
+# key still gates writes, but narrower is better once you know the address.
+ALLOWED_ORIGIN = "*"
+
+# The repository the Worker publishes to, as "owner/repo". Readers load the
+# published-content.js it commits there.
+GITHUB_REPO = ""
+GITHUB_BRANCH = "main"
+GITHUB_PATH = "published-content.js"
+
+# Storage for the paper's content.
+[[kv_namespaces]]
+binding = "PAPER"
+id = "PASTE_KV_ID_HERE"
+
+# Secrets are NOT set here — they would end up in git. Set them with:
+#   wrangler secret put EDITOR_KEY
+#   wrangler secret put GITHUB_TOKEN

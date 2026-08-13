@@ -48,6 +48,18 @@ window.WL_CONFIG = {
   //  Our team's name as it appears in the bracket data (teams.js).
   homeTeam: "Maret",
 
+  // ── Shared editing (optional) ────────────────────────────────────────────
+  //  With an endpoint here, every editor sees the same content — including
+  //  what is scheduled — and publishing happens on its own: no downloading, no
+  //  committing by hand. Leave it blank and the site works exactly as before,
+  //  with each editor's work in their own browser.
+  //
+  //  Set this up once: setup/worker/README.md (about 20 minutes).
+  sync: {
+    endpoint: "",   // ← your Worker's URL, e.g. https://paper-content.you.workers.dev
+    key: "",        // ← the editor key you set on the Worker
+  },
+
   // ── Where the site lives ─────────────────────────────────────────────────
   //  Used by `npm run brand` to generate sitemap.xml and robots.txt, which
   //  need absolute URLs. Leave blank until you know the address; no sitemap is

@@ -35,6 +35,7 @@ passes, that click path genuinely works.
 | `ownership` | A new section starts empty — content belongs to one section, in the dashboard and on the public page |
 | `schedule` | Every kind of content can be dated forward: hidden from readers, marked in the dashboard, one shared rule |
 | `upcoming` | The Schedule tab: every store gathered into one list, in the order it goes out, and publishing early |
+| `sync` | Shared editing: only your own changes go up, incoming ones never clobber unsent work, offline survives |
 
 ## Why these exist
 
@@ -75,6 +76,11 @@ broke on a path nobody had clicked:
   an edition could not be built ahead of time: a poem, a photo, a video or a
   game went live the instant it was saved. Worse, the rule for "is this live?"
   existed only inside articles-store, where nothing else could reach it.
+- **`sync`** — the obvious design for shared editing ("send everything I have")
+  silently destroys work: two editors both push a full snapshot and whoever
+  saves second erases what the first added. These pin the two rules that stop
+  it — push only what this browser changed, and never let an incoming key
+  overwrite an edit that has not been sent yet.
 - **`publish`** — the editor and the reader were only ever tested in the same
   browser, where `localStorage` does the work. The step between them — the file
   an editor downloads and commits — had never been run at all.

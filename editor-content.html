@@ -102,6 +102,14 @@
   .c-badge-featured { background: #c9b458; }
   .c-badge-scheduled { background: #8a6d00; }
 
+  /* Shared-editing status. Only shown when a shared store is configured. */
+  .wl-sync { font-family: "Helvetica Neue", Arial, sans-serif; font-size: 13px; line-height: 1.55;
+    border: 1px solid var(--rule); border-left: 4px solid var(--accent); background: var(--cream);
+    padding: 11px 14px; margin: 12px 0 0; }
+  .wl-sync[hidden] { display: none; }
+  .wl-sync.is-offline, .wl-sync.is-error { border-left-color: #b8002a; }
+  .wl-sync.is-offline strong, .wl-sync.is-error strong { color: #b8002a; }
+
   .acm-list { display: flex; flex-direction: column; gap: 8px; margin-top: 6px; }
   .acm-list button { text-align: left; padding: 12px 14px; font-size: 15px; font-weight: 600; }
 </style>
@@ -160,7 +168,7 @@
     <section class="c-publish" id="wl-publish-panel" style="margin-top:36px;border-top:2px solid var(--ink);padding-top:20px;">
       <h3 style="font-family:Georgia,serif;font-size:20px;margin:0 0 4px;">Publish &amp; transfer</h3>
       <p class="c-intro" style="margin-top:4px;">Your edits are saved as <b>drafts in this browser only</b> — a co-editor on another laptop won't see them yet. To make them live for every reader, click <b>Download to publish</b> and commit the downloaded <code>published-content.js</code> to the site (readers then see it, and refresh automatically the next time you publish). To hand drafts to a co-editor without publishing, download the bundle and have them load it.</p>
-      <p class="c-intro" style="margin-top:-8px;"><b>This is the step that puts your work on the site.</b> A publish date on a piece decides <em>when</em> it appears once readers have it — see the <a href="editor-schedule.html">Schedule</a> tab. It is not a substitute for publishing: a scheduled piece that was never published reaches nobody, whatever time it carries.</p>
+      <p class="c-intro" style="margin-top:-8px;"><b>With shared editing switched on, none of this is needed</b> — your work reaches your co-editors and the site on its own, and the buttons below become a backup and a way to hand drafts around. Without it, <b>Download to publish</b> is the step that puts your work on the site. Either way, a publish date decides <em>when</em> a piece appears once readers have it — see the <a href="editor-schedule.html">Schedule</a> tab. It is not a substitute for reaching them: a scheduled piece that was never published, and never synced, reaches nobody whatever time it carries.</p>
       <div class="c-toolbar" style="gap:8px;flex-wrap:wrap;justify-content:flex-start;">
         <button class="btn-primary" id="wl-publish-publish">Download to publish</button>
         <button class="btn-ghost" id="wl-publish-download">Download bundle (.json)</button>
@@ -168,6 +176,7 @@
         <input type="file" id="wl-publish-file" accept="application/json,.json" style="display:none;">
       </div>
       <p class="c-intro" id="wl-publish-status" role="status" aria-live="polite" style="margin-top:8px;color:var(--muted);"></p>
+      <p class="wl-sync" id="wl-sync-status" role="status" aria-live="polite" hidden></p>
     </section>
   </div>
 </main>
@@ -322,6 +331,7 @@
 <script src="videos-store.js"></script>
 <script src="submissions.js"></script>
 <script src="auth.js"></script>
+<script src="sync.js"></script>
 <script src="modal-a11y.js"></script>
 <script src="script.js"></script>
 <script>

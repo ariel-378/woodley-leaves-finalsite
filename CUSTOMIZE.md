@@ -216,6 +216,39 @@ Finalsite deployment, editor access is granted by an administrator through the
 school login (see the notes in `auth.js`); in the standalone template, use the
 "Editor preview" link to try the dashboards.
 
+## Shared editing (optional)
+
+By default every editor's work lives in their own browser, and reaching readers
+means clicking **Download to publish** and committing a file. Switch on shared
+editing and neither is true:
+
+- Editors see each other's work, **including anything scheduled**.
+- Publishing happens on its own — nobody downloads or commits anything.
+- Readers still load a fast committed file, so the site is unaffected if the
+  service is ever down.
+
+It runs on a Cloudflare Worker you deploy once; the free tier is far more than a
+school paper needs. Setup takes about twenty minutes:
+**[setup/worker/README.md](setup/worker/README.md)**. Then fill in `config.js`:
+
+```js
+sync: {
+  endpoint: "https://paper-content.yourname.workers.dev",
+  key: "the editor key you set on the Worker",
+},
+```
+
+Leave `endpoint` blank and nothing changes.
+
+**Two editors at once** is handled by sending only the keys a browser actually
+changed and merging them one at a time, so people working on different things
+never overwrite each other. Two people editing the *same article* at the same
+moment will still have one version win — this keeps a small newsroom out of
+each other's way, it is not Google Docs.
+
+**Someone has to own the Cloudflare account.** Put it on an address the paper
+keeps and add it to the handover list in `EDITORIAL.md`.
+
 ## Planning ahead: publish dates
 
 Every kind of content takes an optional **publish date and time** — articles,

@@ -40,6 +40,7 @@ window.WLBundle = (function () {
     "wl_sections_custom_migrated": 1,
     "wl_published_hash": 1,           // which published version this browser has applied
     "wl_last_backup": 1,              // when THIS browser last downloaded one
+    "wl_sync_baseline": 1,            // what THIS browser last agreed with the shared store
   };
 
   // Every store's change event — fired after a load so all pages re-render.
@@ -94,6 +95,27 @@ window.WLBundle = (function () {
       applied++;
     });
     fireAll();
+    return { ok: true, applied: applied };
+  }
+
+  /**
+   * Apply SOME keys, leaving everything else alone. `load()` is a replace —
+   * right for restoring a bundle, catastrophic for syncing, where it would
+   * delete whatever the editor is in the middle of writing. Sync needs this.
+   *
+   * A key whose value is null is a deletion.
+   */
+  function merge(changes) {
+    if (!changes || typeof changes !== "object") return { ok: false, error: "not-changes" };
+    var applied = 0;
+    Object.keys(changes).forEach(function (k) {
+      if (!isContentKey(k)) return;     // never let a sync write a session key
+      var v = changes[k];
+      if (v === null || v === undefined) { localStorage.removeItem(k); applied++; return; }
+      localStorage.setItem(k, typeof v === "string" ? v : JSON.stringify(v));
+      applied++;
+    });
+    if (applied) fireAll();
     return { ok: true, applied: applied };
   }
 
@@ -290,6 +312,7 @@ window.WLBundle = (function () {
   return {
     snapshot: snapshot, toJSON: toJSON, load: load, clearAll: clearAll,
     download: download, summary: summary, isContentKey: isContentKey,
+    merge: merge,
     applyPublished: applyPublished, toPublishedJS: toPublishedJS, downloadPublished: downloadPublished,
     FORMAT: FORMAT, VERSION: VERSION, isBundleFormat: isBundleFormat,
   };
