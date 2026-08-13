@@ -89,6 +89,10 @@ export async function loadPage(file, opts = {}) {
     window, document, errors,
     $: sel => document.querySelector(sel),
     $$: sel => [...document.querySelectorAll(sel)],
+    // Pages that start a timer (the crossword clock, for one) keep node's event
+    // loop alive after the checks finish, so `npm test` never exits. Close the
+    // window when a suite is done with it.
+    close: () => window.close(),
     click: el => el && el.dispatchEvent(new window.MouseEvent("click", { bubbles: true, cancelable: true })),
     type: (el, value) => { el.value = value; el.dispatchEvent(new window.Event("input", { bubbles: true })); },
     pick: (el, value) => { el.value = value; el.dispatchEvent(new window.Event("change", { bubbles: true })); },

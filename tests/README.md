@@ -31,6 +31,7 @@ passes, that click path genuinely works.
 | `favicon` | The tab icon: drawn letters, an uploaded image, and an export whose filenames match the files it downloads |
 | `storage` | Uploads are shrunk before they are stored, and a full browser says so instead of losing the change silently |
 | `publish` | The whole point: a story with a photo goes editor → published file → a stranger's browser, and renders |
+| `crossword` | Actually playing the mini: direction on click, one letter per keypress, arrows, backspace, the controls |
 
 ## Why these exist
 
@@ -52,6 +53,14 @@ broke on a path nobody had clicked:
   is ~5.4MB encoded, more than the entire ~5MB budget, and of the twenty-one
   files that wrote to storage exactly one handled the quota error. Everywhere
   else the write threw into nothing and the change was gone.
+- **`crossword`** — two bugs nobody could have seen from a rendering test. The
+  grid opens with the top-left square selected, and a click on the
+  already-selected square toggles direction — so a reader's first click flipped
+  them into Down and the answer they typed for 1 Across went down the column.
+  And the grid and the document both listened for `keydown` and both called the
+  same handler, so a bubbled event was handled twice: one letter typed put two
+  in the grid. Every other suite loaded the centerspread and checked it didn't
+  throw, which it never did.
 - **`publish`** — the editor and the reader were only ever tested in the same
   browser, where `localStorage` does the work. The step between them — the file
   an editor downloads and commits — had never been run at all.

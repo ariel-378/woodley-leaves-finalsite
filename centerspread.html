@@ -1250,6 +1250,15 @@ const CLUES = { across: _todayCw.across || {}, down: _todayCw.down || {} };
 let grid = Array.from({length: SIZE}, () => Array(SIZE).fill(""));
 let selected = {row: 0, col: 0};
 let direction = "across"; // or "down"
+
+// The grid opens with the top-left square selected so the keyboard has
+// somewhere to go before anyone clicks. onCellClick treats a click on the
+// already-selected square as "switch direction", which meant that opening
+// square was pre-armed: a reader's very first click flipped them into Down,
+// and the answer they typed for 1 Across marched down the first column
+// instead. Nothing counts as a toggle until the reader has placed the
+// selection themselves.
+let selectionPlacedByReader = false;
 let startTime = null;
 let timerInterval = null;
 let solved = false;
@@ -1321,6 +1330,7 @@ function renderClues() {
       const {row, col} = acrossStarts[num];
       direction = "across";
       selected = {row, col};
+      selectionPlacedByReader = true;   // clicking a clue places it too
       updateUI();
     });
     aEl.appendChild(li);
@@ -1334,6 +1344,7 @@ function renderClues() {
       const {row, col} = downStarts[num];
       direction = "down";
       selected = {row, col};
+      selectionPlacedByReader = true;   // clicking a clue places it too
       updateUI();
     });
     dEl.appendChild(li);
@@ -1392,11 +1403,12 @@ function updateUI() {
 
 // ===== Interactions =====
 function onCellClick(r, c) {
-  if (selected.row === r && selected.col === c) {
+  if (selectionPlacedByReader && selected.row === r && selected.col === c) {
     direction = direction === "across" ? "down" : "across";
   } else {
     selected = {row: r, col: c};
   }
+  selectionPlacedByReader = true;
   startTimerIfNeeded();
   updateUI();
   gridEl.focus();
@@ -1563,10 +1575,16 @@ const claim = (name, selector) => {
 };
 claim("cw", ".cw-layout");
 
+// Typing works without clicking into the grid first, as long as the crossword
+// is the game in view.
 document.addEventListener("keydown", (e) => {
   const ae = document.activeElement;
   if (ae && (ae.tagName === "INPUT" || ae.tagName === "TEXTAREA" || ae.isContentEditable)) return;
   if (activeGame !== "cw") return;
+  // The grid has its own keydown listener, and this one sees the same event
+  // again as it bubbles. Without this guard every keypress was handled twice:
+  // one letter typed put two in the grid, and an arrow key jumped two squares.
+  if (gridEl.contains(e.target)) return;
   handleKey(e);
 });
 
