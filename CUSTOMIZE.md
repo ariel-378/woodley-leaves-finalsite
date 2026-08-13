@@ -248,8 +248,13 @@ question the section cards can't — *what goes out this week, and when?*
 - **Publish now** on any row runs it immediately instead of waiting — for when
   the plan changes.
 
-Anything already published has left the list; it is on the site. If the tab is
-empty, nothing is waiting.
+If the tab is empty, nothing is waiting on a future time.
+
+**Scheduling is not publishing.** A publish time decides *when* a piece appears
+once readers have it. Getting it to readers at all is **Content → Publish &
+transfer → Download to publish**, and a scheduled piece that was never
+published reaches nobody, whatever time it carries. The Schedule tab warns you
+when this browser is holding work readers have never received.
 
 ### The Centerspread tab
 The **Centerspread** tab controls the centerspread page:

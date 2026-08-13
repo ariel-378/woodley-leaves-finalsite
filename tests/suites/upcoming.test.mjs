@@ -191,6 +191,56 @@ export async function run() {
     check.ok("and is shown no part of the plan", !ctx.$("#sched-list .sched-item"));
   }
 
+  // ===== Each tab explains the other =====
+  //  Scheduling and publishing are sequential, not alternatives: a publish time
+  //  decides WHEN a piece appears; publishing is what puts it on the site at
+  //  all. Wording that blurred them led to "we have scheduling now, we can drop
+  //  publishing" — which would have left the paper unable to reach anyone.
+  {
+    const ctx = await open("editor-schedule.html");
+    const text = ctx.document.body.textContent.replace(/\s+/g, " ");
+    check.ok("the Schedule tab says scheduling does not send anything to readers",
+      /does not send it to readers|not a substitute/i.test(text), text.slice(0, 240));
+    check.ok("and points at where publishing happens",
+      /Download to publish/i.test(text) && !!ctx.$('a[href="editor-content.html"]'));
+    check.ok("it no longer claims published items are already on the site",
+      !/it is on the site/i.test(text), text.slice(0, 200));
+  }
+
+  {
+    const ctx = await open("editor-content.html");
+    const text = ctx.document.body.textContent.replace(/\s+/g, " ");
+    check.ok("the Content tab says publishing is what puts work on the site",
+      /puts your work on the site/i.test(text), text.slice(0, 240));
+    check.ok("and that a schedule is not a substitute for it",
+      /reaches nobody|not a substitute/i.test(text));
+    check.ok("linking to the Schedule tab", !!ctx.$('a[href="editor-schedule.html"]'));
+  }
+
+  // ===== Unpublished work is called out on the plan =====
+  {
+    const ed = await open("editor-content.html");
+    seedPlan(ed.window);
+    const stored = {};
+    for (let i = 0; i < ed.window.localStorage.length; i++) {
+      const k = ed.window.localStorage.key(i);
+      if (k && k.startsWith("wl_")) stored[k] = ed.window.localStorage.getItem(k);
+    }
+    const ctx = await open("editor-schedule.html", { storage: stored });
+    const banner = ctx.$("#sched-unpublished");
+    check.ok("a browser with unpublished changes says so on the plan",
+      banner && !banner.hidden, banner ? "hidden" : "no banner");
+    check.ok("and names the step that fixes it",
+      banner && /Download to publish/i.test(banner.textContent), banner && banner.textContent);
+  }
+
+  {
+    const ctx = await open("editor-schedule.html");
+    const banner = ctx.$("#sched-unpublished");
+    check.ok("with nothing unpublished, the warning stays out of the way",
+      banner && banner.hidden);
+  }
+
   opened.forEach(c => c.close());
   return check;
 }

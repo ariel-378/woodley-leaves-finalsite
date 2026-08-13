@@ -65,6 +65,13 @@
   .sched-count { font-family: "Helvetica Neue", Arial, sans-serif; font-size: 13px;
     color: var(--muted); margin: 0 0 4px; }
 
+  /* The step people forget: a plan that was never published reaches nobody. */
+  .unpublished { border: 1px solid var(--rule); border-left: 4px solid #b8002a;
+    background: var(--cream); padding: 12px 15px; margin: 0 0 16px;
+    font-family: "Helvetica Neue", Arial, sans-serif; font-size: 13px; line-height: 1.55; }
+  .unpublished[hidden] { display: none; }
+  .unpublished strong { color: #b8002a; }
+
   .account-prompt { font-family: "Helvetica Neue", Arial, sans-serif; font-size: 14px;
     border: 1px solid var(--rule); background: var(--cream); padding: 16px 18px; }
 </style>
@@ -110,10 +117,15 @@
     <p class="c-intro">
       Everything with a publish time still to come, in the order it goes out —
       articles, poems, art, videos, features and games together. Give any piece
-      a date and time in its own editor and it appears here. Anything already
-      published has left this list; it is on the site.
+      a date and time in its own editor and it appears here.
+      <br><br>
+      <strong>Scheduling decides <em>when</em> a piece appears. It does not send
+      it to readers.</strong> That is the <a href="editor-content.html">Content</a>
+      tab's <em>Download to publish</em>, which is what puts your work on the
+      site at all. Publish first; then each piece appears at the time you set.
     </p>
 
+    <p class="unpublished" id="sched-unpublished" hidden></p>
     <p class="sched-count" id="sched-count"></p>
     <div id="sched-list"></div>
   </div>
@@ -178,17 +190,33 @@
 
   const timeOf = t => new Date(t).toLocaleTimeString(undefined, { hour: "numeric", minute: "2-digit" });
 
+  // Everything on this page is still sitting in this browser until somebody
+  // publishes. Saying so here is the whole point — a plan nobody published is
+  // a plan that reaches nobody, whatever times it carries.
+  function renderUnpublished() {
+    const el = document.getElementById("sched-unpublished");
+    const drafts = window.WLBundle ? WLBundle.summary().keys : 0;
+    if (!drafts) { el.hidden = true; return; }
+    el.hidden = false;
+    el.innerHTML = "<strong>Not published yet.</strong> This browser has changes " +
+      "readers have never received. Scheduling sets <em>when</em> a piece appears; " +
+      'it still has to reach the site first — <a href="editor-content.html">Content ' +
+      "&rarr; Publish &amp; transfer &rarr; Download to publish</a>.";
+  }
+
   function render() {
     if (!gate()) return;
+    renderUnpublished();
     const plan = window.WLSchedule ? WLSchedule.collect() : [];
 
     if (!plan.length) {
       countEl.textContent = "";
       list.innerHTML = `<div class="sched-empty">
         <strong>Nothing scheduled.</strong><br>
-        Everything written so far is already published. To plan ahead, open any
-        piece in the <a href="editor-content.html">Content</a> tab and give it a
-        publish date and time in the future.
+        Nothing is waiting on a future time — everything written so far is set to
+        appear as soon as it reaches readers. To plan ahead, open any piece in the
+        <a href="editor-content.html">Content</a> tab and give it a publish date
+        and time in the future.
       </div>`;
       return;
     }
