@@ -152,7 +152,14 @@ publication, not by a student who graduates.
 |---|---|---|
 | The site repository | The paper / school | Current online editors, the adviser |
 | The subscriber Sheet and its script | The paper / school | Current EIC |
+| The shared-editing service (Cloudflare) | The paper / school | Current online editors |
+| The editor key for shared editing | — | Every editor; change it when one leaves |
+| The GitHub token the service publishes with | — | Nobody. It lives in the service. |
 | The domain or subdomain, if any | The school | — |
+
+The shared-editing service now holds the paper's working content. If it is on a
+student's personal account, the paper loses shared editing the day that account
+goes — move it to one the publication keeps.
 
 **Review this list every August.** Add the incoming editors, remove the ones
 who graduated. An account nobody can get into is the normal way a student
