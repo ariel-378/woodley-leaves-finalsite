@@ -235,8 +235,7 @@
       heroEl.innerHTML = hero ? heroHtml(hero) : `<p class="ha-empty">No stories yet.</p>`;
       if (hero) heroEl.dataset.homeId = hero.id; else delete heroEl.dataset.homeId;
     }
-    fill("home-left", left.map(leftHtml).join("") +
-      `<div class="sidebar-ads ha-sponsor" data-ads-offset="0" data-ads-limit="1"></div>`);
+    fill("home-left", left.map(leftHtml).join(""));
     fill("home-right", right.map(rightHtml).join(""));
 
     const below = document.getElementById("home-below");
@@ -251,9 +250,6 @@
     }
 
     if (document.body.classList.contains("wl-home-edit")) enableDragDrop();
-
-    // Let the ads store fill any placeholders we just rendered.
-    document.dispatchEvent(new CustomEvent("wl-ads-change"));
   }
 
   // ===== Drag-and-drop layout editing (editors only) =====

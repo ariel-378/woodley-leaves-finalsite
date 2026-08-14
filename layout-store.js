@@ -1,5 +1,5 @@
 // Homepage layout configuration. Editors drag/select where each "block" goes:
-// individual ads, right-sidebar story cards, Video module, and "More from the
+// right-sidebar story cards, Video module, and "More from the
 // newsroom" section. The homepage reads this config and places blocks into
 // the right zones.
 window.WLLayout = (function () {

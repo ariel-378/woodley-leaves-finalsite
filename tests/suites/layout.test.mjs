@@ -36,8 +36,8 @@ export async function run() {
     const orphans = [...d.querySelectorAll("[data-move-key]")]
       .filter(el => !el.closest("[data-move-group]"));
 
-    // One block is not an arrangement. Since ads moved to the front page alone,
-    // several pages hold only their article list — so the rule is: a page with
+    // One block is not an arrangement. Several pages hold only their article
+    // list — so the rule is: a page with
     // something to rearrange offers the editor, and a page without one does not
     // offer an editor that would open empty.
     const rearrangeable = blocks.length >= 2;

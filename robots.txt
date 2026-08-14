@@ -5,11 +5,11 @@
 User-agent: *
 Allow: /
 Disallow: /404.html
-Disallow: /editor-ads.html
 Disallow: /editor-brand.html
 Disallow: /editor-centerspread.html
 Disallow: /editor-content.html
 Disallow: /editor-puzzles.html
+Disallow: /editor-schedule.html
 Disallow: /editor-sports.html
 Disallow: /editor-staff.html
 Disallow: /editor-videos.html

@@ -1,7 +1,7 @@
 // ============================================================================
 //  Content bundle — the single-file publish/transfer format.
 //
-//  Every editor change (articles, ads, staff, sections, puzzles, brand, inline
+//  Every editor change (articles, staff, sections, puzzles, brand, inline
 //  text, …) is saved to a `wl_*` localStorage key by its store. Those edits
 //  live in ONE browser. This module gathers all of them into a single JSON
 //  bundle that can be:
@@ -45,7 +45,7 @@ window.WLBundle = (function () {
 
   // Every store's change event — fired after a load so all pages re-render.
   var EVENTS = [
-    "wl-brand-change", "wl-sections-change", "wl-articles-change", "wl-ads-change",
+    "wl-brand-change", "wl-sections-change", "wl-articles-change",
     "wl-staff-change", "wl-writers-change", "wl-videos-change", "wl-teams-change",
     "wl-puzzles-change", "wl-features-change", "wl-games-change", "wl-home-order-change",
     "wl-layout-change", "wl-text-change", "wl-centerspread-change",

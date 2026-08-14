@@ -4,7 +4,7 @@
 //
 //  Defaults live in centerspread.js (window.WL_CENTERSPREAD); editor changes
 //  from editor-centerspread.html are layered on top in localStorage, exactly
-//  like articles and ads. Everything here is per-browser demo storage — see
+//  like articles. Everything here is per-browser demo storage — see
 //  auth.js for the identity model.
 //
 //  A piece is: { id, type, kicker, title, byline, ...type fields, reveal? }

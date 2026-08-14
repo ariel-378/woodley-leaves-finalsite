@@ -199,7 +199,7 @@ window.WLSync = (function () {
 
     // Any store writing anything means there may be something to send.
     [
-      "wl-brand-change", "wl-sections-change", "wl-articles-change", "wl-ads-change",
+      "wl-brand-change", "wl-sections-change", "wl-articles-change",
       "wl-staff-change", "wl-writers-change", "wl-videos-change", "wl-teams-change",
       "wl-puzzles-change", "wl-features-change", "wl-games-change", "wl-home-order-change",
       "wl-layout-change", "wl-text-change", "wl-centerspread-change",

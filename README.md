@@ -12,7 +12,7 @@ content, and the paper name stamped into each page's `<head>` by `npm run brand`
 
 ## Highlights
 
-- **Editor dashboard** — create and edit articles, and manage staff, sports, ads,
+- **Editor dashboard** — create and edit articles, and manage staff, sports,
   videos, and the puzzles & games pages.
 - **Editor-managed sections** — add, rename, reorder, and remove sections, and
   choose which section fills each home-page slot. The nav, section pages, home
@@ -45,7 +45,7 @@ npm install   # once — pulls jsdom, the only dependency
 npm test
 ```
 
-957 checks across 21 suites: every page loads clean, every editor control is
+943 checks across 21 suites: every page loads clean, every editor control is
 pressed without throwing, and content added in the editor reaches the reader
 pages. See [tests/README.md](tests/README.md).
 

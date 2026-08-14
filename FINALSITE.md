@@ -22,7 +22,7 @@ This document explains:
 |-------|-----------|-------|
 | **Pages** | One static `.html` per surface (home, section pages, article, editor dashboard, etc.). No build step, no framework. | `index.html`, `news.html`, `article.html`, `section.html`, `editor*.html`, … |
 | **Brand config** | The only file that changes per school: name, colors, logo, footer. Applied to every page by `brand.js`. | `config.js` (`window.WL_CONFIG`) |
-| **Content source** | Plain JS objects on `window` (`WL_ARTICLES`, `WL_WRITERS`, `WL_TEAMS`, `WL_ADS`, `WL_VIDEOS`, …). "Have your CMS emit this object." | `articles.js`, `writers.js`, `teams.js`, `ads.js`, `videos.js`, … |
+| **Content source** | Plain JS objects on `window` (`WL_ARTICLES`, `WL_WRITERS`, `WL_TEAMS`, `WL_VIDEOS`, …). "Have your CMS emit this object." | `articles.js`, `writers.js`, `teams.js`, `videos.js`, … |
 | **Data stores** | A thin CRUD layer per content type that **merges the static source with editor changes** and exposes `getAll/save/remove/...`. This is the seam to redirect at for production persistence. | `articles-store.js`, `sections-store.js`, `teams-store.js`, … |
 | **Identity adapter** | Resolves the current user + role, renders the account bar, and gates editor tools. | `auth.js` (`window.WLAuth`) |
 | **Editor tools** | The dashboard (`editor.html`) + per-domain editors, plus inline text/layout editing on public pages. Only shown to editors. | `editor*.html`, `text-editor.js`, `layout-editor.js` |
@@ -106,7 +106,7 @@ everyone else (authenticated reader)  ──►  WL_CONTEXT.role = "reader"  ─
 
 | Surface | Gate (in code) | Reader sees |
 |---------|----------------|-------------|
-| Editor Dashboard (`editor.html`) and every `editor-*.html` tab (articles, sections, sports, videos, writers, ads, brand, centerspread) | `if (!user || !WLAuth.isEditor()) { …deny… }` | An "editor access required" notice; no dashboard |
+| Editor Dashboard (`editor.html`) and every `editor-*.html` tab (articles, sections, sports, videos, writers, brand, centerspread) | `if (!user || !WLAuth.isEditor()) { …deny… }` | An "editor access required" notice; no dashboard |
 | **Sections management** (add / rename / reorder / remove sections; choose which section fills each home-page slot) | inside the gated dashboard | n/a |
 | Inline **text** editing on public pages (kickers, decks, datelines) | `WLAuth.isEditor()` in `text-editor.js` | Static text, no edit affordances |
 | Inline **layout** editing (reorder page modules) | `WLAuth.isEditor()` in `layout-editor.js` | Fixed layout |
@@ -169,7 +169,7 @@ calls integrates the whole app — the pages and the editor UI keep working unch
 because they only ever talk to `WLArticles`, `WLSections`, etc.
 
 Stores to wire: `articles-store`, `sections-store`, `writers-store`, `teams-store`,
-`ads-store`, `videos-store`, `centerspread-store`, `puzzles-store`, `views-store`,
+`videos-store`, `centerspread-store`, `puzzles-store`, `views-store`,
 `brand-store`, plus the editable static text (`wl_text_custom`).
 
 ### 4.3 Three integration models

@@ -118,7 +118,7 @@ icon, and footer contacts — with a live preview, and no code.
 
 **Design changes are saved in your own browser, not published to readers.**
 
-This template has no server: like the Articles, Ads, and Video dashboards, the
+This template has no server: like the Articles and Video dashboards, the
 Brand design tab writes to your browser's local storage. That's genuinely useful —
 you can try artwork and colors and see them on every page instantly — but a
 reader on another computer still sees the original design.
@@ -210,7 +210,7 @@ Before you switch this on, check with your adviser. It collects contact details
 from students, and schools usually have rules about that.
 
 ### Adding content
-Stories, ads, sports, videos, puzzles, and the centerspread are managed from the
+Stories, sports, videos, puzzles, and the centerspread are managed from the
 **Editor dashboard** (`editor.html`). The paper ships blank — add your own. In a
 Finalsite deployment, editor access is granted by an administrator through the
 school login (see the notes in `auth.js`); in the standalone template, use the
@@ -268,13 +268,6 @@ Two things worth knowing:
   opens the page source can read it early. That is fine for planning a poem.
   For a story that genuinely must not leak, keep it out of the site until the
   day you publish it.
-
-### Ads and announcements
-
-Club ads and upcoming events appear **only on the front page** — one beside the
-lead story and the rest below the fold. They used to run in the margin of every
-section page, article and the centerspread, which made a club notice look like
-an advert following readers around the paper.
 
 ### The Schedule tab
 

@@ -146,7 +146,6 @@
           if (el) colEl.appendChild(el);
         });
         if (colEl.querySelector(":scope > .article-list")) colEl.classList.add("wl-col-wide");
-        if (isAdOnlyColumn(colEl)) colEl.classList.add("wl-col-ad");
         rowEl.appendChild(colEl);
       });
       group.appendChild(rowEl);
@@ -157,13 +156,6 @@
     document.querySelectorAll("[data-move-group]").forEach(applyGroup);
   }
 
-  // A column is "ad-only" if every block inside is a .sidebar-ads/.ad-block.
-  // These get a narrow sidebar max-width in CSS; other columns flex normally.
-  function isAdOnlyColumn(colEl) {
-    const kids = [...colEl.children].filter(c => c.dataset && c.dataset.moveKey);
-    if (kids.length === 0) return false;
-    return kids.every(c => c.classList.contains("sidebar-ads") || c.classList.contains("ad-block"));
-  }
 
   // ===== Row-gap drop zones (create a new row between existing rows) =====
   function refreshRowGaps(group) {
@@ -445,7 +437,6 @@
       cols.forEach(c => {
         c.classList.toggle("wl-col-stacked", c.children.length > 1);
         c.classList.toggle("wl-col-wide", !!c.querySelector(":scope > .article-list"));
-        c.classList.toggle("wl-col-ad", isAdOnlyColumn(c));
       });
     });
     saveGroup(group);
@@ -486,9 +477,9 @@
     const isEditor = window.WLAuth && WLAuth.isEditor();
     let btn = document.getElementById("wl-layout-toggle");
     let resetBtn = document.getElementById("wl-layout-reset");
-    // One block is not an arrangement. Section pages have only their article
-  // list now that ads live on the front page alone, so offering to rearrange
-  // them would open an editor with nothing to drag.
+    // One block is not an arrangement. Several pages hold only their article
+  // list, so offering to rearrange them would open an editor with nothing to
+  // drag.
   const hasMovable = document.querySelectorAll("[data-move-key]").length > 1;
 
     if (!isEditor || !hasMovable) {
