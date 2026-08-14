@@ -21,8 +21,20 @@ content, and the paper name stamped into each page's `<head>` by `npm run brand`
   *Edit layout* toggle: drag its blocks into new rows and columns, or move them
   with the keyboard. Article pages, the video index, staff, search, tags, team
   pages and the centerspread all included. Each page keeps its own layout.
+- **Plan an edition ahead** — every piece of content takes a publish date and
+  time and stays invisible to readers until it arrives: articles, poems, art,
+  videos, custom features and games alike. A **Schedule** tab gathers the whole
+  plan into one list, in the order it goes out, grouped by day, with *Publish
+  now* on any row when the plan changes.
+- **Shared editing (optional)** — point `config.js` at a small store the school
+  runs itself and every editor sees the same content, including what is
+  scheduled, with no downloading or committing by hand. Off by default; see
+  [setup/worker/README.md](setup/worker/README.md).
+- **Newsletter signups** — a Subscribe button collecting an email address, and
+  nothing else, into a Google Sheet the school owns.
 - **Brand config** — one file (`config.js`) sets the masthead, school, colors,
-  logo, and footer across every page.
+  logo, and footer across every page. Editors can also upload a masthead
+  flourish and a tab icon from the dashboard and export a finished `config.js`.
 - **Host-ready auth** — designed to sit behind Finalsite, which provides login and
   decides who is an editor.
 
