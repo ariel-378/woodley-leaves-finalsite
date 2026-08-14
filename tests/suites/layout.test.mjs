@@ -36,12 +36,22 @@ export async function run() {
     const orphans = [...d.querySelectorAll("[data-move-key]")]
       .filter(el => !el.closest("[data-move-group]"));
 
-    check.ok(`${page} has two or more movable blocks`, blocks.length >= 2,
-      `found ${blocks.length} — nothing to rearrange`);
-    check.ok(`${page} loads the layout editor`, !!d.getElementById("wl-layout-toggle"),
-      "markup is there but layout-editor.js is not loaded, so editors see no way in");
-    check.ok(`${page} rebuilt its group into rows`,
-      d.querySelector("[data-move-group] > .wl-row") !== null, "applyGroup did not run");
+    // One block is not an arrangement. Since ads moved to the front page alone,
+    // several pages hold only their article list — so the rule is: a page with
+    // something to rearrange offers the editor, and a page without one does not
+    // offer an editor that would open empty.
+    const rearrangeable = blocks.length >= 2;
+    const toggle = !!d.getElementById("wl-layout-toggle");
+
+    if (rearrangeable) {
+      check.ok(`${page} loads the layout editor`, toggle,
+        "markup is there but layout-editor.js is not loaded, so editors see no way in");
+      check.ok(`${page} rebuilt its group into rows`,
+        d.querySelector("[data-move-group] > .wl-row") !== null, "applyGroup did not run");
+    } else {
+      check.ok(`${page} has one block, so offers no empty layout editor`, !toggle,
+        `${blocks.length} block(s) but the toggle appeared anyway`);
+    }
     check.ok(`${page} leaves no movable block outside a group`, orphans.length === 0,
       orphans.map(o => o.dataset.moveKey).join(","));
     check.clean(`${page} lays out without errors`, ctx);

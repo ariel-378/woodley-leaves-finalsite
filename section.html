@@ -58,7 +58,6 @@
 
   <div id="section-main">
     <div class="article-list" id="article-list"></div>
-    <div class="sidebar-ads" id="section-ads" data-ads-limit="2"></div>
   </div>
 </main>
 
@@ -101,9 +100,6 @@
       groupEl.dataset.moveGroup = "section-" + slug + "-main";
       list.dataset.moveKey = "articles";
       list.dataset.moveLabel = "Articles";
-      const ads = document.getElementById("section-ads");
-      ads.dataset.moveKey = "ads";
-      ads.dataset.moveLabel = "Announcements";
     } else {
       titleEl.textContent = name ? "Section not found" : "Section";
       kickerEl.textContent = "Section";

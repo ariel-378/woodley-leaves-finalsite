@@ -486,7 +486,10 @@
     const isEditor = window.WLAuth && WLAuth.isEditor();
     let btn = document.getElementById("wl-layout-toggle");
     let resetBtn = document.getElementById("wl-layout-reset");
-    const hasMovable = document.querySelector("[data-move-key]") !== null;
+    // One block is not an arrangement. Section pages have only their article
+  // list now that ads live on the front page alone, so offering to rearrange
+  // them would open an editor with nothing to drag.
+  const hasMovable = document.querySelectorAll("[data-move-key]").length > 1;
 
     if (!isEditor || !hasMovable) {
       if (btn) btn.remove();

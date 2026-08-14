@@ -269,6 +269,13 @@ Two things worth knowing:
   For a story that genuinely must not leak, keep it out of the site until the
   day you publish it.
 
+### Ads and announcements
+
+Club ads and upcoming events appear **only on the front page** — one beside the
+lead story and the rest below the fold. They used to run in the margin of every
+section page, article and the centerspread, which made a club notice look like
+an advert following readers around the paper.
+
 ### The Schedule tab
 
 The **Schedule** tab is the plan: everything with a publish time still to come,
