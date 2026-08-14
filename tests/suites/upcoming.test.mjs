@@ -210,10 +210,12 @@ export async function run() {
   {
     const ctx = await open("editor-content.html");
     const text = ctx.document.body.textContent.replace(/\s+/g, " ");
-    check.ok("the Content tab says publishing is what puts work on the site",
-      /puts your work on the site/i.test(text), text.slice(0, 240));
-    check.ok("and that a schedule is not a substitute for it",
-      /reaches nobody|not a substitute/i.test(text));
+    // Assert the meaning, not one phrasing — the panel's line is written at
+    // runtime and says something different once shared editing is configured.
+    check.ok("the Content tab names what actually puts work on the site",
+      /puts them on the site|publishes itself/i.test(text), text.slice(0, 240));
+    check.ok("and that a publish date does not send anything anywhere",
+      /does not send it anywhere|not a substitute|reaches nobody/i.test(text), text.slice(0, 240));
     check.ok("linking to the Schedule tab", !!ctx.$('a[href="editor-schedule.html"]'));
   }
 

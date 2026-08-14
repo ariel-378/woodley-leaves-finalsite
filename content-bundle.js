@@ -210,6 +210,26 @@ window.WLBundle = (function () {
 
     function setStatus(msg) { if (status) status.textContent = msg; }
 
+    // The panel's one-line summary. Which sentence is true depends on whether
+    // a shared store is configured, so it is written here rather than sitting
+    // in the markup claiming one of them unconditionally.
+    function renderLede() {
+      var el = document.getElementById("wl-publish-lede");
+      if (!el) return;
+      var shared = window.WLSync && WLSync.isConfigured();
+      el.innerHTML = shared
+        ? "<b>The site publishes itself.</b> Your work reaches your co-editors and readers " +
+          "on its own — the buttons below are a backup, and a way to hand drafts to someone. " +
+          "A publish date sets <em>when</em> a piece appears; see the " +
+          '<a href="editor-schedule.html">Schedule</a> tab.'
+        : "<b>Your edits are in this browser only.</b> <b>Download to publish</b> is what puts " +
+          "them on the site; the bundle is a backup and a way to hand drafts to someone. " +
+          "A publish date sets <em>when</em> a piece appears once readers have it — it does not " +
+          'send it anywhere. <a href="setup/worker/README.md">Shared editing</a> removes this step.';
+    }
+    renderLede();
+    document.addEventListener("wl-sync-change", renderLede);
+
     // ── The backup nudge ────────────────────────────────────────────────────
     //  Drafts live in one browser. Clearing site data, a school laptop reimage,
     //  or a full quota all end the same way, and the writer finds out last. The
