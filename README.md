@@ -91,6 +91,8 @@ in a private window) to get back to the shipped version.
   for hosting, authentication, and content persistence.
 - **[CUSTOMIZE.md](CUSTOMIZE.md)** — rebrand the paper for your school (the Brand
   design tab, or editing `config.js`).
+- **[FINALSITE-EMAIL.md](FINALSITE-EMAIL.md)** — the scoping email for the school
+  to send Finalsite, ready to forward.
 - **[EDITORIAL.md](EDITORIAL.md)** — who publishes, how corrections work, when a
   story comes down, and who holds the accounts. The half of running a paper that
   isn't software.
