@@ -234,6 +234,27 @@ export async function run() {
       el && /shared|sync|saved|up to date/i.test(el.textContent), el && el.textContent);
   }
 
+  // ===== Sync failing must never stop someone editing =====
+  //  `fetch` can be absent, or blocked by a policy. It throws synchronously, so
+  //  it escapes the promise handlers and would take the whole dashboard with
+  //  it — every editor page, not just the sync status line.
+  {
+    const ctx = await loadPage("editor-content.html", {
+      beforeParse(w) { delete w.fetch; },
+    });
+    opened.push(ctx);
+    ctx.window.WL_CONFIG.sync = { endpoint: "https://paper.example.workers.dev", key: "k" };
+    await ctx.window.WLSync.pullNow();
+    await settle();
+
+    check.clean("a browser with no fetch still loads the dashboard", ctx);
+    check.equal("and sync simply reports itself offline", ctx.window.WLSync.status().state, "offline");
+
+    ctx.window.WLArticles.save("still-works", { title: "Written anyway", section: "News", body: ["Yes."] });
+    check.ok("and editing carries on working",
+      !!ctx.window.WLArticles.getById("still-works"));
+  }
+
   opened.forEach(c => c.close());
   return check;
 }

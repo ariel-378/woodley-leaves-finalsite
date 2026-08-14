@@ -90,14 +90,25 @@ window.WLSync = (function () {
   }
 
   function request(method, body) {
-    var cfg = config();
-    var headers = { "Content-Type": "text/plain;charset=utf-8" };
-    if (cfg.key) headers["X-Editor-Key"] = cfg.key;
-    return fetch(cfg.endpoint + "/content", {
-      method: method,
-      headers: headers,
-      body: body ? JSON.stringify(body) : undefined,
-    });
+    // Anything that goes wrong reaching the network has to come back as a
+    // rejected promise, never as a throw. `fetch` can be missing outright, and
+    // a synchronous throw here would escape the handlers below and take the
+    // whole dashboard down — sync failing must never stop someone editing.
+    if (typeof fetch !== "function") {
+      return Promise.reject(new Error("no fetch in this browser"));
+    }
+    try {
+      var cfg = config();
+      var headers = { "Content-Type": "text/plain;charset=utf-8" };
+      if (cfg.key) headers["X-Editor-Key"] = cfg.key;
+      return fetch(cfg.endpoint + "/content", {
+        method: method,
+        headers: headers,
+        body: body ? JSON.stringify(body) : undefined,
+      });
+    } catch (e) {
+      return Promise.reject(e);
+    }
   }
 
   // ── Pull ──────────────────────────────────────────────────────────────────

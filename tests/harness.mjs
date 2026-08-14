@@ -51,6 +51,18 @@ export function pages() {
  * Returns { window, document, errors, $, click, type, pick }.
  * `errors` collects anything thrown during load or later interaction.
  */
+/**
+ * Blank out the shared-editing endpoint in a page's inlined config.
+ *
+ * A deployed site names a real Worker in config.js. Tests must not depend on
+ * that — they would make live network calls, count somebody else's requests,
+ * and fail on a laptop with no connection. Suites that exercise sync set their
+ * own endpoint after load, against a stubbed fetch.
+ */
+function withoutSync(html) {
+  return html.replace(/(sync:\s*\{[^}]*?endpoint:\s*")[^"]*(")/, "$1$2");
+}
+
 export async function loadPage(file, opts = {}) {
   const errors = [];
   const vc = new VirtualConsole();
@@ -59,7 +71,7 @@ export async function loadPage(file, opts = {}) {
 
   // opts.query ("?name=Reviews") reaches pages that read location.search —
   // section.html resolves which section it is that way.
-  const dom = new JSDOM(inlineScripts(file), {
+  const dom = new JSDOM(withoutSync(inlineScripts(file)), {
     runScripts: "dangerously",
     url: "https://localhost/" + file + (opts.query || ""),
     virtualConsole: vc,

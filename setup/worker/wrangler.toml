@@ -10,14 +10,14 @@ ALLOWED_ORIGIN = "*"
 
 # The repository the Worker publishes to, as "owner/repo". Readers load the
 # published-content.js it commits there.
-GITHUB_REPO = ""
+GITHUB_REPO = "ariel-378/woodley-leaves-finalsite"
 GITHUB_BRANCH = "main"
 GITHUB_PATH = "published-content.js"
 
 # Storage for the paper's content.
 [[kv_namespaces]]
 binding = "PAPER"
-id = "PASTE_KV_ID_HERE"
+id = "3893b5791bdc4d3f99ab3aa8fa64cb7a"
 
 # Secrets are NOT set here — they would end up in git. Set them with:
 #   wrangler secret put EDITOR_KEY
