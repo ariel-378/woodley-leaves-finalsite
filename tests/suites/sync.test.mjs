@@ -255,6 +255,31 @@ export async function run() {
       !!ctx.window.WLArticles.getById("still-works"));
   }
 
+  // ===== It must not become a condition of using this code =====
+  //  These repos are offered to a host platform to integrate. Shared editing is
+  //  a standalone answer for a paper with no host integration yet — if the host
+  //  becomes the system of record it is switched off, or two systems write the
+  //  same content and one overwrites the other. So it has to be genuinely
+  //  optional, and the shipped default has to be off.
+  {
+    const ctx = await loadPage("editor-content.html");
+    opened.push(ctx);
+    check.ok("sync is a plain config block a school can empty",
+      typeof (ctx.window.WL_CONFIG.sync || {}) === "object");
+    check.ok("and emptying it turns the whole layer off",
+      !ctx.window.WLSync.isConfigured(),
+      "the harness blanks the endpoint; sync still thought it was on");
+  }
+
+  {
+    const ctx = await loadPage("index.html", { editor: false });
+    opened.push(ctx);
+    check.clean("a reader's page never touches the sync layer", ctx);
+    check.ok("readers do not even load it",
+      ![...ctx.document.querySelectorAll("script")].some(x => (x.src || "").includes("sync.js")),
+      "sync.js was loaded on a reader page");
+  }
+
   opened.forEach(c => c.close());
   return check;
 }

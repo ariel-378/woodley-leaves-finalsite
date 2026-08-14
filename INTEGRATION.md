@@ -71,6 +71,31 @@ also exports/loads as a portable `content-bundle.json` for transferring drafts
 between editors. This is the simplest real publishing path; the options below
 integrate the host more deeply when that is wanted.
 
+**Shared editing — the standalone answer, and OFF by default.** `sync.js` keeps
+several editors' browsers in step through a small store the school runs itself
+(a Cloudflare Worker; `setup/worker/`), and that store commits
+`published-content.js` back to the repo so readers still get a static file.
+It exists because a paper with no host integration otherwise cannot have two
+editors, and it is what one school is running today.
+
+**It is an alternative to B and C, not a companion to them.** If Finalsite
+becomes the system of record, blank `sync.endpoint` in `config.js` and this
+layer stops entirely — otherwise two systems write the same content and one
+will overwrite the other. It also assumes the site lives in a git repository it
+can commit to; under host-managed hosting there is no repo, and the publish half
+of it has nowhere to write.
+
+The template ships with `sync.endpoint` blank, so integrating the template
+brings no Cloudflare dependency, no third-party account and no credential.
+
+Worth knowing for scoping option C: `sync.js` is a working demonstration that
+the stores can be backed by a remote service. It reads and writes through
+`WLBundle.snapshot()` / `merge()` without touching any individual store, and it
+already handles the parts that are easy to get wrong — sending only what one
+browser changed, refusing to let an incoming change overwrite unsent local
+work, and surviving being offline. Whatever Finalsite puts behind these stores
+can follow the same shape.
+
 **A. Demo / pilot — no work.** Leave it as is. Editors can explore the full
 dashboard and nothing they do affects anyone else. Right for evaluation, and for
 showing students the workflow. Not for publishing.
@@ -251,7 +276,7 @@ and needs no CSP allowance.
 
 ```bash
 npm install   # once — jsdom, used only by the tests
-npm test      # 979 checks across 21 suites
+npm test      # 983 checks across 21 suites
 npm run brand # after changing `name`/`school` in config.js
 ```
 
