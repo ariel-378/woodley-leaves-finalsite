@@ -18,23 +18,23 @@ window.WL_STAFF_GROUPS = [
 
 window.WL_STAFF = [
   {
-    id: "ariel-pollard",
-    name: "Ariel Pollard",
+    id: "rowan-ellis",
+    name: "Rowan Ellis",
     role: "Online Editor-in-Chief",
     year: "Class of 2027",
     group: "Leadership",
-    email: "arielp2027@maret.org",
-    slug: "ariel-pollard",
+    email: "online-eic@maret.org",
+    slug: "rowan-ellis",
     photo: ""
   },
   {
-    id: "farryn-b",
-    name: "the Online Managing Editor",
+    id: "sana-okafor",
+    name: "Sana Okafor",
     role: "Online Managing Editor",
     year: "Class of 2027",
     group: "Leadership",
-    email: "farrynb2027@maret.org",
-    slug: "farryn-b",
+    email: "online-managing@maret.org",
+    slug: "sana-okafor",
     photo: ""
   }
 ];

@@ -72,17 +72,17 @@ export async function run() {
   // ===== Pulling another editor's work =====
   {
     const server = newServer({
-      wl_articles_custom: { "from-farryn": { title: "the Online Managing Editor's story", section: "News", body: ["Hers."] } },
+      wl_articles_custom: { "from-a-co-editor": { title: "A co-editor's story", section: "News", body: ["Hers."] } },
     });
     const ctx = await editorWith(server);
     await ctx.window.WLSync.pullNow();
     await settle();
 
     check.ok("a co-editor's article arrives in this browser",
-      !!ctx.window.WLArticles.getById("from-farryn"),
+      !!ctx.window.WLArticles.getById("from-a-co-editor"),
       Object.keys(ctx.window.WLArticles.getAll()).join(", "));
     check.ok("and the dashboard is told to redraw",
-      ctx.document.body.textContent.includes("the Online Managing Editor's story"),
+      ctx.document.body.textContent.includes("A co-editor's story"),
       "the page did not re-render after a pull");
   }
 

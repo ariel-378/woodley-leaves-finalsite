@@ -39,8 +39,8 @@ window.WL_CONFIG = {
 
   // ── Footer contacts ──────────────────────────────────────────────────────
   contacts: [
-    { title: "Online Editor-in-Chief", email: "arielp2027@maret.org" },
-    { title: "Online Managing Editor", email: "farrynb2027@maret.org" },
+    { title: "Online Editor-in-Chief", email: "online-eic@maret.org" },
+    { title: "Online Managing Editor", email: "online-managing@maret.org" },
   ],
   footerNote: "Student Publication",
 
@@ -77,7 +77,7 @@ window.WL_CONFIG = {
   submissions: {
     enabled: true,                         // false removes the Subscribe link entirely
     endpoint: "",                          // ← paste the Apps Script web-app URL
-    fallbackEmail: "arielp2027@maret.org", // used if a send fails
+    fallbackEmail: "online-eic@maret.org", // used if a send fails
     sheetUrl: "",                          // the Subscribers Sheet — editors only, never shown to readers
   },
 };
