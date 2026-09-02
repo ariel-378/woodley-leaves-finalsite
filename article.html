@@ -61,7 +61,6 @@
         <div class="article-actions" data-move-key="share" data-move-label="Share buttons">
           <div class="share-row">
             <button class="share-btn" data-action="copy" title="Copy link">Copy link</button>
-            <button class="share-btn" data-action="instagram" title="Share to Instagram (copies link so you can paste it into your story)">Instagram</button>
             <a class="share-btn" id="share-email" title="Share by email">Email</a>
           </div>
         </div>
@@ -303,22 +302,6 @@
     } catch {
       e.target.textContent = "Press Cmd/Ctrl+C";
     }
-  });
-
-  // Instagram doesn't have a web share intent, so the best we can do is:
-  // (1) copy the link, (2) prompt the user to paste it into a story or bio.
-  // On mobile, try the native share sheet (most phones let you pick IG from
-  // there). On desktop, just copy + inform.
-  const igBtn = document.querySelector('.share-btn[data-action="instagram"]');
-  igBtn.addEventListener("click", async (e) => {
-    const shareData = { title: a.title, text: a.deck || "", url };
-    if (navigator.share) {
-      try { await navigator.share(shareData); return; } catch { /* user cancelled */ }
-    }
-    // Fallback: copy link + tell the user what to do
-    try { await navigator.clipboard.writeText(url); } catch {}
-    e.target.textContent = "Link copied — paste into your story";
-    setTimeout(() => { e.target.textContent = "Instagram"; }, 2800);
   });
 
   const emailBtn = document.getElementById("share-email");
