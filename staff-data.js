@@ -23,7 +23,7 @@ window.WL_STAFF = [
     role: "Online Editor-in-Chief",
     year: "Class of 2027",
     group: "Leadership",
-    email: "online-eic@maret.org",
+    email: "arielp2027@maret.org",
     slug: "rowan-ellis",
     photo: ""
   },
