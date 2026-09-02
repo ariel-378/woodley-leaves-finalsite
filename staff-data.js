@@ -18,13 +18,13 @@ window.WL_STAFF_GROUPS = [
 
 window.WL_STAFF = [
   {
-    id: "rowan-ellis",
-    name: "Rowan Ellis",
+    id: "ariel-pollard",
+    name: "Ariel Pollard",
     role: "Online Editor-in-Chief",
     year: "Class of 2027",
     group: "Leadership",
     email: "arielp2027@maret.org",
-    slug: "rowan-ellis",
+    slug: "ariel-pollard",
     photo: ""
   },
   {
