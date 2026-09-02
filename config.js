@@ -40,7 +40,6 @@ window.WL_CONFIG = {
   // ── Footer contacts ──────────────────────────────────────────────────────
   contacts: [
     { title: "Online Editor-in-Chief", email: "arielp2027@maret.org" },
-    { title: "Online Managing Editor", email: "online-managing@maret.org" },
   ],
   footerNote: "Student Publication",
 

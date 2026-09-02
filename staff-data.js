@@ -33,7 +33,7 @@ window.WL_STAFF = [
     role: "Online Managing Editor",
     year: "Class of 2027",
     group: "Leadership",
-    email: "online-managing@maret.org",
+    email: "",
     slug: "sana-okafor",
     photo: ""
   }
