@@ -25,6 +25,7 @@ passes, that click path genuinely works.
 | `a11y` | Keyboard and screen-reader paths through the core tasks: reading an article, and filing one |
 | `layout` | The in-place layout editor on every page that offers it, driven for real rather than asserted from markup |
 | `security` | Editor-pasted HTML/CSS/JS cannot reach the host page — no cookies, no storage, no DOM — plus escaping of reader-visible text |
+| `breaking` | Which story reaches the breaking banner: a featured pick first, the newest otherwise, never one readers can't see |
 | `bundle` | The content bundle: it captures content, ignores per-device keys, and reloads to the same state |
 | `custom` | Custom games and custom features share one form but must never share a destination |
 | `subscribe` | The Subscribe button end to end, and the Newsletter panel — including never reporting a signup that wasn't recorded |

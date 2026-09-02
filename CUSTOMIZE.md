@@ -269,6 +269,21 @@ Two things worth knowing:
   For a story that genuinely must not leak, keep it out of the site until the
   day you publish it.
 
+### The breaking-news banner
+
+The banner across the top of the front page shows **one** story from the
+**Breaking** section, and picks it in this order:
+
+1. **The section's featured pick**, if there is one. Click *Feature* on a
+   Breaking story and the banner uses it.
+2. **Otherwise the newest** Breaking story.
+
+A featured pick that readers can't see yet — hidden, or scheduled for later —
+is skipped, and the newest live story runs instead. So featuring next Friday's
+story doesn't put Friday's headline on the front page today.
+
+With no stories in Breaking, the banner doesn't appear at all.
+
 ### Tags
 
 Tags are **off until you turn them on**, in **Content → Tags**. A paper that

@@ -151,7 +151,13 @@
     const banner = document.getElementById("breaking-banner");
     const overlay = document.getElementById("breaking-popup");
     if (!banner || !overlay) return;
-    const breaking = sorted.find(a => a.section === "Breaking");
+    // Featured beats newest. An editor who features a story has said "this is
+    // the one"; showing a later story instead overrides a deliberate choice
+    // with an accident of timing. WLArticles.getFeatured already refuses a pick
+    // readers cannot see — hidden, or scheduled for later — so a story held for
+    // Friday never reaches the banner today, and the newest live one takes over.
+    const breaking = WLArticles.getFeatured("Breaking")
+      || sorted.find(a => a.section === "Breaking");
     if (!breaking) {
       banner.style.display = "none";
       overlay.style.display = "none";
