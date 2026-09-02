@@ -61,7 +61,6 @@
         <div class="article-actions" data-move-key="share" data-move-label="Share buttons">
           <div class="share-row">
             <button class="share-btn" data-action="copy" title="Copy link">Copy link</button>
-            <a class="share-btn" id="share-email" title="Share by email">Email</a>
           </div>
         </div>
 
@@ -304,8 +303,6 @@
     }
   });
 
-  const emailBtn = document.getElementById("share-email");
-  emailBtn.href = `mailto:?subject=${encodeURIComponent(a.title)}&body=${encodeURIComponent(a.deck + "\n\n" + url)}`;
 
   // Tags (optional)
   if (Array.isArray(a.tags) && a.tags.length > 0) {
