@@ -276,7 +276,7 @@ and needs no CSP allowance.
 
 ```bash
 npm install   # once — jsdom, used only by the tests
-npm test      # 969 checks across 22 suites
+npm test      # 985 checks across 22 suites
 npm run brand # after changing `name`/`school` in config.js
 ```
 

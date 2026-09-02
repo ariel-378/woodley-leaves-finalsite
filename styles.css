@@ -2192,3 +2192,42 @@ footer a:hover { opacity: 0.85; }
 
 /* Date beside a front-page byline. Muted: it's orientation, not the story. */
 .ha-date { color: var(--muted); white-space: nowrap; }
+
+/* ===== Tag picker in the article editor =====
+   A search rather than a row of checkboxes: a paper with thirty tags cannot
+   show thirty checkboxes in a modal and call that a choice. */
+.ed-tag-chip {
+  display: inline-flex; align-items: center; gap: 6px;
+  background: var(--cream); border: 1px solid var(--rule); border-radius: 999px;
+  padding: 3px 6px 3px 11px; margin: 0 6px 6px 0;
+  font-family: "Helvetica Neue", Arial, sans-serif; font-size: 13px; color: var(--ink);
+  text-transform: none; letter-spacing: 0;
+}
+.ed-tag-chip button {
+  border: none; background: none; cursor: pointer; padding: 0 4px;
+  font-size: 16px; line-height: 1; color: var(--muted);
+}
+.ed-tag-chip button:hover { color: #b8002a; }
+.ed-tag-chip button:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+
+.ed-tag-search-wrap { position: relative; }
+
+/* The menu floats over the form rather than pushing it around as you type. */
+#ed-tag-results {
+  display: none;
+  position: absolute; left: 0; right: 0; top: 100%; z-index: 10;
+  background: #fff; border: 1px solid var(--rule); border-top: none;
+  max-height: 220px; overflow-y: auto;
+  box-shadow: 0 6px 18px rgba(0,0,0,.10);
+}
+#ed-tag-results.is-open { display: block; }
+.ed-tag-option {
+  display: block; width: 100%; text-align: left;
+  padding: 9px 12px; border: none; background: none; cursor: pointer;
+  font-family: "Helvetica Neue", Arial, sans-serif; font-size: 14px; color: var(--ink);
+}
+.ed-tag-option:hover, .ed-tag-option:focus-visible { background: var(--cream); outline: none; }
+.ed-tag-empty {
+  padding: 9px 12px; font-family: "Helvetica Neue", Arial, sans-serif;
+  font-size: 13px; color: var(--muted); line-height: 1.5;
+}

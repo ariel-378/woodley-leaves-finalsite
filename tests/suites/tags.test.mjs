@@ -158,6 +158,100 @@ export async function run() {
       (ctx.$("#tags-list") || {}).textContent);
   }
 
+  // ===== Picking tags on an article: search, not a wall of checkboxes =====
+  //  A paper with thirty tags cannot show thirty checkboxes in a modal and call
+  //  it a choice. Editors type a few letters and pick from what matches.
+  async function editorWithTags(tags) {
+    const ctx = await editor();
+    ctx.window.WLTags.setEnabled(true);
+    tags.forEach(t => ctx.window.WLTags.add(t));
+    ctx.window.WLArticleEditor.open(null, { section: "News" });
+    return ctx;
+  }
+
+  {
+    const ctx = await editorWithTags(["Profiles", "Sports", "Opinion", "Science"]);
+    check.ok("there is a search box, not a checkbox list", !!ctx.$("#ed-tag-search"));
+    check.equal("no checkboxes are dumped on the page", ctx.$$(".ed-tag-box").length, 0);
+    check.ok("nothing is suggested before you type", !ctx.$$("#ed-tag-results .ed-tag-option").length);
+  }
+
+  {
+    const ctx = await editorWithTags(["Profiles", "Sports", "Opinion", "Science"]);
+    ctx.type(ctx.$("#ed-tag-search"), "sc");
+    const shown = ctx.$$("#ed-tag-results .ed-tag-option").map(o => o.textContent.trim());
+    check.equal("typing filters the list", shown, ["Science"]);
+
+    ctx.type(ctx.$("#ed-tag-search"), "o");
+    const many = ctx.$$("#ed-tag-results .ed-tag-option").map(o => o.textContent.trim());
+    check.ok("a looser match shows everything containing it",
+      many.includes("Profiles") && many.includes("Opinion"), many.join(", "));
+    check.ok("and excludes what does not match", !many.includes("Science"), many.join(", "));
+  }
+
+  {
+    const ctx = await editorWithTags(["Profiles", "Sports"]);
+    ctx.type(ctx.$("#ed-tag-search"), "pro");
+    ctx.click(ctx.$("#ed-tag-results .ed-tag-option"));
+
+    check.ok("picking one adds it as a chip",
+      ctx.$$("#ed-tag-chips .ed-tag-chip").some(c => c.textContent.includes("Profiles")),
+      ctx.$("#ed-tag-chips").textContent);
+    check.equal("and clears the search so the next one is easy", ctx.$("#ed-tag-search").value, "");
+    check.ok("a tag already chosen is not offered again",
+      !ctx.$$("#ed-tag-results .ed-tag-option").some(o => o.textContent.includes("Profiles")));
+  }
+
+  {
+    const ctx = await editorWithTags(["Profiles", "Sports"]);
+    ctx.type(ctx.$("#ed-tag-search"), "pro");
+    ctx.click(ctx.$("#ed-tag-results .ed-tag-option"));
+    ctx.click(ctx.$("#ed-tag-chips .ed-tag-chip button"));
+    check.equal("a chip can be removed", ctx.$$("#ed-tag-chips .ed-tag-chip").length, 0);
+  }
+
+  {
+    const ctx = await editorWithTags(["Profiles"]);
+    ctx.type(ctx.$("#ed-tag-search"), "somethingelse");
+    check.equal("a tag that is not on the list matches nothing", ctx.$$("#ed-tag-results .ed-tag-option").length, 0);
+    check.ok("and it says so rather than looking broken",
+      /no tag|not on the list|no match/i.test(ctx.$("#ed-tag-results").textContent),
+      ctx.$("#ed-tag-results").textContent);
+
+    const box = ctx.$("#ed-tag-search");
+    box.dispatchEvent(new ctx.window.KeyboardEvent("keydown", { key: "Enter", bubbles: true }));
+    check.equal("pressing Enter cannot invent a tag", ctx.$$("#ed-tag-chips .ed-tag-chip").length, 0,
+      "free text got in, which is the thing the list exists to prevent");
+  }
+
+  {
+    // Enter on a single match is the fast path an editor will actually use.
+    const ctx = await editorWithTags(["Profiles", "Sports"]);
+    const box = ctx.$("#ed-tag-search");
+    ctx.type(box, "spo");
+    box.dispatchEvent(new ctx.window.KeyboardEvent("keydown", { key: "Enter", bubbles: true }));
+    check.ok("Enter picks the only match",
+      ctx.$("#ed-tag-chips").textContent.includes("Sports"), ctx.$("#ed-tag-chips").textContent);
+  }
+
+  {
+    // Editing an article shows what it already has.
+    const ctx = await editor();
+    ctx.window.WLTags.setEnabled(true);
+    ["Profiles", "Sports"].forEach(t => ctx.window.WLTags.add(t));
+    ctx.window.WLArticles.save("a9", { title: "T", section: "News", body: ["x"], tags: ["Sports"] });
+    ctx.window.WLArticleEditor.open("a9");
+    check.ok("an article's existing tags appear as chips",
+      ctx.$("#ed-tag-chips").textContent.includes("Sports"), ctx.$("#ed-tag-chips").textContent);
+  }
+
+  {
+    const ctx = await editor();          // tags switched off
+    ctx.window.WLArticleEditor.open(null, { section: "News" });
+    check.ok("with tags off the whole field is gone",
+      ctx.$("#ed-tags-wrap").style.display === "none");
+  }
+
   opened.forEach(c => c.close());
   return check;
 }

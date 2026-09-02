@@ -50,8 +50,14 @@ window.WLArticleEditor = (function () {
         </label>
 
         <div id="ed-tags-wrap">
-          <label style="margin-bottom:6px;">Tags</label>
-          <div id="ed-tags-picks"></div>
+          <label for="ed-tag-search" style="margin-bottom:6px;">Tags</label>
+          <div id="ed-tag-chips"></div>
+          <div class="ed-tag-search-wrap">
+            <input type="text" id="ed-tag-search" autocomplete="off" role="combobox"
+                   aria-expanded="false" aria-controls="ed-tag-results" aria-autocomplete="list"
+                   placeholder="Search tags\u2026">
+            <div id="ed-tag-results" role="listbox" aria-label="Matching tags"></div>
+          </div>
           <input type="hidden" id="ed-tags">
         </div>
 
@@ -146,6 +152,26 @@ window.WLArticleEditor = (function () {
       workingGallery.push({ url: "", caption: "" });
       renderGalleryRows();
     });
+
+    const tagSearch = $("ed-tag-search");
+    tagSearch.addEventListener("input", renderTagResults);
+    tagSearch.addEventListener("keydown", (e) => {
+      if (e.key !== "Enter") return;
+      // Enter must never create a tag — only choose one, and only when there is
+      // exactly one thing it could mean. Anything else and the editor picks.
+      e.preventDefault();
+      const matches = tagMatches();
+      if (matches.length === 1) pickTag(matches[0]);
+    });
+    // Leaving the field should not leave a menu hanging over the form.
+    tagSearch.addEventListener("blur", () => setTimeout(() => {
+      const host = $("ed-tag-results");
+      if (host && !host.contains(document.activeElement)) {
+        host.classList.remove("is-open");
+        host.innerHTML = "";
+        tagSearch.setAttribute("aria-expanded", "false");
+      }
+    }, 150));
 
     photoEl.addEventListener("input", refreshPhotoPreview);
     videoEl.addEventListener("input", refreshPhotoPreview);
@@ -287,34 +313,87 @@ window.WLArticleEditor = (function () {
 
 
   /**
-   * Tags come from the list the masthead keeps (WLTags), not from typing. That
-   * is the point: a free-text box is how "Sports", "sports" and "sport" become
-   * three tag pages holding one article each.
+   * Tags come from the list the masthead keeps (WLTags), never from typing.
+   * That is the point: a free-text box is how "Sports", "sports" and "sport"
+   * become three tag pages holding one article each.
    *
-   * With tags switched off, or with an empty list, the field disappears rather
+   * It is a search rather than a row of checkboxes because a paper with thirty
+   * tags cannot show thirty checkboxes in a modal and call that a choice. Type
+   * a few letters, pick from what matches. Chosen tags sit above as chips so
+   * the article's tags are readable at a glance rather than hidden among the
+   * unticked ones.
+   *
+   * With tags switched off, or an empty list, the whole field disappears rather
    * than offering a choice that leads nowhere.
    */
+  let workingTags = [];
+
   function renderTagPicker(selected) {
     const wrap = document.getElementById("ed-tags-wrap");
-    const host = document.getElementById("ed-tags-picks");
-    if (!wrap || !host) return;
-
+    if (!wrap) return;
     const on = window.WLTags && WLTags.isEnabled();
     const list = on ? WLTags.list() : [];
     wrap.style.display = list.length ? "block" : "none";
-    if (!list.length) { host.innerHTML = ""; return; }
-
-    const chosen = (selected || []).map(t => String(t).toLowerCase());
-    host.innerHTML = list.map((t, i) => `
-      <label style="display:inline-flex;align-items:center;gap:6px;margin:0 12px 8px 0;text-transform:none;letter-spacing:0;font-size:13px;color:var(--ink);">
-        <input type="checkbox" class="ed-tag-box" value="${escapeHtml(t)}" ${chosen.includes(t.toLowerCase()) ? "checked" : ""} style="width:auto;margin:0;">
-        ${escapeHtml(t)}
-      </label>`).join("");
+    // Keep only tags still on the list: one deleted since this article was
+    // written should not reappear here.
+    workingTags = on && window.WLTags ? WLTags.clean(selected || []) : [];
+    renderTagChips();
+    renderTagResults();
   }
 
-  function checkedTags() {
-    return [...document.querySelectorAll(".ed-tag-box")].filter(b => b.checked).map(b => b.value);
+  function renderTagChips() {
+    const host = document.getElementById("ed-tag-chips");
+    if (!host) return;
+    host.innerHTML = workingTags.map(t => `
+      <span class="ed-tag-chip">${escapeHtml(t)}<button type="button" aria-label="Remove ${escapeHtml(t)}" data-tag-off="${escapeHtml(t)}">&times;</button></span>`).join("");
+    host.querySelectorAll("[data-tag-off]").forEach(b =>
+      b.addEventListener("click", () => {
+        workingTags = workingTags.filter(t => t !== b.dataset.tagOff);
+        renderTagChips(); renderTagResults();
+      }));
   }
+
+  /** Everything on the list that matches what has been typed and is not already chosen. */
+  function tagMatches() {
+    if (!window.WLTags || !WLTags.isEnabled()) return [];
+    const q = (document.getElementById("ed-tag-search").value || "").trim().toLowerCase();
+    if (!q) return [];
+    return WLTags.list()
+      .filter(t => !workingTags.some(w => w.toLowerCase() === t.toLowerCase()))
+      .filter(t => t.toLowerCase().includes(q));
+  }
+
+  function renderTagResults() {
+    const box = document.getElementById("ed-tag-search");
+    const host = document.getElementById("ed-tag-results");
+    if (!host || !box) return;
+    const q = (box.value || "").trim();
+    const matches = tagMatches();
+
+    if (!q) { host.innerHTML = ""; host.classList.remove("is-open"); box.setAttribute("aria-expanded", "false"); return; }
+
+    host.classList.add("is-open");
+    box.setAttribute("aria-expanded", "true");
+    if (!matches.length) {
+      // Saying nothing here reads as broken. Say why, and where tags come from.
+      host.innerHTML = `<div class="ed-tag-empty">No tag matches “${escapeHtml(q)}”. Tags are added in Content &rarr; Tags.</div>`;
+      return;
+    }
+    host.innerHTML = matches.map(t =>
+      `<button type="button" class="ed-tag-option" role="option" data-tag-on="${escapeHtml(t)}">${escapeHtml(t)}</button>`).join("");
+    host.querySelectorAll("[data-tag-on]").forEach(b =>
+      b.addEventListener("click", () => pickTag(b.dataset.tagOn)));
+  }
+
+  function pickTag(tag) {
+    if (!tag || workingTags.some(t => t.toLowerCase() === tag.toLowerCase())) return;
+    workingTags.push(tag);
+    document.getElementById("ed-tag-search").value = "";   // ready for the next one
+    renderTagChips();
+    renderTagResults();
+  }
+
+  function checkedTags() { return workingTags.slice(); }
 
   // ===== Open / close =====
   function open(id, opts) {

@@ -46,7 +46,11 @@ export async function run() {
     type(document.querySelector("#ed-authors input"), "Ada Chen");
     click($("#ed-author-add"));
     type(ctx.$$("#ed-authors input")[1], "Ben Ruiz");
-    ctx.$$(".ed-tag-box").forEach(b => { b.checked = true; });
+    // Tags are searched for and picked, not ticked from a list of everything.
+    for (const q of ["senior", "profile"]) {
+      type($("#ed-tag-search"), q);
+      click(ctx.$("#ed-tag-results .ed-tag-option"));
+    }
     click($("#ed-save"));
 
     check.ok("modal closes on save", !$("#ed-modal").classList.contains("visible"));

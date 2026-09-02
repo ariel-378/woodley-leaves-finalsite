@@ -275,7 +275,9 @@ Tags are **off until you turn them on**, in **Content → Tags**. A paper that
 doesn't want them never sees them.
 
 Switched on, you keep a short list — *Profiles*, *Sports*, *Op-Ed* — and writers
-tick the ones that apply rather than typing their own. That is the point: a
+**search it** when tagging an article: type a few letters, pick from what
+matches. Chosen tags sit above the box as chips you can remove. Typing a tag
+that isn't on the list does nothing, deliberately. That is the point: a
 free-text box is how "Sports", "sports" and "sport" become three separate tag
 pages with one article each.
 
