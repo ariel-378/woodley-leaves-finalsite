@@ -79,7 +79,7 @@
     resultsEl.innerHTML = results.map(a => `
       <article class="search-result">
         <div class="kicker">${escapeHtml(a.section)}</div>
-        <h3><a href="article.html?id=${encodeURIComponent(a.id)}">${highlight(a.title, q)}</a></h3>
+        <h3><a href="${WL_storyHref(a.id)}">${highlight(a.title, q)}</a></h3>
         <div class="byline">By ${window.WL_bylineTagsHtml ? WL_bylineTagsHtml(a) : highlight(a.byline, q)} · ${escapeHtml(a.date)}</div>
       </article>
     `).join("");

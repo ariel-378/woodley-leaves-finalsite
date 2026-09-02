@@ -1,0 +1,61 @@
+# Generate a real page per story, after every publish.
+#
+# Publishing is automatic: the shared-editing service commits
+# published-content.js on its own. It runs on Cloudflare Workers and cannot run
+# Node, so it cannot generate the story pages that make link previews work.
+# This does that immediately afterwards.
+#
+# Until this has run, links to a new story fall back to article.html?id=...,
+# which works but previews poorly. See story-url.js.
+name: Story pages
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - published-content.js
+      - content-bundle.js
+      - article.html
+      - config.js
+      - setup/build-stories.mjs
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  # The service can commit twice in quick succession. Let the newer run win
+  # rather than having two runs push conflicting story pages.
+  group: story-pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Generate story pages
+        run: node setup/build-stories.mjs
+
+      - name: Commit them if anything changed
+        run: |
+          if [ -z "$(git status --porcelain)" ]; then
+            echo "Story pages already up to date."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add stories story-url.js
+          git commit -m "chore: regenerate story pages"
+          # A push can lose a race with the publishing service. Rebase and retry
+          # rather than failing and leaving new stories without pages.
+          for i in 1 2 3; do
+            git push && exit 0
+            git pull --rebase --autostash origin main || exit 1
+          done
+          exit 1

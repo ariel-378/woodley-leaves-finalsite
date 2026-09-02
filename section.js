@@ -33,7 +33,7 @@
   }
 
   // ── NYT-style tiers: one lead story, a row of cards, then smaller minis. ──
-  function href(a) { return `article.html?id=${encodeURIComponent(a.id)}`; }
+  function href(a) { return WL_storyHref(a.id); }
   function eyebrow(a) { return `<div class="sec-eyebrow">${window.WL_bylineTagsHtml ? WL_bylineTagsHtml(a) : escapeHtml(a.byline)}</div>`; }
   function deckHtml(a) { return a.deck ? `<p class="sec-deck">${escapeHtml(a.deck)}</p>` : ""; }
 

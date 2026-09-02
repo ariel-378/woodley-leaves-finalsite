@@ -15,6 +15,7 @@
 <script src="content-bundle.js"></script>
 <script src="brand.js"></script>
 <script src="sections-store.js"></script>
+<script src="story-url.js"></script>
 <script src="nav.js"></script>
 <style>
   .ed-tabs { display: flex; gap: 4px; margin-bottom: 18px; border-bottom: 1px solid var(--rule); flex-wrap: wrap; }
@@ -496,7 +497,7 @@
       return `
         <div class="c-art">
           <div class="c-art-main">
-            <a href="article.html?id=${encodeURIComponent(a.id)}" target="_blank">${esc(a.title)}</a>${badges}
+            <a href="${WL_storyHref(a.id)}" target="_blank">${esc(a.title)}</a>${badges}
             <div class="c-art-deck">${esc(a.deck || "")}</div>
             <div class="c-art-meta">${esc(a.byline || "")} · ${esc(a.date || "")}</div>
           </div>

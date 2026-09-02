@@ -15,7 +15,7 @@
     const m = url.match(/(?:youtube\.com\/(?:watch\?v=|embed\/)|youtu\.be\/)([\w-]+)/);
     return m ? m[1] : null;
   }
-  function href(a) { return `article.html?id=${encodeURIComponent(a.id)}`; }
+  function href(a) { return WL_storyHref(a.id); }
   function byline(a) { return window.WL_bylineTagsHtml ? WL_bylineTagsHtml(a) : escapeHtml(a.byline); }
 
   // Byline plus date. A reader who can't tell whether a story is from this week
@@ -173,7 +173,7 @@
     const cta = overlay.querySelector(".popup-cta");
     if (h) h.textContent = breaking.title;
     if (d) d.textContent = breaking.deck;
-    if (cta) cta.href = `article.html?id=${encodeURIComponent(breaking.id)}`;
+    if (cta) cta.href = `${WL_storyHref(breaking.id)}`;
   }
 
   function renderVideoModule() {

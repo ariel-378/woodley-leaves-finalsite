@@ -17,8 +17,11 @@ export const SITE = path.resolve(fileURLToPath(import.meta.url), "../..");
 /** Read a page and inline its same-directory scripts so jsdom can run them. */
 export function inlineScripts(file) {
   const html = fs.readFileSync(path.join(SITE, file), "utf8");
-  return html.replace(/<script src="([^"/:]+\.js)"[^>]*><\/script>/g, (match, src) => {
-    const p = path.join(SITE, src);
+  // Resolve relative to the page's own directory, so a generated story page in
+  // stories/ can pull in ../articles-store.js the way a browser would.
+  const from = path.dirname(path.join(SITE, file));
+  return html.replace(/<script src="([^":]+\.js)"[^>]*><\/script>/g, (match, src) => {
+    const p = path.resolve(from, src);
     return fs.existsSync(p) ? `<script>\n${fs.readFileSync(p, "utf8")}\n</script>` : "";
   });
 }

@@ -3,30 +3,31 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>The Woodley Leaves</title>
-<meta name="description" content="The Woodley Leaves — Maret School's student newspaper.">
-<meta property="og:title" content="The Woodley Leaves">
-<meta property="og:description" content="">
-<meta property="og:image" content="">
+<title>Maret Upper School Students Walk Out of Classes to Protest ICE — The Woodley Leaves</title>
+<meta name="description" content="On Feb. 27, Maret students joined more than a thousand DMV peers at the Lincoln Memorial to protest ICE brutality toward immigrants.">
+<meta property="og:title" content="Maret Upper School Students Walk Out of Classes to Protest ICE">
+<meta property="og:description" content="On Feb. 27, Maret students joined more than a thousand DMV peers at the Lincoln Memorial to protest ICE brutality toward immigrants.">
+<meta property="og:image" content="media/photo-ice-walkout-february.jpg">
 <meta property="og:type" content="article">
 <meta property="og:site_name" content="The Woodley Leaves">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="The Woodley Leaves">
-<meta name="twitter:description" content="">
-<meta name="twitter:image" content="">
-<link rel="icon" type="image/svg+xml" href="favicon.svg">
-<link rel="stylesheet" href="styles.css" />
-<script src="storage.js"></script>
-<script src="schedule.js"></script>
-<script src="config.js"></script>
-<script src="brand-store.js"></script>
-<script src="published-content.js"></script>
-<script src="content-bundle.js"></script>
-<script src="brand.js"></script>
-<script src="sections-store.js"></script>
-<script src="story-url.js"></script>
-<script src="nav.js"></script>
-<link rel="stylesheet" href="responsive.css" />
+<meta name="twitter:title" content="Maret Upper School Students Walk Out of Classes to Protest ICE">
+<meta name="twitter:description" content="On Feb. 27, Maret students joined more than a thousand DMV peers at the Lincoln Memorial to protest ICE brutality toward immigrants.">
+<meta name="twitter:image" content="media/photo-ice-walkout-february.jpg">
+<link rel="icon" type="image/svg+xml" href="../favicon.svg">
+<link rel="stylesheet" href="../styles.css" />
+<script src="../storage.js"></script>
+<script src="../schedule.js"></script>
+<script src="../config.js"></script>
+<script src="../brand-store.js"></script>
+<script src="../published-content.js"></script>
+<script src="../content-bundle.js"></script>
+<script src="../brand.js"></script>
+<script src="../sections-store.js"></script>
+<script src="../story-url.js"></script>
+<script src="../nav.js"></script>
+<link rel="stylesheet" href="../responsive.css" />
+<script>window.WL_ARTICLE_ID = "ice-walkout-february";</script>
 </head>
 <body>
 
@@ -35,9 +36,9 @@
 <div class="topbar"><div class="topbar-inner"><div><a href="#" class="topbar-cta">Subscribe</a></div><div></div></div></div>
 
 <div class="masthead">
-  <div class="masthead-ornament left" aria-hidden="true"><img src="media/leaf.svg" alt="" width="60" height="30"></div>
-  <div class="masthead-ornament right" aria-hidden="true"><img src="media/leaf.svg" alt="" width="60" height="30"></div>
-  <h1><a href="index.html">The Student Times</a></h1>
+  <div class="masthead-ornament left" aria-hidden="true"><img src="../media/leaf.svg" alt="" width="60" height="30"></div>
+  <div class="masthead-ornament right" aria-hidden="true"><img src="../media/leaf.svg" alt="" width="60" height="30"></div>
+  <h1><a href="../index.html">The Student Times</a></h1>
   <div class="dateline" data-wl-text="article-dateline">YOUR SCHOOL</div>
 </div>
 
@@ -49,7 +50,7 @@
   <article class="article-page" id="article-root">
     <div id="article-not-found" style="display:none;">
       <h1>Article not found</h1>
-      <p>We couldn't find that story. <a href="index.html">Return home</a>.</p>
+      <p>We couldn't find that story. <a href="../index.html">Return home</a>.</p>
     </div>
 
     <div id="article-body" style="display:none;">
@@ -89,17 +90,17 @@
 </main>
 
 <footer></footer>
-<script src="articles.js"></script>
-<script src="articles-store.js"></script>
-<script src="tags-store.js"></script>
-<script src="writers.js"></script>
-<script src="writers-store.js"></script>
-<script src="views-store.js"></script>
-<script src="submissions.js"></script>
-<script src="auth.js"></script>
-<script src="script.js"></script>
-<script src="text-editor.js"></script>
-<script src="layout-editor.js"></script>
+<script src="../articles.js"></script>
+<script src="../articles-store.js"></script>
+<script src="../tags-store.js"></script>
+<script src="../writers.js"></script>
+<script src="../writers-store.js"></script>
+<script src="../views-store.js"></script>
+<script src="../submissions.js"></script>
+<script src="../auth.js"></script>
+<script src="../script.js"></script>
+<script src="../text-editor.js"></script>
+<script src="../layout-editor.js"></script>
 <script>
 (function () {
   const params = new URLSearchParams(location.search);
@@ -234,7 +235,7 @@
     wrap.hidden = false;
     grid.innerHTML = a.gallery.map((g, i) => `
       <button class="gallery-thumb" data-i="${i}" aria-label="Open photo ${i + 1}">
-        <img src="${g.url}" alt="${(g.caption || "Photo " + (i + 1)).replace(/"/g, "&quot;")}" loading="lazy">
+        <img src="../${g.url}" alt="${(g.caption || "Photo " + (i + 1)).replace(/"/g, "&quot;")}" loading="lazy">
       </button>
     `).join("");
 
@@ -326,7 +327,7 @@
     const tagsEl = document.getElementById("article-tags");
     tagsEl.hidden = false;
     tagsEl.innerHTML = shownTags.map(t =>
-      `<a class="tag-chip" href="tag.html?tag=${encodeURIComponent(t.toLowerCase())}">${t.replace(/[<>&"]/g, c => ({ "<":"&lt;", ">":"&gt;", "&":"&amp;", '"':"&quot;" }[c]))}</a>`
+      `<a class="tag-chip" href="../tag.html?tag=${encodeURIComponent(t.toLowerCase())}">${t.replace(/[<>&"]/g, c => ({ "<":"&lt;", ">":"&gt;", "&":"&amp;", '"':"&quot;" }[c]))}</a>`
     ).join("");
   }
 
@@ -345,7 +346,7 @@
     const grid = document.getElementById("related-grid");
     section.hidden = false;
     grid.innerHTML = related.map(r => `
-      <a class="related-card" href="${WL_storyHref(r.id)}">
+      <a class="related-card" href="../${WL_storyHref(r.id)}">
         <div class="kicker">${escapeHtml(r.section)}</div>
         <h4>${escapeHtml(r.title)}</h4>
         <p>${escapeHtml(r.deck)}</p>

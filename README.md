@@ -84,6 +84,45 @@ Because editor changes are saved to `localStorage` and override the shipped file
 if the demo ever shows stale content, click **Reset demo data** (or open the site
 in a private window) to get back to the shipped version.
 
+## Link previews
+
+When a story is pasted into a group chat, iMessage, Slack or a social post, the
+preview is built by a machine that fetches the page and reads its markup. **It
+does not run JavaScript.** A page that fills in its own headline after loading
+previews as the name of the paper and nothing else — which, for a school paper
+whose readers share stories in group chats, is most of the distribution.
+
+So every published story is also written out as a real page:
+
+```
+stories/<id>.html
+```
+
+with its headline, description and photo already in the markup. `article.html`
+still works — old links, and the editor previewing a draft, both go through it.
+
+**Regenerating them:**
+
+```
+npm run stories      # just the story pages
+npm run brand        # re-stamps the paper name, then regenerates
+```
+
+Both are run for you by `.github/workflows/stories.yml` after every publish, so
+in normal use nobody has to remember. A story published in the last minute or
+two may briefly link to `article.html?id=…` instead — that page works, it just
+previews poorly, and the link corrects itself once the workflow has run.
+
+Two things worth knowing:
+
+- **Set `siteUrl` in `config.js`** to the address the paper is published at.
+  Without it the photo in a preview is a relative path, which most previews
+  cannot resolve. Headlines and descriptions work either way, and
+  `npm run stories` tells you when it is missing.
+- **Scheduled stories are not generated.** A story with a future publish time
+  gets no page until that time, so an embargoed headline is never sitting in a
+  public file early.
+
 ## Documentation
 
 - **[FINALSITE.md](FINALSITE.md)** — how the site integrates with Finalsite: the
@@ -107,6 +146,8 @@ in a private window) to get back to the shipped version.
 | `*-store.js` | CRUD / data layer — the seam for server-backed persistence |
 | `auth.js` | Identity adapter (`window.WLAuth`; reads `WL_CONTEXT`) |
 | `nav.js`, `brand.js`, `section.js`, … | Shared rendering |
+| `stories/` | Generated — one real page per story, so links preview. Do not edit by hand |
+| `story-url.js` | Where a story lives; holds the generated list of pages |
 
 ## Licence
 

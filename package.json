@@ -6,7 +6,8 @@
   "scripts": {
     "test": "node tests/run.mjs",
     "serve": "python3 serve.py",
-    "brand": "node setup/stamp-brand.mjs"
+    "brand": "node setup/stamp-brand.mjs && node setup/build-stories.mjs",
+    "stories": "node setup/build-stories.mjs"
   },
   "devDependencies": {
     "jsdom": "^26.0.0"
