@@ -21,7 +21,7 @@ const tick = () => new Promise(r => setTimeout(r, 0));
  * committed published-content.js in place of the shipped placeholder. This is
  * the step that had never been tested.
  */
-async function readerReceiving(publishedJS, page = "index.html") {
+export async function readerReceiving(publishedJS, page = "index.html") {
   const errors = [];
   const vc = new VirtualConsole();
   vc.on("jsdomError", e => errors.push(e.message.split("\n")[0]));

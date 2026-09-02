@@ -74,8 +74,12 @@
   .sub-status { margin-top: 16px; border-top: 1px solid var(--rule); padding-top: 12px; font-size: 13px; line-height: 1.55; }
   .sub-status p { margin: 0 0 6px; }
   .sub-status p:last-child { margin-bottom: 0; }
-  /* Drift = the form says one thing, the deployed config.js says another. */
+  /* Drift = the form says one thing, the deployed config.js says another.
+     Red, because readers are not getting what the editor is looking at. */
   .sub-drift { color: #b8002a; }
+  /* Pending = the change is real and on its way. Not a warning — the same red
+     here would train editors to read every status line as a problem. */
+  .sub-pending { color: var(--muted); }
   .sub-msg.ok { color: var(--accent); }
   .sub-msg.err { color: #b8002a; }
 
@@ -960,10 +964,38 @@
   //  config.js, and the panel says so out loud whenever the form has drifted
   //  from it. An editor must never be able to paste a URL here, be told it is
   //  set up, and leave every reader with nothing.
+  // The switch and the Sheet details reach readers by different routes, so the
+  // panel has to answer "what do readers have" separately for each.
+  //
+  //  · The Sheet details (endpoint, fallback, Sheet URL) come from config.js
+  //    and only from config.js — see submissions.js. Where the paper's mail
+  //    goes must be identical for every reader, so it is never taken from an
+  //    editor's browser. Changing them needs a deployed config.js.
+  //
+  //  · The switch is presentation, and it lives in wl_brand, which travels with
+  //    everything else the paper publishes. So what readers have is whatever the
+  //    deployed published-content.js says — falling back to config.js when the
+  //    paper has never published, or published before this switch existed.
+  function shippedEnabled() {
+    const raw = window.WL_PUBLISHED && WL_PUBLISHED.data && WL_PUBLISHED.data.wl_brand;
+    if (raw) {
+      try {
+        const b = typeof raw === "string" ? JSON.parse(raw) : raw;
+        const v = b && b.submissions && b.submissions.enabled;
+        if (v !== undefined) return v !== false;
+      } catch (e) {
+        // Unreadable published data must not be reported as an answer. Fall
+        // through to config.js rather than guess at what readers can see.
+      }
+    }
+    const s = (window.WL_CONFIG && window.WL_CONFIG.submissions) || {};
+    return s.enabled !== false;               // unset means on
+  }
+
   function shippedSubmissions() {
     const s = (window.WL_CONFIG && window.WL_CONFIG.submissions) || {};
     return {
-      enabled: s.enabled !== false,          // unset means on
+      enabled: shippedEnabled(),
       endpoint: String(s.endpoint || "").trim(),
       fallbackEmail: String(s.fallbackEmail || "").trim(),
       sheetUrl: String(s.sheetUrl || "").trim(),
@@ -1015,9 +1047,26 @@
     box.innerHTML = "";
     box.appendChild(statusLine("", "Readers right now: ", readersGet(live)));
 
-    if (JSON.stringify(live) !== JSON.stringify(formSubmissions())) {
+    const now = formSubmissions();
+
+    // The switch publishes itself. Telling an editor to go and find a developer
+    // for a change that has already happened is as wrong as the reverse.
+    if (now.enabled !== live.enabled) {
+      const shared = window.WLSync && WLSync.isConfigured();
+      box.appendChild(statusLine("sub-pending", "",
+        shared
+          ? "The Subscribe button is switched " + (now.enabled ? "on" : "off") +
+            " here, and reaches readers on its own within a couple of minutes."
+          : "The Subscribe button is switched " + (now.enabled ? "on" : "off") +
+            " here. It reaches readers with the next Download to publish, on the Content tab."));
+    }
+
+    // The Sheet details are a different matter and genuinely do need a deploy.
+    const sheetChanged = now.endpoint !== live.endpoint ||
+      now.fallbackEmail !== live.fallbackEmail || now.sheetUrl !== live.sheetUrl;
+    if (sheetChanged) {
       box.appendChild(statusLine("sub-drift", "",
-        "What's entered above isn't live yet. Click Download config below and send the " +
+        "The Sheet details above aren't live yet. Click Download config below and send the " +
         "file to whoever manages your site — until then, readers get what's described above."));
     }
     if (msg) box.appendChild(statusLine("sub-msg " + msg.tone, "", msg.text));

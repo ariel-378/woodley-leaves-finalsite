@@ -5,6 +5,7 @@
 // signed up when nothing was recorded. So these drive the real modal and check
 // what the reader is told in each case — configured, unconfigured, and failing.
 import { loadPage, inlineStyles, Check } from "../harness.mjs";
+import { readerReceiving } from "./publish.test.mjs";
 import jsdomPkg from "jsdom";
 import { readFileSync } from "node:fs";
 
@@ -239,10 +240,54 @@ export async function run() {
     ctx.type($(ctx, "f-sub-endpoint"), "https://script.google.com/macros/s/TYPED/exec");
     check.ok("typing an endpoint does NOT claim signups are working",
       !/going to your Sheet/i.test(status()), status());
-    check.ok("it warns the setting isn't live for readers yet",
-      /isn't live yet/i.test(status()), status());
+    check.ok("it warns the Sheet details aren't live for readers yet",
+      /aren't live yet/i.test(status()), status());
     check.ok("and points at Download config as the way to make it live",
       /Download config/i.test(status()), status());
+  }
+
+  // ===== An editor turning it off actually reaches readers =====
+  //  This is the whole point of the switch, and it is the one thing the other
+  //  tests cannot show: they seed wl_brand into a reader's own browser, which
+  //  proves the reader code works, not that publishing carries the setting.
+  //  Adding wl_brand to content-bundle.js's exclude list would break this and
+  //  nothing else would notice.
+  {
+    const ed = await brandTab();
+    ed.window.WLBrand.save({ submissions: { enabled: false } });
+
+    const published = ed.window.WLBundle.toPublishedJS();
+    check.ok("the published file carries the switch", /"enabled":\s*false/.test(published),
+      "wl_brand did not survive into the published bundle");
+
+    const r = await readerReceiving(published);
+    const link = [...r.window.document.querySelectorAll(".topbar a")]
+      .find(a => a.textContent.trim() === "Subscribe");
+    check.ok("a reader who has never opened the site gets no Subscribe button", !link,
+      "the editor switched the newsletter off and readers still saw the button");
+  }
+
+  // ===== The switch and the Sheet details travel differently =====
+  //  The endpoint is read from config.js on purpose, so changing it needs a
+  //  deploy. The switch lives in wl_brand and goes out with everything else the
+  //  paper publishes. Telling an editor to go and find a developer for a change
+  //  that has already happened is as wrong as the reverse.
+  {
+    const ctx = await brandTab();
+    const status = () => $(ctx, "sub-status").textContent;
+
+    ctx.click($(ctx, "f-sub-enabled"));       // turn the newsletter off
+    check.ok("switching the newsletter off says so", /switched off/i.test(status()), status());
+    check.ok("and does NOT send the editor off to download a config file",
+      !/Download config/i.test(status()), status());
+    check.ok("nor claim it isn't live", !/aren't live yet/i.test(status()), status());
+
+    ctx.type($(ctx, "f-sub-endpoint"), "https://script.google.com/macros/s/TYPED/exec");
+    check.ok("changing the Sheet details as well still asks for a deploy",
+      /Download config/i.test(status()), status());
+    check.ok("and the switch is still reported separately",
+      /switched off/i.test(status()), status());
+    check.clean("no errors rendering the split status", ctx);
   }
 
   {
