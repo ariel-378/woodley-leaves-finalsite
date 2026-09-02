@@ -113,16 +113,10 @@
       <a href="editor-brand.html" class="ed-tab-brand">Brand design</a>
     </div>
 
-    <p class="c-intro">
-      Everything with a publish time still to come, in the order it goes out —
-      articles, poems, art, videos, features and games together. Give any piece
-      a date and time in its own editor and it appears here.
-      <br><br>
-      <strong>Scheduling decides <em>when</em> a piece appears. It does not send
-      it to readers.</strong> That is the <a href="editor-content.html">Content</a>
-      tab's <em>Download to publish</em>, which is what puts your work on the
-      site at all. Publish first; then each piece appears at the time you set.
-    </p>
+    <!-- One line, written at runtime: what is true about publishing depends on
+         whether shared editing is switched on, and a page that states the wrong
+         one is worse than a page that stays quiet. -->
+    <p class="c-intro" id="sched-lede"></p>
 
     <p class="unpublished" id="sched-unpublished" hidden></p>
     <p class="sched-count" id="sched-count"></p>
@@ -205,8 +199,27 @@
       "&rarr; Publish &amp; transfer &rarr; Download to publish</a>.";
   }
 
+
+  // Publishing explained in one line, and only the line that is true. With
+  // shared editing on, work reaches readers by itself and a time just decides
+  // when. With it off, a time sends nothing anywhere and somebody still has to
+  // publish. Stating the wrong one is how an editor ends up believing a
+  // scheduled story went out when it never left their browser.
+  function renderLede() {
+    const el = document.getElementById("sched-lede");
+    if (!el) return;
+    const shared = window.WLSync && WLSync.isConfigured();
+    el.innerHTML = shared
+      ? "A publish time decides <strong>when</strong> a piece appears. Getting it to " +
+        "readers happens on its own \u2014 nothing to click."
+      : "A publish time decides <strong>when</strong> a piece appears. It does not send " +
+        "anything to readers \u2014 that is <a href=\"editor-content.html\">Content &rarr; " +
+        "Download to publish</a>, and a scheduled piece that was never published reaches nobody.";
+  }
+
   function render() {
     if (!gate()) return;
+    renderLede();
     renderUnpublished();
     const plan = window.WLSchedule ? WLSchedule.collect() : [];
 
@@ -270,6 +283,7 @@
     "wl-auth-change", "wl-sections-change", "wl-articles-change",
     "wl-centerspread-change", "wl-videos-change", "wl-features-change", "wl-games-change",
   ].forEach(evt => document.addEventListener(evt, render));
+  document.addEventListener("wl-sync-change", renderLede);
 
   render();
 })();

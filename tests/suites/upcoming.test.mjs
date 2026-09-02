@@ -199,8 +199,10 @@ export async function run() {
   {
     const ctx = await open("editor-schedule.html");
     const text = ctx.document.body.textContent.replace(/\s+/g, " ");
-    check.ok("the Schedule tab says scheduling does not send anything to readers",
-      /does not send it to readers|not a substitute/i.test(text), text.slice(0, 240));
+    // Assert the meaning, not one phrasing: the line is written at runtime and
+    // says something different once shared editing is configured.
+    check.ok("the Schedule tab is clear that a time alone sends nothing",
+      /does not send|happens on its own/i.test(text), text.slice(0, 240));
     check.ok("and points at where publishing happens",
       /Download to publish/i.test(text) && !!ctx.$('a[href="editor-content.html"]'));
     check.ok("it no longer claims published items are already on the site",
