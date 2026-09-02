@@ -269,6 +269,21 @@ Two things worth knowing:
   For a story that genuinely must not leak, keep it out of the site until the
   day you publish it.
 
+### Tags
+
+Tags are **off until you turn them on**, in **Content → Tags**. A paper that
+doesn't want them never sees them.
+
+Switched on, you keep a short list — *Profiles*, *Sports*, *Op-Ed* — and writers
+tick the ones that apply rather than typing their own. That is the point: a
+free-text box is how "Sports", "sports" and "sport" become three separate tag
+pages with one article each.
+
+- **Renaming a tag** carries every article with it, so a tag keeps meaning one thing.
+- **Deleting one** takes it off the articles too, so nothing points at a tag that's gone.
+- **Switching tags off hides them; it doesn't delete anything.** The list and the
+  articles' tags survive, and switching back on restores exactly what was there.
+
 ### The Schedule tab
 
 The **Schedule** tab is the plan: everything with a publish time still to come,

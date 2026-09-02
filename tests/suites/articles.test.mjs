@@ -32,7 +32,21 @@ export async function run() {
     const writers = ctx.$$("#ed-authors input");
     type(writers[1], "Ben Ruiz");
 
-    type($("#ed-tags"), "seniors, profile");
+    // Tags now come from the list the masthead keeps, not from a free-text box:
+    // tick the ones that apply. Typing a tag is no longer possible, which is
+    // the point — it is how one tag stopped meaning three different things.
+    window.WLTags.setEnabled(true);
+    window.WLTags.add("Seniors");
+    window.WLTags.add("Profile");
+    window.WLArticleEditor.close();
+    window.WLArticleEditor.open(null, { section: "News" });
+    type($("#ed-title"), "A Story Filed Inline!");
+    type($("#ed-deck"), "One-line summary.");
+    type($("#ed-body"), "First paragraph.\n\nSecond paragraph.");
+    type(document.querySelector("#ed-authors input"), "Ada Chen");
+    click($("#ed-author-add"));
+    type(ctx.$$("#ed-authors input")[1], "Ben Ruiz");
+    ctx.$$(".ed-tag-box").forEach(b => { b.checked = true; });
     click($("#ed-save"));
 
     check.ok("modal closes on save", !$("#ed-modal").classList.contains("visible"));
@@ -41,7 +55,8 @@ export async function run() {
     check.equal("byline lists both writers", saved.byline, "Ada Chen, Ben Ruiz");
     check.equal("authors are kept separately", saved.authors, ["Ada Chen", "Ben Ruiz"]);
     check.equal("body split into paragraphs", saved.body.length, 2);
-    check.equal("tags parsed", saved.tags, ["seniors", "profile"]);
+    check.equal("the ticked tags are saved, in the list's own spelling",
+      saved.tags, ["Seniors", "Profile"]);
     check.equal("section page recorded", saved.sectionPage, "news.html");
     check.clean("no errors while filing", ctx);
   }

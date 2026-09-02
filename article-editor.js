@@ -49,9 +49,11 @@ window.WLArticleEditor = (function () {
           <textarea id="ed-body" rows="14" placeholder="The story opens here.&#10;&#10;Each paragraph goes on its own line."></textarea>
         </label>
 
-        <label>Tags (comma-separated, optional)
-          <input type="text" id="ed-tags" placeholder="e.g., seniors, prom, profile">
-        </label>
+        <div id="ed-tags-wrap">
+          <label style="margin-bottom:6px;">Tags</label>
+          <div id="ed-tags-picks"></div>
+          <input type="hidden" id="ed-tags">
+        </div>
 
         <fieldset class="ed-media">
           <legend>Media (optional)</legend>
@@ -283,6 +285,37 @@ window.WLArticleEditor = (function () {
     if (names.includes(current)) sectionEl.value = current;
   }
 
+
+  /**
+   * Tags come from the list the masthead keeps (WLTags), not from typing. That
+   * is the point: a free-text box is how "Sports", "sports" and "sport" become
+   * three tag pages holding one article each.
+   *
+   * With tags switched off, or with an empty list, the field disappears rather
+   * than offering a choice that leads nowhere.
+   */
+  function renderTagPicker(selected) {
+    const wrap = document.getElementById("ed-tags-wrap");
+    const host = document.getElementById("ed-tags-picks");
+    if (!wrap || !host) return;
+
+    const on = window.WLTags && WLTags.isEnabled();
+    const list = on ? WLTags.list() : [];
+    wrap.style.display = list.length ? "block" : "none";
+    if (!list.length) { host.innerHTML = ""; return; }
+
+    const chosen = (selected || []).map(t => String(t).toLowerCase());
+    host.innerHTML = list.map((t, i) => `
+      <label style="display:inline-flex;align-items:center;gap:6px;margin:0 12px 8px 0;text-transform:none;letter-spacing:0;font-size:13px;color:var(--ink);">
+        <input type="checkbox" class="ed-tag-box" value="${escapeHtml(t)}" ${chosen.includes(t.toLowerCase()) ? "checked" : ""} style="width:auto;margin:0;">
+        ${escapeHtml(t)}
+      </label>`).join("");
+  }
+
+  function checkedTags() {
+    return [...document.querySelectorAll(".ed-tag-box")].filter(b => b.checked).map(b => b.value);
+  }
+
   // ===== Open / close =====
   function open(id, opts) {
     lastFocused = document.activeElement;
@@ -319,7 +352,7 @@ window.WLArticleEditor = (function () {
       captionEl.value = a.photoCaption || "";
       videoEl.value = a.video || "";
       workingGallery = (a.gallery || []).map(g => Object.assign({}, g));
-      tagsEl.value = (a.tags || []).join(", ");
+      renderTagPicker(a.tags || []);
     } else {
       titleHeadingEl.textContent = "New Article";
       idEl.value = "";
@@ -337,7 +370,7 @@ window.WLArticleEditor = (function () {
       captionEl.value = "";
       videoEl.value = "";
       workingGallery = [];
-      tagsEl.value = "";
+      renderTagPicker([]);
     }
 
     photoFileEl.value = "";
@@ -400,7 +433,7 @@ window.WLArticleEditor = (function () {
     const cleanGallery = workingGallery.filter(g => g.url && g.url.trim());
     cleanGallery.forEach(g => { g.url = g.url.trim(); g.caption = (g.caption || "").trim(); if (!g.caption) delete g.caption; });
     if (cleanGallery.length > 0) data.gallery = cleanGallery;
-    const rawTags = tagsEl.value.trim();
+    const rawTags = checkedTags().join(", ");
     if (rawTags) {
       const tagList = rawTags.split(",").map(t => t.trim()).filter(Boolean);
       if (tagList.length > 0) data.tags = tagList;

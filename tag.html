@@ -71,6 +71,7 @@
 
 <script src="articles.js"></script>
 <script src="articles-store.js"></script>
+<script src="tags-store.js"></script>
 <script src="writers.js"></script>
 <script src="submissions.js"></script>
 <script src="auth.js"></script>
@@ -90,7 +91,11 @@
 
   // Collect all tags for the cloud
   const tagCounts = {};
-  entries.forEach(a => (a.tags || []).forEach(t => {
+  // Only tags the editors still keep. WLTags.visibleFor returns nothing when
+  // the paper has tags switched off, so the cloud empties rather than listing
+  // a taxonomy the site no longer uses.
+  const tagsOf = a => (window.WLTags ? WLTags.visibleFor(a) : (a.tags || []));
+  entries.forEach(a => tagsOf(a).forEach(t => {
     const key = t.toLowerCase();
     tagCounts[key] = (tagCounts[key] || 0) + 1;
   }));
@@ -110,7 +115,7 @@
 
   // Filter articles by tag
   const matches = entries
-    .filter(a => (a.tags || []).some(t => t.toLowerCase() === tag))
+    .filter(a => tagsOf(a).some(t => t.toLowerCase() === tag))
     .sort((x, y) => (Date.parse(y.date) || 0) - (Date.parse(x.date) || 0));
 
   document.getElementById("tag-heading").textContent = `#${tag}`;

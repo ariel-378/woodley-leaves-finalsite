@@ -90,6 +90,7 @@
 <footer></footer>
 <script src="articles.js"></script>
 <script src="articles-store.js"></script>
+<script src="tags-store.js"></script>
 <script src="writers.js"></script>
 <script src="writers-store.js"></script>
 <script src="views-store.js"></script>
@@ -304,11 +305,15 @@
   });
 
 
-  // Tags (optional)
-  if (Array.isArray(a.tags) && a.tags.length > 0) {
+  // Tags. WLTags decides what a reader sees: nothing at all when the paper has
+  // tags switched off, and only tags still on the editors' list otherwise — so
+  // a removed tag stops appearing without having to be scrubbed from every
+  // article that carried it.
+  const shownTags = window.WLTags ? WLTags.visibleFor(a) : (Array.isArray(a.tags) ? a.tags : []);
+  if (shownTags.length > 0) {
     const tagsEl = document.getElementById("article-tags");
     tagsEl.hidden = false;
-    tagsEl.innerHTML = a.tags.map(t =>
+    tagsEl.innerHTML = shownTags.map(t =>
       `<a class="tag-chip" href="tag.html?tag=${encodeURIComponent(t.toLowerCase())}">${t.replace(/[<>&"]/g, c => ({ "<":"&lt;", ">":"&gt;", "&":"&amp;", '"':"&quot;" }[c]))}</a>`
     ).join("");
   }

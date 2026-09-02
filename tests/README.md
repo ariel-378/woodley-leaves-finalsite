@@ -34,6 +34,7 @@ passes, that click path genuinely works.
 | `crossword` | Actually playing the mini, on a keyboard and on a phone: direction on click, one letter per keypress, arrows, backspace, the controls |
 | `ownership` | A new section starts empty — content belongs to one section, in the dashboard and on the public page |
 | `schedule` | Every kind of content can be dated forward: hidden from readers, marked in the dashboard, one shared rule |
+| `tags` | The editors' tag list: no duplicates by case, renames follow the articles, and the whole system switches off |
 | `upcoming` | The Schedule tab: every store gathered into one list, in the order it goes out, and publishing early |
 | `sync` | Shared editing: only your own changes go up, incoming ones never clobber unsent work, offline survives |
 
@@ -81,6 +82,9 @@ broke on a path nobody had clicked:
   saves second erases what the first added. These pin the two rules that stop
   it — push only what this browser changed, and never let an incoming key
   overwrite an edit that has not been sent yet.
+- **`tags`** — tags were a free-text box, so "Sports", "sports" and "sport"
+  became three tag pages holding one article each and nothing said so. The list
+  is now fixed and articles pick from it.
 - **`publish`** — the editor and the reader were only ever tested in the same
   browser, where `localStorage` does the work. The step between them — the file
   an editor downloads and commits — had never been run at all.

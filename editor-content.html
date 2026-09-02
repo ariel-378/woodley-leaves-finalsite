@@ -163,6 +163,27 @@
 
     <div id="content-sections"></div>
 
+    <!-- ── Tags ─────────────────────────────────────────────────────────── -->
+    <section class="c-publish" id="tags-panel" style="margin-top:36px;border-top:2px solid var(--ink);padding-top:20px;">
+      <h3 style="font-family:Georgia,serif;font-size:20px;margin:0 0 4px;">Tags</h3>
+      <p class="c-intro" style="margin-top:4px;">A short list the masthead agrees on, so a tag means one thing. Writers pick from this list rather than typing their own — that is what stops “Sports”, “sports” and “sport” becoming three separate tag pages. Leave tags switched off if the paper doesn’t want them.</p>
+
+      <div class="checkbox-row" style="display:flex;align-items:center;gap:8px;margin-bottom:14px;">
+        <input type="checkbox" id="tags-enabled" style="width:auto;margin:0;">
+        <label for="tags-enabled" style="margin:0;text-transform:none;letter-spacing:0;font-size:13px;color:var(--ink);font-weight:600;">Use tags on this paper</label>
+      </div>
+
+      <div id="tags-body">
+        <div class="c-toolbar" style="gap:8px;flex-wrap:wrap;justify-content:flex-start;">
+          <input type="text" id="tag-new" placeholder="e.g., Profiles" maxlength="32"
+                 style="flex:1 1 200px;max-width:280px;padding:8px 10px;border:1px solid var(--rule);font:inherit;font-size:14px;background:#fafafa;">
+          <button class="btn-primary" id="tag-add" type="button">Add tag</button>
+        </div>
+        <p class="c-intro" id="tag-error" role="alert" style="color:#b8002a;min-height:18px;margin:6px 0 8px;"></p>
+        <div id="tags-list"></div>
+      </div>
+    </section>
+
     <!-- ── Publish & transfer ─────────────────────────────────────────── -->
     <section class="c-publish" id="wl-publish-panel" style="margin-top:36px;border-top:2px solid var(--ink);padding-top:20px;">
       <h3 style="font-family:Georgia,serif;font-size:20px;margin:0 0 4px;">Publish &amp; transfer</h3>
@@ -316,6 +337,7 @@
 
 <script src="articles.js"></script>
 <script src="articles-store.js"></script>
+<script src="tags-store.js"></script>
 <script src="writers.js"></script>
 <script src="article-editor.js"></script>
 <script src="teams.js"></script>
@@ -1016,6 +1038,76 @@
   document.querySelectorAll(".ed-modal-close, [data-cancel]").forEach(b => b.addEventListener("click", closeModals));
   document.querySelectorAll(".ed-modal-overlay").forEach(m => m.addEventListener("click", e => { if (e.target === m) closeModals(); }));
   document.addEventListener("keydown", e => { if (e.key === "Escape" && document.querySelector(".ed-modal-overlay.visible")) closeModals(); });
+
+
+  // ===== Tags =====
+  //  A list the masthead keeps, rather than a free-text box. Renaming or
+  //  removing a tag here rewrites every article carrying it, which is the whole
+  //  reason the list exists — a tag has to keep meaning one thing.
+  const tagsEnabledEl = $("tags-enabled");
+  const tagsBody = $("tags-body");
+  const tagNewEl = $("tag-new");
+  const tagErrEl = $("tag-error");
+
+  function tagSay(msg) { tagErrEl.textContent = msg || ""; }
+
+  function renderTags() {
+    if (!window.WLTags) return;
+    const on = WLTags.isEnabled();
+    tagsEnabledEl.checked = on;
+    // Dimmed rather than hidden: the list is still there, and an editor can see
+    // what turning it back on would restore.
+    tagsBody.style.opacity = on ? "1" : "0.45";
+    tagsBody.querySelectorAll("input,button").forEach(el => { el.disabled = !on; });
+
+    const list = WLTags.list();
+    const host = $("tags-list");
+    if (!list.length) {
+      host.innerHTML = `<div class="c-item-empty">No tags yet. Add the few this paper actually uses.</div>`;
+      return;
+    }
+    host.innerHTML = list.map(t => `
+      <div class="c-item">
+        <div class="c-item-main"><span class="c-item-title">${esc(t)}</span>
+          <div class="c-item-meta">${WLArticles.getAll ? Object.values(WLArticles.getAll()).filter(a => (a.tags||[]).some(x => x.toLowerCase() === t.toLowerCase())).length : 0} article(s)</div>
+        </div>
+        <div class="c-art-tools">
+          <button class="btn-ghost" data-tag-rename="${esc(t)}">Rename</button>
+          <button class="btn-danger" data-tag-remove="${esc(t)}">Delete</button>
+        </div>
+      </div>`).join("");
+
+    host.querySelectorAll("[data-tag-rename]").forEach(b => b.addEventListener("click", () => {
+      const from = b.dataset.tagRename;
+      const to = prompt(`Rename “${from}” to:`, from);
+      if (to === null) return;
+      const res = WLTags.rename(from, to);
+      tagSay(res.ok ? "" : res.error);
+      renderTags(); renderSections();
+    }));
+    host.querySelectorAll("[data-tag-remove]").forEach(b => b.addEventListener("click", () => {
+      const t = b.dataset.tagRemove;
+      if (!confirm(`Delete the tag “${t}”? It will be removed from every article that carries it.`)) return;
+      WLTags.remove(t);
+      tagSay(""); renderTags(); renderSections();
+    }));
+  }
+
+  tagsEnabledEl.addEventListener("change", () => {
+    WLTags.setEnabled(tagsEnabledEl.checked);
+    tagSay(""); renderTags();
+  });
+
+  $("tag-add").addEventListener("click", () => {
+    const res = WLTags.add(tagNewEl.value);
+    tagSay(res.ok ? "" : res.error);
+    if (res.ok) tagNewEl.value = "";
+    renderTags();
+  });
+  tagNewEl.addEventListener("keydown", e => { if (e.key === "Enter") { e.preventDefault(); $("tag-add").click(); } });
+
+  document.addEventListener("wl-tags-change", renderTags);
+  renderTags();
 
   document.getElementById("prompt-preview").addEventListener("click", (e) => { e.preventDefault(); WLAuth.enableEditorPreview(); });
 
