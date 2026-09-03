@@ -12,35 +12,51 @@ says it does.
 
 ## Who publishes
 
-**Student editors publish. The adviser can pull anything, immediately.**
+**The online edition carries the print edition's stories.** They are the same
+articles. They have already been reported, edited and approved as part of
+putting out the paper, and they do not go through a second screening to appear
+online. Publishing online is republishing, not deciding.
 
-A story reaches readers like this:
+That is worth saying plainly, because it answers the question people usually ask
+first — *who checks it before it goes up?* — and the answer is: the same people
+who checked it before it went to print, in the same process, before it ever
+reached this site.
+
+So the sequence that matters is the print one:
 
 | Step | Who |
 |---|---|
 | Write and file | The writer |
-| First edit — accuracy, fairness, clarity | The section editor |
-| Second read and the decision to publish | The Editor-in-Chief, or an Online Editor acting for them |
-| Publish | The Online Editor-in-Chief or Online Managing Editor |
+| Edit — accuracy, fairness, clarity | The section editor |
+| The decision to run it | The Editor-in-Chief |
+| Put it on the site | Any editor with publish access |
 
-The adviser does **not** have to read a story before it goes live. In exchange:
+**Everyone with publish access has the same rights: students and the adviser
+alike.** The adviser is not a separate tier with special powers, and does not
+have to ask a student to act. They can publish and they can pull, directly and
+immediately, exactly as any editor can. There is no approval queue, no override
+button, and no technical distinction anywhere in the software — `role: "editor"`
+is one role, and it means the same thing for a teacher as for a senior.
 
-> **The adviser has standing authority to unpublish anything, at any time, for
-> any reason, without discussion first.** They do not need to reach us, ask
-> permission, or explain in advance. The conversation happens afterwards.
+This is deliberate. An adviser who has to text a sixteen-year-old to get
+something taken down does not really have the authority everyone assumes they
+have. Giving them the same access removes that gap instead of papering over it.
 
-That is the whole bargain. We get to run the paper; the adult with their name
-on it never has to wait for a teenager to answer a text.
+### The one thing that is genuinely different online
 
-Every editor with publish rights is told this on their first day, in these
-words. If an adviser would rather read stories before publication, that is
-their call to make and this page changes.
+Some of what this site carries has no print edition behind it — video, puzzles
+and games, and anything posted as breaking news between issues. Those have not
+been through the print process, because there was no print process for them.
 
-### What always gets a second adult read before publishing
+**Who reads those before they go up is the open question, and it is the
+adviser's to answer, not ours.** Until it is answered, the working assumption is
+that they follow the same path as print: the Editor-in-Chief decides, and
+anything in the list below goes to the adviser first.
 
-Independence is not the same as recklessness. We bring these to the adviser
-*before* publishing, every time — not for permission, but so nobody is
-surprised:
+### What goes to the adviser before publishing
+
+Independence is not the same as recklessness. These go to the adviser *before*
+publishing — not for permission, but so nobody is surprised:
 
 - A story accusing a **named** student, teacher, or staff member of wrongdoing
 - Anything involving discipline, an investigation, or a police matter
@@ -48,6 +64,10 @@ surprised:
   or anything else that is theirs to disclose and not ours
 - Anything relying on an **anonymous source**
 - Anything a subject has already asked us not to run
+
+For print stories this is settled before the issue goes out, so it is rarely a
+question by the time the story reaches the site. For online-only material it is
+the whole of the check.
 
 The test is not "is this allowed." It is: *if this is wrong, who gets hurt, and
 can that be undone?* Where the answer is a person and "no," we ask first.
@@ -82,7 +102,9 @@ that removes stories on request isn't one.
 
 The exceptions, which are real:
 
-1. **The adviser or the school says so.** Immediate, no debate. See above.
+1. **The adviser or the school says so.** Immediate, no debate — and the adviser
+   does not have to ask anyone to do it, because they have the same publish and
+   unpublish access every other editor has.
 2. **It is false and we cannot fix it.** Then it comes down and a note says
    the story was removed and why.
 3. **It endangers someone.** Safety outranks the archive, always.

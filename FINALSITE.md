@@ -86,6 +86,12 @@ That single bit comes entirely from Finalsite.
    Editors"** (or a role/permission set, whichever Finalsite construct fits).
 2. Newspaper staff (editors-in-chief, section editors, advisers) are added to that
    group. Everyone else in the community is not.
+
+   **One tier, deliberately.** The faculty adviser sits in the same group as the
+   students and has exactly the same rights — publish and unpublish, directly.
+   This is not an omission to be corrected later: an adviser who has to ask a
+   student to take something down does not really hold the authority everyone
+   assumes they hold. A single group closes that gap.
 3. When Finalsite renders a page for a signed-in member, it checks group membership
    and emits:
 
@@ -117,9 +123,10 @@ link; readers see only their name.
 
 ### 3.3 Finer-grained roles (optional, future)
 
-Today the role is a single flag. If the paper later needs **section-scoped editors**
-(e.g. a Sports editor who can only touch Sports) or an **adviser/approver** tier,
-extend the contract with an additional field, e.g.:
+Today the role is a single flag, and for this paper that is the right shape —
+see the note in 3.1. If a school later needs **section-scoped editors** (e.g. a
+Sports editor who can only touch Sports) or an **adviser/approver** tier, extend
+the contract with an additional field, e.g.:
 
 ```js
 role: "editor",
