@@ -130,8 +130,11 @@ Two things worth knowing:
   for hosting, authentication, and content persistence.
 - **[CUSTOMIZE.md](CUSTOMIZE.md)** — rebrand the paper for your school (the Brand
   design tab, or editing `config.js`).
-- **[FINALSITE-EMAIL.md](FINALSITE-EMAIL.md)** — the scoping email for the school
-  to send Finalsite, ready to forward.
+- **[PROPOSAL.md](PROPOSAL.md)** — the ask itself, in two parts: one for Maret,
+  one written to Finalsite for when it is forwarded on.
+- **[FINALSITE-EMAIL.md](FINALSITE-EMAIL.md)** — one email: sent to whoever at
+  the school deals with Finalsite, and written so that forwarding it to Finalsite
+  is all they have to do.
 - **[EDITORIAL.md](EDITORIAL.md)** — who publishes, how corrections work, when a
   story comes down, and who holds the accounts. The half of running a paper that
   isn't software.
