@@ -247,7 +247,7 @@ moment will still have one version win — this keeps a small newsroom out of
 each other's way, it is not Google Docs.
 
 **Someone has to own the Cloudflare account.** Put it on an address the paper
-keeps and add it to the handover list in `EDITORIAL.md`.
+keeps, not a personal one.
 
 ## Planning ahead: publish dates
 

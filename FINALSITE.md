@@ -87,11 +87,8 @@ That single bit comes entirely from Finalsite.
 2. Newspaper staff (editors-in-chief, section editors, advisers) are added to that
    group. Everyone else in the community is not.
 
-   **One tier, deliberately.** The faculty adviser sits in the same group as the
-   students and has exactly the same rights — publish and unpublish, directly.
-   This is not an omission to be corrected later: an adviser who has to ask a
-   student to take something down does not really hold the authority everyone
-   assumes they hold. A single group closes that gap.
+   The faculty adviser goes in the same group as the students, with the same
+   rights. One group, one tier — the app has no second role.
 3. When Finalsite renders a page for a signed-in member, it checks group membership
    and emits:
 

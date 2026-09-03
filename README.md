@@ -135,9 +135,6 @@ Two things worth knowing:
 - **[FINALSITE-EMAIL.md](FINALSITE-EMAIL.md)** — one email: sent to whoever at
   the school deals with Finalsite, and written so that forwarding it to Finalsite
   is all they have to do.
-- **[EDITORIAL.md](EDITORIAL.md)** — who publishes, how corrections work, when a
-  story comes down, and who holds the accounts. The half of running a paper that
-  isn't software.
 
 ## Project layout
 

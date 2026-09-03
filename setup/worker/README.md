@@ -11,9 +11,9 @@ until someone downloads a file and commits it. With it:
 It runs on a **Cloudflare Worker** with a **KV** namespace. Free tier is far
 more than a school paper needs.
 
-> **Someone has to own this account.** Set it up on an address the paper keeps —
-> not a personal one — and add it to the handover list in `EDITORIAL.md`. A
-> Worker nobody can sign into is how next year's staff loses shared editing.
+> **Someone has to own this account.** Set it up on an address the paper keeps,
+> not a personal one. A Worker nobody can sign into is how next year's staff
+> loses shared editing.
 
 ---
 
