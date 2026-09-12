@@ -1,0 +1,11 @@
+# Vercel serves whatever is left here, so anything below would be a public URL.
+
+# Internal. PROPOSAL.md and FINALSITE-EMAIL.md name school staff and describe
+# an ask that has not been made yet — they are for the adviser to read, not for
+# the site to hand out.
+*.md
+
+# Development only.
+tests/
+node_modules/
+serve.py

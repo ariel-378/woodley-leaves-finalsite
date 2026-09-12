@@ -1,0 +1,5 @@
+{
+  "buildCommand": "node setup/demo-config.mjs",
+  "outputDirectory": ".",
+  "cleanUrls": true
+}
