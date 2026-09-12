@@ -12,24 +12,29 @@ content, and the paper name stamped into each page's `<head>` by `npm run brand`
 
 ## Live demo
 
-**<https://woodley-leaves.vercel.app>** — the real paper, running.
+**<https://woodley-leaves.vercel.app>** — password **`woodley2027`**
 
-**It is password protected.** The password is shared with the link; ask Ariel
-(arielp2027@maret.org) if you need it. It is not committed here — it lives in
-`WL_DEMO_PASSWORD` in the host's environment variables.
+That is the real paper, running. Log in and click around; the editor dashboard
+is reachable from the footer.
 
-Two things about that deployment differ from this repository, both deliberate:
+> **If you are reading this repository, you are almost certainly integrating
+> this into Finalsite.** Start with **[FINALSITE.md](FINALSITE.md)** — it is the
+> whole contract in one file. [INTEGRATION.md](INTEGRATION.md) goes deeper on
+> internals. Everything else here is background.
 
-| | Why |
+### Two things about that deployment that are not in this repository
+
+Both are temporary scaffolding for showing the paper before the school has
+decided anything, and both disappear on integration.
+
+| | Why it is there |
 |---|---|
-| **Shared editing is off** — `sync.endpoint` and `sync.key` are blanked at build time by `setup/build-demo.mjs` | The browser fetches `config.js`, so hosting the site would hand the Worker's editor key to every visitor — and anyone switching on editor preview could push into the shared store, which commits itself back here |
-| **A password sits in front** — `middleware.js` | Vercel's own protection is a paid feature. See *The demo password gate* below |
+| **A password in front of it** — `middleware.js` | Edge middleware, so a visitor without the cookie never receives the paper's HTML. It is a shared password with no accounts: it stops a stranger who finds the URL, and it is not authentication. **Delete `middleware.js` and it is gone** — no page refers to it. |
+| **Shared editing switched off** — `sync.endpoint` and `sync.key` blanked by `setup/build-demo.mjs` at build time | The browser fetches `config.js`, so hosting the site would hand the paper's Cloudflare Worker key to every visitor. Not relevant once Finalsite stores the content. |
 
-Everything else is byte-for-byte what is in this repository. The pages
-themselves contain no gate and no demo-specific code, which is the point: what
-Finalsite would integrate is exactly what is here.
-
-**Both are temporary.** Delete `middleware.js` when Finalsite provides identity.
+Every `.html` file here is byte-for-byte what is served — no gate, no
+demo-specific code in any page. What you would integrate is exactly what is in
+this repository.
 
 ## Highlights
 
@@ -152,32 +157,24 @@ Two things worth knowing:
   gets no page until that time, so an embargoed headline is never sitting in a
   public file early.
 
-## The demo password gate — remove this during integration
+## Removing the demo scaffolding
 
-The preview at <https://woodley-leaves.vercel.app> sits behind a password. That
-gate is **not part of the site**, and it is not in any page here.
+Two files exist only so the paper could be shown by link before the school
+decided anything. Neither is part of the platform.
 
-It is `middleware.js` — edge middleware that runs on the host before a single
-file is served. A visitor without the cookie never receives the paper's HTML at
-all, so there is nothing to read in "view source" and nothing to skip. Every
-`.html` in this repository is exactly what Finalsite would integrate, with no
-gate in it, which is also why the test suite never meets a password prompt.
+1. **`middleware.js`** — the password gate. Delete the file. That is the entire
+   removal; nothing else refers to it, and no page contains a gate.
+2. **`setup/build-demo.mjs`** and the `buildCommand` line in `vercel.json` —
+   these blank the shared-editing credentials in the deployed copy. Once
+   Finalsite stores the content, `sync` is not used at all and both can go.
 
-**It still is not authentication.** One shared password, no accounts — it cannot
-tell one reader from another, and cannot express "students and faculty only".
-It exists because the paper is being shown by link to a few people before the
-school has decided anything, and the host's built-in protection is paid.
+The password itself is not committed. It lives in `WL_DEMO_PASSWORD` in the
+host's environment variables.
 
-**The real mechanism** is the one Finalsite provides: the site never
-authenticates anyone. Finalsite decides who may read the paper with a
-page-audience setting, and tells the page who is looking via `window.WL_CONTEXT`.
-See `FINALSITE.md`.
-
-**To remove: delete `middleware.js`.** That is the entire removal — nothing
-else refers to it.
-
-The password comes from `WL_DEMO_PASSWORD` in the host's environment, so it is
-not committed here.
+**What replaces the gate** is the thing this platform was built around: the site
+never authenticates anyone. Finalsite decides who may read the paper with a
+page-audience setting, and tells the page who is looking by setting
+`window.WL_CONTEXT` before the scripts run. See `FINALSITE.md`.
 
 ## Documentation
 

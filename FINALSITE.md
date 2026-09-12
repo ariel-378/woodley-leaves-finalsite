@@ -16,15 +16,16 @@ This document explains:
 
 ---
 
-> **The live preview: <https://woodley-leaves.vercel.app>** (password
-> protected — it comes with the link).
+> **See it running first: <https://woodley-leaves.vercel.app>**
+> **Password: `woodley2027`**
 >
-> **A note on that password prompt.** If you reached the site through a
-> password prompt, that is a temporary lock on the shared demo, not part of the
-> platform. It is edge middleware (`middleware.js`) sitting in front of the
-> host; it appears in no page in this repository and touches nothing described
-> below. It is deleted during integration — one file, no other references. See
-> "The demo password gate" in `README.md`.
+> That password prompt is a temporary lock on the shared preview, not part of
+> the platform. It is edge middleware (`middleware.js`) in front of the host —
+> it appears in no page in this repository and touches nothing described below.
+> Removing it is deleting that one file; there are no other references. The
+> deployed copy also has `sync.endpoint` and `sync.key` blanked, for the same
+> reason: `config.js` is fetched by the browser. See "Removing the demo
+> scaffolding" in `README.md`.
 
 ## 1. Architecture at a glance
 
