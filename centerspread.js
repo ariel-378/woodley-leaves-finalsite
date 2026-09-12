@@ -15,7 +15,7 @@ window.WL_CENTERSPREAD = {
       type: "poem",
       kicker: "Poem",
       title: "Spring at Maret",
-      byline: "By Ivy Callahan",
+      byline: "By Poppy Trelawney",
       body:
         "At long last the snow banks from past winter storms\n" +
         "Are melting beneath all the sun rays so warm\n" +
@@ -47,7 +47,7 @@ window.WL_CENTERSPREAD = {
       type: "poem",
       kicker: "Guess Who",
       title: "On a rainy April morning…",
-      byline: "By Freya Donnelly",
+      byline: "By Saoirse Boyle",
       body:
         "On a rainy April morning\n" +
         "My cereal was frozen cold,\n" +
@@ -69,7 +69,7 @@ window.WL_CENTERSPREAD = {
       type: "prose",
       kicker: "Guess the Teacher",
       title: "A Day in the Life of a Grade Dean",
-      byline: "By Cole Fenton",
+      byline: "By Barnaby Quill",
       body:
         "Have you ever wondered how a Maret grade dean goes through a typical Monday? This grade dean starts her morning off bright and early at 6 a.m. She wakes up her children, gets them ready for their day, and walks and feeds her dog, Saint. Then, she makes a crucial stop at Starbucks before dropping her younger daughter off with her carpool and dropping her elder daughter off at school. While this grade dean has many stops on her way to Maret, she makes the miles fly by immersing herself in an audiobook. After beginning her journey at 6:50, she finally arrives at school at 8:10.\n" +
         "\n" +
@@ -83,7 +83,7 @@ window.WL_CENTERSPREAD = {
       type: "image",
       kicker: "Riddle Game",
       title: "Clue to the Code",
-      byline: "By Devon Marsh",
+      byline: "By Orson Pace",
       image: "media/riddle-2.png",
       alt: "Clue to the Code riddle",
     },

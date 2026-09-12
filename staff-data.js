@@ -26,15 +26,5 @@ window.WL_STAFF = [
     email: "arielp2027@maret.org",
     slug: "ariel-pollard",
     photo: ""
-  },
-  {
-    id: "sana-okafor",
-    name: "Sana Okafor",
-    role: "Online Managing Editor",
-    year: "Class of 2027",
-    group: "Leadership",
-    email: "",
-    slug: "sana-okafor",
-    photo: ""
   }
 ];
