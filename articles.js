@@ -1,21 +1,21 @@
 // Article data store. Real articles from the April 2026 edition of The Woodley Leaves.
 window.WL_ARTICLES = {
-  "early-dismissal-winter-storm": {
-    photo: "media/photo-facilities-severe-weather.jpg",
-    caption: "Grounds crews clearing the main walk ahead of Friday's early dismissal.",
-    title: "School to Dismiss at Noon Friday Ahead of Winter Storm",
-    deck: "Afternoon classes and all athletics are cancelled. Buses will run on the early schedule.",
+  "football-dcsaa-state-title": {
+    photo: "media/photo-student-athlete-pressure.jpg",
+    caption: "The Frogs on the sideline in the closing minutes at Cardozo.",
+    title: "Maret Football Wins First DCSAA State Championship",
+    deck: "The Frogs beat St. John's 21-17 on Saturday to take the program's first state title.",
     section: "Breaking",
-    sectionPage: "news.html",
-    tags: ["Campus"],
-    byline: "Nora Bexley",
+    sectionPage: "sports.html",
+    tags: ["Sports","Football","Campus"],
+    byline: "Mateo Solis",
     date: "September 11, 2026",
     featured: true,
     body: [
-      "The school will dismiss at noon on Friday ahead of the winter storm forecast to reach the District by early afternoon. Afternoon classes, all athletic practices, and Friday's home games are cancelled.",
-      "Buses will run on the early-dismissal schedule. Families who drive are asked to arrive before 12:15 p.m. so that the front circle clears before conditions worsen.",
-      "Assignments due Friday afternoon will be accepted Monday without penalty. The Upper School office said a decision about Monday's schedule will be shared by Sunday evening.",
-      "This story will be updated as more information becomes available."
+      "Maret football won the DCSAA state championship on Saturday afternoon, beating St. John's 21-17 at Cardozo Education Campus for the first state title in the program's history.",
+      "The Frogs trailed 17-14 with under four minutes left before a nine-play drive ended in a one-yard touchdown run. The defense held on the final possession, breaking up a fourth-down pass near midfield as the clock ran out.",
+      "Students who had made the trip stayed in the stands well after the whistle. The team finishes the season 11-1, its only loss coming in September.",
+      "A full report, with photographs and reaction from the team, will follow this week."
     ]
   },
   "hopkinson-black-history-assembly": {
