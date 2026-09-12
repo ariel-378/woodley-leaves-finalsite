@@ -10,6 +10,27 @@ identical to the `newspaper-template`, and this repo adds the paper's brand conf
 (`config.js` — masthead, Woodley green, the leaf named for Woodley Park), its
 content, and the paper name stamped into each page's `<head>` by `npm run brand`.
 
+## Live demo
+
+**<https://woodley-leaves.vercel.app>** — the real paper, running.
+
+**It is password protected.** The password is shared with the link; ask Ariel
+(arielp2027@maret.org) if you need it. It is not committed here — it lives in
+`WL_DEMO_PASSWORD` in the host's environment variables.
+
+Two things about that deployment differ from this repository, both deliberate:
+
+| | Why |
+|---|---|
+| **Shared editing is off** — `sync.endpoint` and `sync.key` are blanked at build time by `setup/build-demo.mjs` | The browser fetches `config.js`, so hosting the site would hand the Worker's editor key to every visitor — and anyone switching on editor preview could push into the shared store, which commits itself back here |
+| **A password sits in front** — `middleware.js` | Vercel's own protection is a paid feature. See *The demo password gate* below |
+
+Everything else is byte-for-byte what is in this repository. The pages
+themselves contain no gate and no demo-specific code, which is the point: what
+Finalsite would integrate is exactly what is here.
+
+**Both are temporary.** Delete `middleware.js` when Finalsite provides identity.
+
 ## Highlights
 
 - **Editor dashboard** — create and edit articles, and manage staff, sports,

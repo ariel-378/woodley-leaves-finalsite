@@ -16,7 +16,10 @@ This document explains:
 
 ---
 
-> **A note on the preview you were sent.** If you reached the site through a
+> **The live preview: <https://woodley-leaves.vercel.app>** (password
+> protected — it comes with the link).
+>
+> **A note on that password prompt.** If you reached the site through a
 > password prompt, that is a temporary lock on the shared demo, not part of the
 > platform. It is edge middleware (`middleware.js`) sitting in front of the
 > host; it appears in no page in this repository and touches nothing described
