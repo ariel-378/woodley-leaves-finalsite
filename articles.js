@@ -15,7 +15,7 @@ window.WL_ARTICLES = {
       "Maret football won the DCSAA state championship on Saturday afternoon, beating St. John's 21-17 at Cardozo Education Campus for the first state title in the program's history.",
       "The Frogs trailed 17-14 with under four minutes left before a nine-play drive ended in a one-yard touchdown run. The defense held on the final possession, breaking up a fourth-down pass near midfield as the clock ran out.",
       "Students who had made the trip stayed in the stands well after the whistle. The team finishes the season 11-1, its only loss coming in September.",
-      "A full report, with photographs and reaction from the team, will follow this week."
+      "A full report, with photographs and reaction from the team, will follow in the next edition."
     ]
   },
   "hopkinson-black-history-assembly": {
