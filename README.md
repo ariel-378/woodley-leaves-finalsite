@@ -134,27 +134,29 @@ Two things worth knowing:
 ## The demo password gate — remove this during integration
 
 The preview at <https://woodley-leaves.vercel.app> sits behind a password. That
-gate is **not part of the site** and must not survive integration.
+gate is **not part of the site**, and it is not in any page here.
 
-It exists because the paper is being shared by link with a few people before the
-school has decided anything, and the host's own password protection is a paid
-feature. It lives in `setup/demo-gate.js`, is injected into the deployed copy by
-`setup/build-demo.mjs`, and appears in no page in this repository.
+It is `middleware.js` — edge middleware that runs on the host before a single
+file is served. A visitor without the cookie never receives the paper's HTML at
+all, so there is nothing to read in "view source" and nothing to skip. Every
+`.html` in this repository is exactly what Finalsite would integrate, with no
+gate in it, which is also why the test suite never meets a password prompt.
 
-**It is not authentication.** The password is in a file the browser downloads;
-the page's HTML is on the wire before the gate runs; and with no accounts it
-cannot tell one reader from another, so it cannot express "students and faculty
-only". It stops a stranger who stumbles on the link. That is the whole claim.
+**It still is not authentication.** One shared password, no accounts — it cannot
+tell one reader from another, and cannot express "students and faculty only".
+It exists because the paper is being shown by link to a few people before the
+school has decided anything, and the host's built-in protection is paid.
 
 **The real mechanism** is the one Finalsite provides: the site never
-authenticates anyone, Finalsite decides who may read the paper with a
+authenticates anyone. Finalsite decides who may read the paper with a
 page-audience setting, and tells the page who is looking via `window.WL_CONTEXT`.
 See `FINALSITE.md`.
 
-**To remove:** delete `setup/demo-gate.js` and the `injectGate()` call in
-`setup/build-demo.mjs`. Nothing else refers to it. As a safety net the gate
-disables itself whenever `window.WL_CONTEXT` is present, so a hosted
-integration is unaffected even if it is left in place.
+**To remove: delete `middleware.js`.** That is the entire removal — nothing
+else refers to it.
+
+The password comes from `WL_DEMO_PASSWORD` in the host's environment, so it is
+not committed here.
 
 ## Documentation
 
