@@ -17,10 +17,12 @@ content, and the paper name stamped into each page's `<head>` by `npm run brand`
 - **Editor-managed sections** — add, rename, reorder, and remove sections, and
   choose which section fills each home-page slot. The nav, section pages, home
   page, and search all update automatically.
-- **Rearrange any page in place** — signed in as an editor, every page has a
-  *Edit layout* toggle: drag its blocks into new rows and columns, or move them
-  with the keyboard. Article pages, the video index, staff, search, tags, team
-  pages and the centerspread all included. Each page keeps its own layout.
+- **Rearrange a page in place** — signed in as an editor, any page built from
+  blocks gets an *Edit layout* toggle: drag them into new rows and columns, or
+  move them with the keyboard. Article pages, the video index, staff, search,
+  tags, team pages and the centerspread all included, each keeping its own
+  layout. The home page is arranged differently — by choosing which section
+  fills each slot, above.
 - **Plan an edition ahead** — every piece of content takes a publish date and
   time and stays invisible to readers until it arrives: articles, poems, art,
   videos, custom features and games alike. A **Schedule** tab gathers the whole
@@ -45,7 +47,7 @@ npm install   # once — pulls jsdom, the only dependency
 npm test
 ```
 
-1023 checks across 24 suites: every page loads clean, every editor control is
+1031 checks across 24 suites: every page loads clean, every editor control is
 pressed without throwing, and content added in the editor reaches the reader
 pages. See [tests/README.md](tests/README.md).
 
