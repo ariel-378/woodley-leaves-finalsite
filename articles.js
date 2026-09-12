@@ -6,7 +6,7 @@ window.WL_ARTICLES = {
     deck: "The Black Student Union hosted the American University professor and Go-Go Museum founder for a Black History Month address on Feb. 27.",
     section: "News",
     sectionPage: "news.html",
-    byline: "Ryan Colton",
+    byline: "Devin Calloway",
     date: "April 19, 2026",
     body: [
       "On Friday, February 27th, Maret's Upper School gathered in the theater to celebrate Black History Month with an assembly put on by the Black Student Union. Dr. Natalie Hopkinson, Ph.D. spoke at the assembly. Dr. Hopkinson is associate professor of media, democracy, and society at American University and has authored three books, hundreds of journalistic and academic peer-reviewed articles and book chapters about Black and Indigenous art, media, and knowledge systems. Dr. Hopkinson spoke about her work to curate and open the Go-Go Museum & Cafe in Historic Anacostia and the history of Go-Go music, a music genre that was created by African-American musicians in D.C. during the 1960s and 1970s.",
@@ -24,7 +24,7 @@ window.WL_ARTICLES = {
     deck: "The 5th Grade Dean and longtime middle school Humanities teacher will lead the Upper School department beginning in 2026-27.",
     section: "News",
     sectionPage: "news.html",
-    byline: "Owen Delano",
+    byline: "Theo Brandt",
     date: "April 19, 2026",
     body: [
       "For the past few months, Maret faculty managers Ms. Reyes and Mr. Halvorsen have been hard at work searching for a new chair for the Upper School Humanities Department. Following the departure of former Humanities Chair Nicholas Papadakis, who parted ways with Maret to focus his attention on his upcoming book, a search began for a replacement to lead the upper school department going forward. Upper School Humanities teacher Curtis Langley was appointed as an interim chair for the 2025-26 school year, and his commitment to the growth and excellence of the department has remained greatly appreciated. Upon reviewing several highly qualified and respected candidates, they were fortunately able to find their new chair right at home, as 5th Grade Dean and Humanities teacher Rob Ellwood will become the new chair of the Upper School Humanities Department, beginning in the 2026-27 school year.",
@@ -41,7 +41,7 @@ window.WL_ARTICLES = {
     deck: "After Basis DC ran out of space, Maret volunteered its campus to run the March competition across more than a dozen science events.",
     section: "News",
     sectionPage: "news.html",
-    byline: "Camila Restrepo",
+    byline: "Lucia Navarro",
     date: "April 19, 2026",
     body: [
       "Maret hosted the DC Science Olympiad Tournament in March 2026, a popular science tournament where students compete in various events spanning several scientific studies. Events include tests, labs, building, and testing machines. Competitions include Astronomy, Entomology, Anatomy and Physiology, Forensics, Engineering, Designer Genes, Material Science, Rocks and Minerals, Disease Detectives, Bungee Drop, and many others. Science Olympiad at Maret was introduced to Maret by Alum Karim Sabri and Daniel Ho when they were juniors and Ms. Corley, Science Department Chair, accepted the role of faculty supervisor.",
@@ -59,13 +59,13 @@ window.WL_ARTICLES = {
     deck: "The behavioral health scientist and Executive Director of the National Association to Advance Black Birth addressed racial disparities in maternal care.",
     section: "News",
     sectionPage: "news.html",
-    byline: "Maya Ellison",
+    byline: "Nora Bexley",
     date: "April 19, 2026",
     body: [
       "Dr. Kanika Harris is no stranger to Maret. As the mother of three Maret students and wife of middle school science teacher Mr. Danforth, Dr. Harris was already familiar with Maret's vibrant community when she joined the Upper School to speak at the Women's History Month Assembly in early March. Dr. Harris focused the discussion on racial disparities in maternity care, a subject she has much knowledge in due to her background as a behavioral health scientist and as the Executive Director of the National Association to Advance Black Birth.",
       "Dr. Harris captivated the audience with powerful statistics on the immense inequities that face women of color during childbirth and maternal care. She also shared the powerful childbirth stories of women including herself and Serena Williams who had experienced inequitable healthcare first hand. Dr. Harris' experience of receiving inaccurate medical documents was particularly impactful for Dana Reisman, as she was \"struck by her powerful words and her ability to be vulnerable in front of the crowd when talking about her life.\"",
       "As Dr. Harris spoke, she mentioned that although many students \"are probably not thinking of childbirth yet\", it is still essential to become educated on the healthcare system as a whole. Awareness around childbirth disparities has increased as research has seen increased funding and popularity. Dr. Harris mentioned in her presentation that a study by Dr. Arline Geronimus suggested a leading cause of death in childbirth could be from \"weathering\": the exposure to discrimination, racism, and stressors based on the mother's race. While she discussed how hypotheses like these can be difficult to authenticate due to an excess of variables during childbirth, the theme shown by the research highlighted gross inequities between white and black women. For Micah Feld, the research \"enlightened me to the tragic realities women of color faced and opened my eyes to the disparities women faced in maternal care as a whole.\"",
-      "The presentation gave students like Emma Larsen, who are not currently pursuing a medical career, a glimpse into how \"successful women could be in the work force.\" In addition to feeling empowered, Larsen felt that the presentation \"brought emotions to everyone in the crowd\" and was \"really well done.\" Further into the assembly, Dr. Harris discussed fields in maternal health including midwifery and being an OBGYN. Racism has been present in midwifery, as many Black Americans became midwives, but propaganda and years of wariness around these procedures have led to only 5-10% of childbirths having midwives present. However, Dr. Harris encouraged education on the advantages of having a midwife, as there were less racial disparities in the success of births accompanied by a midwife.",
+      "The presentation gave students like Sofie Dahl, who are not currently pursuing a medical career, a glimpse into how \"successful women could be in the work force.\" In addition to feeling empowered, Larsen felt that the presentation \"brought emotions to everyone in the crowd\" and was \"really well done.\" Further into the assembly, Dr. Harris discussed fields in maternal health including midwifery and being an OBGYN. Racism has been present in midwifery, as many Black Americans became midwives, but propaganda and years of wariness around these procedures have led to only 5-10% of childbirths having midwives present. However, Dr. Harris encouraged education on the advantages of having a midwife, as there were less racial disparities in the success of births accompanied by a midwife.",
       "The presentation proved to be \"really powerful\" for Iris Calloway as she thought \"it was inspiring as a woman to see a model of what I can do in my life.\" To continue sharing her ideas and inspiring other women, Dr. Harris created a documentary on the lives of four women and their struggle for equal maternal care titled Listen to Me that has been used to educate people about racial disparities in maternal care. Dr. Harris' presentation not only educated Upper Schoolers, but empowered them to have a successful life and career."
     ]
   },
@@ -76,11 +76,11 @@ window.WL_ARTICLES = {
     deck: "On Feb. 27, Maret students joined more than a thousand DMV peers at the Lincoln Memorial to protest ICE brutality toward immigrants.",
     section: "News",
     sectionPage: "news.html",
-    byline: "Grace Lin, Priya Mehta, and Claire Donovan",
-    authors: ["Grace Lin", "Priya Mehta", "Claire Donovan"],
+    byline: "Iris Chen, Divya Rao, and Fiona Gallagher",
+    authors: ["Iris Chen", "Divya Rao", "Fiona Gallagher"],
     date: "April 19, 2026",
     body: [
-      "On Friday, February 27 at 2 p.m., Maret Upper School students, along with students from 11 other DC schools, walked out of their last-period classes to protest brutality committed by Immigration & Customs Enforcement (ICE) toward immigrants and US citizens. The walkout was organized by an Instagram account with the username @thefightisntoveryet, and the Maret branch of the walkout had its own instagram account led by Daniela Cortez and Elliot Sawyer under the username @thefightisntoveryet.maret. Using the account, students organized a meeting on the front field for that Friday at 2 p.m. Leaders led anti-ICE poster making sessions, and students were encouraged to bring posters to the protest. Protestors took the Metro to the Lincoln memorial, joining hundreds of other DC students in protest. Many walkout organizers from several schools gave speeches, including Elliot Sawyer. \"Look around you. Fifteen schools. Thousands of students. All of us here, on a school day, because we refused to stay silent... your voice matters.\" Sawyer's speech was very impactful to many students, as it gave a glimpse of the protest's meaning to students and emphasized the importance of speaking out in favor of what you believe in.",
+      "On Friday, February 27 at 2 p.m., Maret Upper School students, along with students from 11 other DC schools, walked out of their last-period classes to protest brutality committed by Immigration & Customs Enforcement (ICE) toward immigrants and US citizens. The walkout was organized by an Instagram account with the username @thefightisntoveryet, and the Maret branch of the walkout had its own instagram account led by Daniela Cortez and Bennett Ashby under the username @thefightisntoveryet.maret. Using the account, students organized a meeting on the front field for that Friday at 2 p.m. Leaders led anti-ICE poster making sessions, and students were encouraged to bring posters to the protest. Protestors took the Metro to the Lincoln memorial, joining hundreds of other DC students in protest. Many walkout organizers from several schools gave speeches, including Bennett Ashby. \"Look around you. Fifteen schools. Thousands of students. All of us here, on a school day, because we refused to stay silent... your voice matters.\" Sawyer's speech was very impactful to many students, as it gave a glimpse of the protest's meaning to students and emphasized the importance of speaking out in favor of what you believe in.",
       "Before the walkout, Daniela Cortez described the challenges in coordinating a walkout which \"Maret can't be affiliated\" with, especially because they were not able to make an announcement at convocation, which is what students would normally do to promote this sort of event. Cortez emphasized that if they \"were able to make an announcement about it…a lot of people would have heard about it.\" Despite this, the walkout was a huge success, drawing over 1000 students across the DMV, including most of the Maret Upper School. Sawyer attributed this success to information which was spread through \"word of mouth\" rather than any official school channels. This huge turnout demonstrated Maret students' desire to be present for issues they care about, which was something incredibly important to the two student leaders.",
       "Because the walkout was during school hours, many teachers had classes with very few students, presenting challenges in terms of scheduling assessments. Mr. Salas, an Upper School English teacher, taught a 7th period class that was affected by the walkout. He described how he had originally planned an in-class writing assessment for the day of the walkout, but \"it was canceled because there were only three students\" who attended his class. Because of this change, Mr. Salas was grateful that he was informed beforehand because he was \"able to shift plans accordingly\" to best fit the plans of all students. Mr. Salas stated that he enjoyed seeing \"students getting involved in things that actually matter\" since \"there are way more important things than school.\" As demonstrated by Mr. Salas's flexibility, even though Maret couldn't be officially affiliated with the walkout, as Cortez stated, the faculty still supported it..",
       "Sawyer stated that the walkout \"was really powerful,\" especially due to news coverage. Both the New York Times and the Washington Post published articles covering the walkout, further spreading the impactful message about the power of students and their ability to voice their concerns and support a cause that they believe in. Maret's walkout leaders hope that this walkout is only the beginning of Maret student activism, and that students will continue to speak out about issues that are important to them."
@@ -93,7 +93,7 @@ window.WL_ARTICLES = {
     deck: "The May 1 Benefit Concert pairs student-written One Acts with musical performances to raise funds for the Horizons program.",
     section: "Features",
     sectionPage: "features.html",
-    byline: "Nadia Brooks and Ella Ray",
+    byline: "Zaria Hale and Juno Pike",
     date: "April 19, 2026",
     body: [
       "On May 1, Maret students will take the stage for the annual Benefit Concert, an event that blends musical performances and acting while raising money for the Horizons program. One of the main highlights of the night will be a series of \"One Acts,\" short plays that combine humor and creativity, some of which are often student-written.",
@@ -114,7 +114,7 @@ window.WL_ARTICLES = {
     deck: "Leaders of Girls Who Code and Black Girl Magic describe how their clubs are marking Women's History Month through research, programming, and community.",
     section: "Features",
     sectionPage: "features.html",
-    byline: "Anika Kapoor and Yasmin Adler",
+    byline: "Meera Sethi and Leila Farrow",
     date: "April 19, 2026",
     body: [
       "The entire month of March is dedicated to commemorating Women's History Month, and Maret's female-focused clubs are ready to celebrate. Selam Girma and Maria Haddad explained what their clubs are doing to honor this important month",
@@ -130,7 +130,7 @@ window.WL_ARTICLES = {
     deck: "Facilities team member Mr. Whitaker describes how early mornings, plowing, and salt keep the campus safe through D.C.'s severe weather.",
     section: "Features",
     sectionPage: "features.html",
-    byline: "Anika Kapoor and Yasmin Adler",
+    byline: "Meera Sethi and Leila Farrow",
     date: "April 19, 2026",
     body: [
       "In recent months, from record-breaking snowstorms to tornado watches, severe weather events have pummeled the D.C. area. But Maret's campus has stayed in excellent condition due to the hard work and careful attention of the Facilities and Grounds team. We spoke with long-time Facilities and Grounds Team member Mr. Whitaker to find out how Maret has been able to withstand nature's fury.",
@@ -150,7 +150,7 @@ window.WL_ARTICLES = {
     deck: "Faculty and student bracket pools turn March into a school-wide competition where even non-sports fans join the debate over upsets and Cinderellas.",
     section: "Features",
     sectionPage: "features.html",
-    byline: "Talia Werner",
+    byline: "Dahlia Krause",
     date: "April 19, 2026",
     body: [
       "Every year in March, the atmosphere at Maret shifts. There is a certain energy in the halls; a sense of togetherness fueled by friendly competition. This is March Madness. The bracket competition engages people from across the school, spanning divisions and grades, as teachers and students debate upsets, compare brackets for both the men's and women's tournaments, and celebrate unexpected wins together.",
@@ -173,7 +173,7 @@ window.WL_ARTICLES = {
     deck: "Extraordinary Birthdays Club and Comfort Cases Club mobilize Maret students to support children and families in need through donations and drives.",
     section: "Features",
     sectionPage: "features.html",
-    byline: "Nadia Brooks and Ella Ray",
+    byline: "Zaria Hale and Juno Pike",
     date: "April 19, 2026",
     body: [
       "Many students at Maret School are involved in activities outside of the classroom. Maret's community community engagement clubs offer students a unique way to turn interests into actions with lasting impact. From organizing donations to volunteering with local organizations, such clubs enable students to support and build stronger connections to their fellow citizens, helping students give back to their community and make a difference at Maret and beyond.",
@@ -192,7 +192,7 @@ window.WL_ARTICLES = {
     deck: "Nationwide student walkouts against ICE show a generation unwilling to stay silent about unconstitutional detentions and killings.",
     section: "Op-Ed",
     sectionPage: "opinion.html",
-    byline: "Meredith Vance",
+    byline: "Harriet Lowell",
     date: "April 19, 2026",
     body: [
       "In recent weeks, a wave of student-led protests and walkouts has taken place across the United States in response to the actions of U.S. Immigration and Customs Enforcement (ICE) agents. Defending Education reports that students have walked out of classrooms and onto streets nationwide in places like Minneapolis, Los Angeles, Baltimore, Philadelphia, and here in DC. During these walkouts, students have been creating signs with messages such as \"we are missing our lessons to teach you one.\" These student demonstrations, which are occurring across the country, represent this generation's refusal to stay silent about policies and issues that affect their communities and futures.",
@@ -208,7 +208,7 @@ window.WL_ARTICLES = {
     deck: "When governments with intolerant ideologies dictate what gets researched, the systemic exclusion of minorities from science becomes a deadly weapon.",
     section: "Op-Ed",
     sectionPage: "opinion.html",
-    byline: "Jordan Marsh",
+    byline: "Casey Thorne",
     date: "April 19, 2026",
     body: [
       "Growing up with a mom who survived cancer, I learned about the life-changing impact of cutting-edge research early on. Nevertheless, all childhood fantasies come crashing down at some point, including my belief that science existed in a perfect vacuum. Often, scientists, doctors, and researchers are protectors of humanity, fighting invisible killers with increasing efficacy. However, sometimes the politics they operate under can be the enabler of invisible killers, infecting the credibility and effectiveness of medicine with increasing efficiency. As the use of scientific research for preserving lives has grown in popularity over the past few centuries, science has also been twisted for malicious purposes. During the Nazi Third Reich, pseudosciences were used to justify the death of Jews and other minority groups deemed inferior by the Nazi regime, according to the National Institutes of Health's (NIH) National Human Genome Research Institute (NHGRI). Yet, pseudoscience is not the only way that science directly targets persecuted minority groups. Today, the systematic exclusion of oppressed communities from equitable scientific research increases health disparities and mortality rates for oppressed communities in the US.",
@@ -227,7 +227,7 @@ window.WL_ARTICLES = {
     deck: "From gerrymandering to voter suppression, the Trump administration's tactics reveal an effort to rig the 2026 midterms rather than win them.",
     section: "Op-Ed",
     sectionPage: "opinion.html",
-    byline: "Elliot Sawyer",
+    byline: "Bennett Ashby",
     date: "April 19, 2026",
     body: [
       "As the 2026 midterm elections approach, in which every House seat and one-third of the Senate will be on the ballot, Democrats have been winning big in off-year and special elections across the country. In response, the Republican Party is working hard to steal the midterms—not with falsified votes, but with suppression and manipulation.",
@@ -247,7 +247,7 @@ window.WL_ARTICLES = {
     deck: "Emerald Fennell's new Wuthering Heights erases Heathcliff's race and replaces Bronte's gothic tragedy with hypersexualized fantasy.",
     section: "Op-Ed",
     sectionPage: "opinion.html",
-    byline: "Talia Ronen",
+    byline: "Noa Feldman",
     date: "April 19, 2026",
     body: [
       "The recently released movie adaptation of Emily Brontë's Wuthering Heights has been a massive success at the box office and on social media, but anyone who has read the book knows that this movie is an absolute joke of an adaptation for numerous reasons.",
@@ -264,7 +264,7 @@ window.WL_ARTICLES = {
     deck: "U.S. gun death rates will not fall until Americans stop treating firearm ownership as an absolute right instead of a qualified privilege.",
     section: "Op-Ed",
     sectionPage: "opinion.html",
-    byline: "Marcus Whitfield",
+    byline: "Desmond Clarke",
     date: "April 19, 2026",
     body: [
       "On February 7, 2025, the White House released a statement pertaining to gun rights: \"The Second Amendment is an indispensable safeguard of security and liberty. It has preserved the right of the American people to protect ourselves, our families, and our freedoms since the founding of our great Nation. Because it is foundational to maintaining all other rights held by Americans, the right to keep and bear arms must not be infringed.\" Rhetoric like this is exactly why the U.S has the highest gun death rate amongst developed nations. If we as Americans keep assuming that gun ownership is an \"indispensible\" right rather than a privilege, no meaningful regulation will ever get passed and gun deaths will never drop.",
@@ -283,7 +283,7 @@ window.WL_ARTICLES = {
     deck: "From the first-ever Tulip Day on the National Mall to the Cherry Blossom races, D.C. offered floral ways to welcome spring this year.",
     section: "Style",
     sectionPage: "style.html",
-    byline: "Salma Haddad and Rebecca Stern",
+    byline: "Amira Nasser and Hannah Kessler",
     date: "April 19, 2026",
     body: [
       "As spring approaches, flowers bloom, and floral-themed activities arise in cities across the country. Washington, D.C. is no exception; with its classic cherry blossoms, the city creates the perfect spring scenes. This March, many blossom hounds flocked to the Tidal Basin, which was filled to the brim with tourists, to catch peak bloom and stroll among the cherry trees. But some intrepid spring lovers departed from this tried and true path in search of new adventures to celebrate the transition from winter to spring by taking part in activities such as D.C.'s Tulip Day and the Cherry Blossom Races.",
@@ -293,7 +293,7 @@ window.WL_ARTICLES = {
       "Another exciting flower-themed activity that ushered in spring were the 5K and 10 Mile Cherry Blossom races. Running was not the only way to take part in the event as volunteers also came out to support the runners.",
       "The Cherry Blossom race was founded in 1973 by Gar Williams and Ralph Reynolds. It was originally known for being a 10-mile training run for the Boston Marathon, which is held on Patriots Day on the third Monday in April. The event is part of the National Cherry Blossom festival, a major four-week spring celebration that usually lasts from late March to early April, featuring a kite festival, petapalooza (music and fireworks), and a parade.",
       "The race uses a competitive lottery-based system to accept runners that typically runs for fifteen days. People are only guaranteed entry if they had been rejected for the past two years, qualified as a charity entry, or had volunteered for the past year (a great incentive for volunteers looking to run it in the future). This entry system is extremely difficult. Bianca Moretti shared, \"My dad thinks the lottery system is frustrating.\"",
-      "However, the competitiveness of entry did not deter some Maret students who were awarded spots this year, including Nadia Kessler, Owen Delano, and Freya Donnelly. Donnelly participated last year and vividly remembered the grand scale of the event, noting how it felt like \"a cross country meet but times a thousand.\" Even though it was her first big race, \"there were so many people on the sidelines with posters, which helped create such an exciting and uplifting environment.\" For Nadia Kessler, it was her first year running, and she reported being \"very excited\" to partake in the picturesque race."
+      "However, the competitiveness of entry did not deter some Maret students who were awarded spots this year, including Nadia Kessler, Theo Brandt, and Freya Donnelly. Donnelly participated last year and vividly remembered the grand scale of the event, noting how it felt like \"a cross country meet but times a thousand.\" Even though it was her first big race, \"there were so many people on the sidelines with posters, which helped create such an exciting and uplifting environment.\" For Nadia Kessler, it was her first year running, and she reported being \"very excited\" to partake in the picturesque race."
     ]
   },
 
@@ -303,7 +303,7 @@ window.WL_ARTICLES = {
     deck: "Students say Maret's relaxed dress code gives them freedom to express themselves, setting it apart from stricter schools across the DMV.",
     section: "Style",
     sectionPage: "style.html",
-    byline: "Gianna Serra",
+    byline: "Bianca Moretti",
     date: "April 19, 2026",
     body: [
       "It's a well-known fact that Maret students are able to choose their style and clothing for school every day. Whether it's putting on sweats and a hoodie on a gloomy Monday morning or sporting jeans and a sweater, the question of \"Will I get dress-coded?\" is not on upper schoolers' minds.",
@@ -313,7 +313,7 @@ window.WL_ARTICLES = {
       "Dress codes around the high schools in the DMV vary widely. For example, according to the DCPS website, D.C. public schools maintain the same dress code, with restrictions including but not limited to clothing and jewelry affiliated with alcohol, drugs, violence, or gang-related activities, or which display profane language or gestures as well as a ban on hats, non-prescriptive sunglasses, and clothing that exposes armpits, bare backs, or midriffs. Some independent schools across the tri-state area, such as Burke, Georgetown Day School, and Sidwell Friends School, are similar to Maret in their policies.",
       "Students I interviewed found Maret's approach to be beneficial. When Ivy Callahan learned about the D.C. public school dress codes, she responded, \"I'm really glad that Maret doesn't enforce a dress code in a way that limits people's creativity and identity.\" Lena Hartman noted, \"I think that teachers recognize that students already have a lot on their plate, so they want to allow them to openly express themselves.\"",
       "One of the key reasons why more relaxed dress codes are being implemented in schools is due to the sexist nature of stricter dress codes. Planned Parenthood argues that many \"outdated\" dress codes \"serve as a mechanism to impose gender norms that harm students, especially those that are non-binary or transgender\" and \"teach that cis females are sexual objects that need to be covered up.\" On the other hand, some argue that requiring students to wear uniforms can beneficially promote feelings of equality among students and improve behavior and academic performance, but research has been mixed as to whether these benefits actually appear.",
-      "Around the DMV area, schools that have taken up the uniform approach include the Washington Latin Public Charter School and St. Johns College High School. Sophomore Josephine Merrill compared her experience transitioning from attending a school that required a uniform to one with a relaxed dress code, saying, \"It was challenging because I had to buy so many more clothes, and it requires more thinking.\" With countless approaches from different schools, it becomes clear that the issue of dress codes is a complicated one, extending beyond Maret. It dives into issues such as socioeconomics and the disproportionate effects on minority groups, complete with many competing perspectives to take into consideration."
+      "Around the DMV area, schools that have taken up the uniform approach include the Washington Latin Public Charter School and St. Johns College High School. Sophomore Penelope Hart compared her experience transitioning from attending a school that required a uniform to one with a relaxed dress code, saying, \"It was challenging because I had to buy so many more clothes, and it requires more thinking.\" With countless approaches from different schools, it becomes clear that the issue of dress codes is a complicated one, extending beyond Maret. It dives into issues such as socioeconomics and the disproportionate effects on minority groups, complete with many competing perspectives to take into consideration."
     ]
   },
 
@@ -323,7 +323,7 @@ window.WL_ARTICLES = {
     deck: "The singer's fourth solo album debuted with 63 million streams and a world tour that sent ticket prices soaring into the thousands.",
     section: "Style",
     sectionPage: "style.html",
-    byline: "Emma Larsen",
+    byline: "Sofie Dahl",
     date: "April 19, 2026",
     body: [
       "Harry Styles' highly anticipated album, \"Kiss All The Time. Disco, Occasionally.\" made a big splash on its March 6th release date. The album generated 63.05 million streams on Spotify on that day, making it the biggest album debut of 2026 on Spotify so far. All 12 tracks made it to the Spotify Daily Global Chart, with \"American Girls\" being the highest ranked.",
@@ -331,7 +331,7 @@ window.WL_ARTICLES = {
       "Styles began teasing the album back in December by posting a video that featured the phrase \"We Belong Together,\" which has now been used to promote the album and his relatedly-named tour, Together, Together. The official announcement came on January 15th, via Instagram with the hit single \"Aperture\" following a week later.",
       "Before the album's release, Styles announced that he would be going on a world tour spanning seven cities, including 30 sold-out shows at Madison Square Garden in New York City. The tour consists of longer, multishow residencies in each city, and his extended Madison Square Garden stop will be his only one in the U.S.",
       "Tickets to the tour were in incredibly high demand, with prices reaching into the thousands almost immediately. After receiving backlash about ticket prices, the 32 year old singer scheduled a special release-day concert in Manchester, England with all tickets selling for 20 pounds. The show was recorded and is now on Netflix, titled Harry Styles: One Night in Manchester. Fans reportedly loved the concert, one going as far as to say it was \"the best night of my life,\" according to a Manchester Evening News article.",
-      "From lower-tempo ballads like \"Paint By Numbers\" to upbeat disco tracks like \"Dance No More,\" the album features a wide range of sounds. Caroline Meade said she \"loved the complexity of the different tracks\" and was impressed by how he was able to \"have such meaningful lyrics with a happy tempo.\"",
+      "From lower-tempo ballads like \"Paint By Numbers\" to upbeat disco tracks like \"Dance No More,\" the album features a wide range of sounds. Eleanor Pryce said she \"loved the complexity of the different tracks\" and was impressed by how he was able to \"have such meaningful lyrics with a happy tempo.\"",
       "Cole Fenton expressed excitement about the upcoming tour. \"I loved the latest album, I thought the lyrics and music videos were beautifully done, and I'm looking forward to when his tour starts,\" he said. Preston Hale has already made plans to hear Styles in person. \"I really like the album. I'm so excited because I am going to a show in September, and I hope he will play his older songs.\"",
       "Not all Maret students are Styles' biggest fans. \"I haven't listened to him in a while, and I was hoping to start listening to his songs more, but I didn't find this album special; in fact, I would even describe it as bad,\" said Sabrina Novak. Remi Falk also found the new release to be lacking. \"I wish I were more impressed with this album,\" she said, adding \"I was shocked by the tickets selling for so much.\"",
       "While acclaim is not universal, there is no doubt that anticipation is growing surrounding \"Kiss All The Time. Disco, Occasionally.\" and Styles' world tour. All eyes will be on Styles on May 16th, 2026, when he takes the stage to kick off the tour in Amsterdam. The tour will reveal how this new era of music sounds being played live and whether Styles is once again redefining his musical direction."
@@ -344,13 +344,13 @@ window.WL_ARTICLES = {
     deck: "Students and faculty share the books they read for fun, from historical fiction and manga to Tim O'Brien and Bill Bryson.",
     section: "Style",
     sectionPage: "style.html",
-    byline: "Caroline Meade",
+    byline: "Eleanor Pryce",
     date: "April 19, 2026",
     body: [
       "With all the assigned reading, projects, teaching, and grading going on at Maret, there is one thing we are all wondering about: what do people read for fun? From classics to graphic novels, our students and faculty have a wide range of favorites, and their choices reveal a lot.",
       "Historical fiction is a common favorite because it combines interesting historical events with relatable fiction. Brooke Ellery noted that her favorite book is \"Bury What We Cannot Take\" by Kirsten Chen, which takes place in Communist China in the late 1950s. \"We're reading it in ethics right now, and I'm not really a big reader, so it was really nice to find a book that I'm actually enjoying, especially since it's for school. I really like the plot twists but also feel like I'm learning something, due to the historical context,\" she said. Many students claim not to have enough time to read, so it's special when they actually enjoy their assigned books. When it happens, which can be rare, reading feels like less of a requirement and more of a genuine interest.",
       "Many students, on the other hand, enjoy graphic novels and comic books more because they are easy and quick reads. Rose Whitman is one of those students. \"I really like manga, and I feel like a lot of people would not expect that from me. My favorite is probably \"Death Note.\" I'm not a super fast reader, so I like manga because it's quick-paced and a light read,\" she explained. As Manga has grown significantly in global popularity, more Maret students are starting to pick up these Japanese comics and graphic novels. The visual storytelling makes books more appealing to students who tend to steer away from longer novels.",
-      "Another popular novel genre among students is fantasy. They offer the perfect escape from the stressful real world into a dimension where anything is possible. Emma Larsen is one of those fans. \"I only read fantasy. Right now, I'm reading \"Fourth Wing\" by Rebecca Yarros. I kind of just think everything else is boring. I also used to love the Percy Jackson and Warrior Cats series. It's just been the only thing that I have liked reading, since forever,\" she said. For a lot of students, fantasy is comforting to read because they have been reading it since they were little. Overall, students' literary taste leans more towards fiction, often focusing on imaginative worlds and engaging plots.",
+      "Another popular novel genre among students is fantasy. They offer the perfect escape from the stressful real world into a dimension where anything is possible. Sofie Dahl is one of those fans. \"I only read fantasy. Right now, I'm reading \"Fourth Wing\" by Rebecca Yarros. I kind of just think everything else is boring. I also used to love the Percy Jackson and Warrior Cats series. It's just been the only thing that I have liked reading, since forever,\" she said. For a lot of students, fantasy is comforting to read because they have been reading it since they were little. Overall, students' literary taste leans more towards fiction, often focusing on imaginative worlds and engaging plots.",
       "The faculty I interviewed reported a varied taste in literature, with both fiction and nonfiction titles rising to the top. Mr. Brennan's favorite book is Tim O'Brien's novel \"The Things They Carried.\" The book is about the Vietnam War, but Mr. Brennan says that it showcases the power of storytelling, which is why it's his favorite. On the flip side, Mr. Salas's favorite is a work of nonfiction, \"A Short History of Nearly Everything,\" by Bill Bryson, a book about all the different fields of science. Mr. Salas explained that Bryson, who is typically a travel writer, didn't like science when he was younger, so he was able to write a book about science that appeals to those who are not interested in STEM as well as to science lovers. It's Mr. Salas's favorite because it is very educational on different types of science, yet it teaches through humor, crazy facts, and irony.",
       "While students and faculty may have very diverse reading preferences, one thing is clear: everyone reads for different reasons. Whether it be for joy, entertainment, assignments, or to learn something new, nobody opens a book for exactly the same reason. No matter the genre, reading remains an important way to unwind, learn, and explore different topics and art outside of the classroom."
     ]
@@ -362,11 +362,11 @@ window.WL_ARTICLES = {
     deck: "After opening the season 1-3, the lacrosse team is leaning on preseason work and player-to-player chemistry to build toward a playoff run.",
     section: "Sports",
     sectionPage: "sports.html",
-    byline: "Rohan Malhotra",
+    byline: "Arjun Bhatt",
     date: "April 19, 2026",
     body: [
       "Maret lacrosse is looking to improve after a difficult 1-3 start to the season, with losses against teams such as Beth Tfiloh, Annapolis Area Christian, and Bishop McNamara to open the year. While the results haven't yet been how they hoped, the team has shown potential in the early games.",
-      "Much of the progress made this season comes from the work put in during preseason, where the team added new players and reinforced fundamentals. Weeks before the first game, preseason practices helped establish the team. Captains Marcus Ellery and Marcus Whitfield worked closely with new players like Aaron Vasquez and Kiran Malhotra, teaching them the fundamentals and helping them adjust to high school speed. Preseason practices were intense and competitive, with players battling for starting roles. Omar Farouk said the \"practices were always great and that the captains and coaches created an environment that was fun but serious at the same time;\" something he hadn't seen on other teams he played for. Despite winter conditions like snow, rain, and freezing temperatures, the team stayed focused and disciplined. Micah Feld said, \"We were usually the only team out on the field. It was cold at the start, but when we got to work, everyone just ignored it.\" Getting in these practices while most other teams were resting helped the team get an advantage for the start of the season.",
+      "Much of the progress made this season comes from the work put in during preseason, where the team added new players and reinforced fundamentals. Weeks before the first game, preseason practices helped establish the team. Captains Marcus Ellery and Desmond Clarke worked closely with new players like Aaron Vasquez and Kiran Malhotra, teaching them the fundamentals and helping them adjust to high school speed. Preseason practices were intense and competitive, with players battling for starting roles. Omar Farouk said the \"practices were always great and that the captains and coaches created an environment that was fun but serious at the same time;\" something he hadn't seen on other teams he played for. Despite winter conditions like snow, rain, and freezing temperatures, the team stayed focused and disciplined. Micah Feld said, \"We were usually the only team out on the field. It was cold at the start, but when we got to work, everyone just ignored it.\" Getting in these practices while most other teams were resting helped the team get an advantage for the start of the season.",
       "A driver of this team's development has been its player to player bonds. From long preseason practices to game-day preparation and locker room conversations, players have built strong connections. That chemistry shows on the field through smart passes, stronger communication, and trust between teammates during intense moments. Upperclassmen also help younger players adjust, making it easier for new members to fit into the team. New sophomore Kiran Malhotra said that Captain Marcus Ellery helped him get into lacrosse and motivated him enough to earn a spot on the starting roster this season.",
       "Early games this season have reflected some of the improvements from the preseason. The team's coordination has looked sharper, and younger players like Aaron Vasquez, Omar Farouk, and Micah Feld have started to show progress. \"Yeah, a lot of those guys will definitely be great players,\" said Captain Marcus Ellery.",
       "Conditioning has helped Maret compete in long games, such as their overtime match against Saint John Paul the Great. Strong defensive communication has reduced free goals for the other team, and attacking the back of the net has placed pressure on opponents defenses. However, the team still needs to work on off-ball movement, accurate passing, and ground balls. If they can improve in these areas, the team could make significant strides as the season continues.",
@@ -381,7 +381,7 @@ window.WL_ARTICLES = {
     deck: "With a full roster of 16, a new coach, and early matches under their belts, MAC tennis is building chemistry and momentum for the spring.",
     section: "Sports",
     sectionPage: "sports.html",
-    byline: "Charlotte Wren",
+    byline: "Imogen Vale",
     date: "April 19, 2026",
     body: [
       "Heading into their anticipated season , MAC tennis looks to continue their momentum into the spring and make a mark on the rest of the league. Captains Dmitri Sokol and Declan Rhodesexpressed how excited they are for the upcoming season.With a full roster of 16 players and a new coach preparing to take over, the team is focused on developing its skills and becoming more competitive in upcoming matches.",
@@ -399,7 +399,7 @@ window.WL_ARTICLES = {
     deck: "Maret's ultimate frisbee team pairs jeans, jorts, and nicknames with fierce competition, building a hidden gem of a sports culture.",
     section: "Sports",
     sectionPage: "sports.html",
-    byline: "Colin Reyes",
+    byline: "Mateo Solis",
     date: "April 19, 2026",
     body: [
       "When people are asked to think about Maret Sports, conversations usually center around the All State Football squad or the Baseball team with the most MAC Conference titles of all time. Although these sports have dominated the sports culture of Maret, a short trip to the back field reveals Maret's hidden gem, Ultimate Frisbee. Watching these athletes sling disks up and down the field and complete complex plays is a sight to behold. Not only does this sport represent traditional values in sports, but Maret ultimate frisbee is redefining what a competitive Maret sport can be.",
@@ -418,7 +418,7 @@ window.WL_ARTICLES = {
     deck: "From Olympic figure skater Alysa Liu to Maret's multi-sport students, young athletes are navigating early commitment and the toll it takes.",
     section: "Sports",
     sectionPage: "sports.html",
-    byline: "Micah Stein and Josephine Merrill",
+    byline: "Asher Blum and Penelope Hart",
     date: "April 19, 2026",
     body: [
       "In recent years, there has been a growing trend of young athletes committing to a single sport at earlier and earlier ages, often pushing themselves to intense levels of competition. While this dedication can lead to incredible success, some critics argue that the pressure placed on young athletes can come at the cost of their childhood and overall well-being.",
@@ -435,7 +435,7 @@ window.WL_ARTICLES = {
     deck: "After a tough opening loss to Potomac, ISL softball is leaning on close team chemistry and intense practices to prepare for a strong season.",
     section: "Sports",
     sectionPage: "sports.html",
-    byline: "Rohan Malhotra",
+    byline: "Arjun Bhatt",
     date: "April 19, 2026",
     body: [
       "ISL Softball is heading into the season full of energy, a strong team bond, and most importantly, excitement. The team hasn't started well, falling to one of the best teams in the ISL, Potomac, after their starting pitcher, Renata, was injured. Nevertheless,",
