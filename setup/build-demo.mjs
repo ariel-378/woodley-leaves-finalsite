@@ -49,5 +49,45 @@ function stripSync() {
   console.log("  shared editing stripped (sync.endpoint and sync.key cleared)");
 }
 
+// ── 2. Switch the tag system on for the preview ────────────────────────────
+// Tags ship OFF: a paper that does not want them should not have to remove
+// them. But a demo that shows the feature switched off does not show the
+// feature, and the emailed pitch points at it directly. An editor would turn
+// this on from the dashboard; here the deployed copy is seeded with it already
+// on, exactly as if one had.
+//
+// This is demo scaffolding like everything else in this file. It writes a
+// published-content.js, which is the same mechanism a real editor publishes
+// with, so nothing bespoke is running on the preview.
+function enableTags() {
+  const articles = path.join(ROOT, "articles.js");
+  const window_ = {};
+  new Function("window", fs.readFileSync(articles, "utf8"))(window_);
+  const all = window_.WL_ARTICLES || {};
+  const tags = [...new Set(Object.values(all).flatMap(a => a.tags || []))].sort();
+
+  const payload = { wl_tags: JSON.stringify({ enabled: true, list: tags }) };
+
+  // Must be a real bundle: applyPublished() rejects anything whose `format`
+  // it does not recognise, and does so silently — the first attempt at this
+  // wrote a file that looked right, was served, and was ignored.
+  const FORMAT = (fs.readFileSync(path.join(ROOT, "content-bundle.js"), "utf8")
+    .match(/var FORMAT\s*=\s*"([^"]+)"/) || [])[1];
+  if (!FORMAT) {
+    console.error("FAILED: could not read the bundle format from content-bundle.js.");
+    process.exit(1);
+  }
+  const js =
+    "// ============================================================================\n" +
+    "//  PUBLISHED CONTENT — generated for the demo build. Not committed.\n" +
+    "//  Turns the tag system on so the preview shows it. See setup/build-demo.mjs.\n" +
+    "// ============================================================================\n" +
+    "window.WL_PUBLISHED = " +
+      JSON.stringify({ format: FORMAT, version: 1, data: payload }, null, 2) + ";\n";
+  fs.writeFileSync(path.join(ROOT, "published-content.js"), js, "utf8");
+  console.log(`  tag system switched on for the preview (${tags.length} tags)`);
+}
+
 console.log("Building the demo copy:");
 stripSync();
+enableTags();   // DEMO ONLY
