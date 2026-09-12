@@ -42,13 +42,13 @@ window.WLNav = (function () {
     });
 
     let html = items.map(it =>
-      `<a href="${esc(it.href)}"` +
+      `<a href="${esc(WL_rootHref(it.href))}"` +
       (it.section ? ` data-section="${esc(it.section)}"` : "") +
       (it.active ? ` class="active"` : "") +
       `>${esc(it.label)}</a>`
     ).join("\n");
 
-    html += `\n<a href="search.html" class="search-link${file === "search.html" ? " active" : ""}" aria-label="Search">🔍</a>`;
+    html += `\n<a href="${WL_rootHref("search.html")}" class="search-link${file === "search.html" ? " active" : ""}" aria-label="Search">🔍</a>`;
 
     inner.innerHTML = html;
   }

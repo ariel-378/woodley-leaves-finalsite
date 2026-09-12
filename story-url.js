@@ -46,6 +46,23 @@ window.WL_STORY_PAGES = [
   /* END GENERATED */
 ];
 
+// How to reach a page at the site root from wherever we currently are.
+//
+// Story pages live one directory down, and every link built at runtime —
+// the section nav, the search icon, byline links, the editor dashboard — is
+// written relative to the root. From stories/ those resolve to
+// stories/news.html and so on, which do not exist. The whole nav 404s.
+//
+// The generated pages already get their <link> and <script> paths rewritten at
+// build time, but runtime-generated links are not in the markup to rewrite, so
+// they need this instead.
+window.WL_rootHref = function (path) {
+  var p = String(path == null ? "" : path);
+  // Leave anything already absolute, anchored, or a scheme alone.
+  if (/^(https?:|mailto:|tel:|javascript:|#|\/)/.test(p)) return p;
+  return (/\/stories\//.test(location.pathname) ? "../" : "") + p;
+};
+
 window.WL_storyHref = function (id) {
   var slug = String(id == null ? "" : id);
   var hasPage = (window.WL_STORY_PAGES || []).indexOf(slug) !== -1;

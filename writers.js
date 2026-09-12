@@ -49,7 +49,7 @@ window.WL_bylineTagsHtml = function (a) {
   var generic = { "The Editorial Board": 1, "Submitted": 1, "School Communications": 1 };
   return WL_articleAuthors(a).map(function (name) {
     if (name && !generic[name] && window.WL_writerSlug) {
-      return '<a class="byline-tag" href="writer.html?slug=' + encodeURIComponent(WL_writerSlug(name)) + '">' + esc(name) + '</a>';
+      return '<a class="byline-tag" href="' + WL_rootHref('writer.html?slug=' + encodeURIComponent(WL_writerSlug(name))) + '">' + esc(name) + '</a>';
     }
     return '<span class="byline-tag byline-tag-plain">' + esc(name) + '</span>';
   }).join("");

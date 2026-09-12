@@ -136,8 +136,30 @@ export function storyPage(template, id, a, cfg) {
   // The page now lives one directory down. Rewrite relative references rather
   // than using <base href="../">, which would also send in-page anchors like
   // the skip link off to the site root.
-  page = page.replace(/\b(src|href)="(?!https?:|mailto:|data:|#|\/)([^"]+)"/g,
-    (m, attr, url) => `${attr}="../${url}"`);
+  //
+  // Only outside <script>. The first version rewrote the whole file, which also
+  // hit href="..." sitting inside JavaScript template literals — turning
+  //   `<a href="${WL_storyHref(r.id)}">`
+  // into
+  //   `<a href="../${WL_storyHref(r.id)}">`
+  // and breaking every related-story link on every generated page, because
+  // WL_storyHref already returns the correct path for wherever it is called
+  // from. A regex cannot tell markup from a string that looks like markup, so
+  // the script blocks are held aside and put back untouched.
+  const rewriteUrls = (chunk) =>
+    chunk.replace(/\b(src|href)="(?!https?:|mailto:|data:|#|\/)([^"]+)"/g,
+      (m, attr, url) => `${attr}="../${url}"`);
+
+  // Inline scripts only. A <script src="..."> still needs its path rewritten —
+  // holding those aside too left all 21 of them pointing at a directory that
+  // does not exist, and the page loaded nothing at all.
+  const scripts = [];
+  page = page.replace(/<script(?![^>]*\bsrc=)[^>]*>[\s\S]*?<\/script>/gi, (m) => {
+    scripts.push(m);
+    return `\u0000SCRIPT${scripts.length - 1}\u0000`;
+  });
+  page = rewriteUrls(page);
+  page = page.replace(/\u0000SCRIPT(\d+)\u0000/g, (m, i) => scripts[Number(i)]);
 
   return page;
 }

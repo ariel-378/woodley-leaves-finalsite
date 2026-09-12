@@ -300,7 +300,7 @@
       }).join(" &nbsp;·&nbsp; ");
       foot.innerHTML =
         "© " + year + " " + esc(cfg.name || "") + " · " + esc(cfg.school || "") + " " + esc(cfg.footerNote || "") +
-        ' · <a href="staff.html">Staff</a>' +
+        ' · <a href="' + WL_rootHref("staff.html") + '">Staff</a>' +
         (contacts ? "<br>" + contacts : "");
     }
   }

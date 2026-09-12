@@ -91,6 +91,34 @@ export async function run() {
       "a <base> tag or a bad rewrite would send it to the site root");
   }
 
+  // ===== Every link on a story page actually goes somewhere =====
+  //  Story pages live one directory down, and the nav, the search icon, the
+  //  byline link, the footer and the editor-dashboard link are all built at
+  //  runtime relative to the site root. From stories/ they resolved to
+  //  stories/news.html and so on — the entire navigation 404'd, on exactly the
+  //  pages that link previews point people at. The generated markup gets its
+  //  asset paths rewritten at build time; runtime-built links are not in the
+  //  markup to rewrite, so nothing caught this.
+  {
+    const id = ids[0];
+    const ctx = await loadPage(`${OUT_DIR}/${id}.html`, { editor: true });
+    opened.push(ctx);
+    // Editor chrome only renders for an editor, and it has links of its own.
+    if (ctx.window.WLAuth && ctx.window.WLAuth.renderAccountBar) ctx.window.WLAuth.renderAccountBar();
+
+    const broken = [];
+    ctx.document.querySelectorAll("a[href]").forEach(a => {
+      const href = a.getAttribute("href");
+      if (!href || /^(#|https?:|mailto:|tel:|javascript:)/.test(href)) return;
+      const rel = href.split("?")[0].split("#")[0];
+      if (!rel) return;
+      const target = path.normalize(path.join(SITE, OUT_DIR, rel));
+      if (!fs.existsSync(target)) broken.push(`${href} → ${path.relative(SITE, target)}`);
+    });
+    check.equal("every link on a story page resolves to a real file",
+      broken.length, 0, broken.join(" | "));
+  }
+
   // ===== Old links keep working =====
   {
     const ctx = await loadPage("article.html", { editor: false, query: `?id=${ids[0]}` });
