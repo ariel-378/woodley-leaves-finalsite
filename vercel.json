@@ -1,5 +1,5 @@
 {
-  "buildCommand": "node setup/demo-config.mjs",
+  "buildCommand": "node setup/build-demo.mjs",
   "outputDirectory": ".",
   "headers": [
     {

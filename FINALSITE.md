@@ -16,6 +16,13 @@ This document explains:
 
 ---
 
+> **A note on the preview you were sent.** If you reached the site through a
+> password prompt, that is a temporary courtesy lock on the shared demo, not
+> part of the platform. It is injected at build time, appears in no page in the
+> repository, and disables itself the moment `window.WL_CONTEXT` is present —
+> so it will not interfere with anything below. It is deleted during
+> integration. See "The demo password gate" in `README.md`.
+
 ## 1. Architecture at a glance
 
 | Layer | What it is | Files |

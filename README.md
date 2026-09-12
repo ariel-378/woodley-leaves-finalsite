@@ -131,6 +131,31 @@ Two things worth knowing:
   gets no page until that time, so an embargoed headline is never sitting in a
   public file early.
 
+## The demo password gate — remove this during integration
+
+The preview at <https://woodley-leaves.vercel.app> sits behind a password. That
+gate is **not part of the site** and must not survive integration.
+
+It exists because the paper is being shared by link with a few people before the
+school has decided anything, and the host's own password protection is a paid
+feature. It lives in `setup/demo-gate.js`, is injected into the deployed copy by
+`setup/build-demo.mjs`, and appears in no page in this repository.
+
+**It is not authentication.** The password is in a file the browser downloads;
+the page's HTML is on the wire before the gate runs; and with no accounts it
+cannot tell one reader from another, so it cannot express "students and faculty
+only". It stops a stranger who stumbles on the link. That is the whole claim.
+
+**The real mechanism** is the one Finalsite provides: the site never
+authenticates anyone, Finalsite decides who may read the paper with a
+page-audience setting, and tells the page who is looking via `window.WL_CONTEXT`.
+See `FINALSITE.md`.
+
+**To remove:** delete `setup/demo-gate.js` and the `injectGate()` call in
+`setup/build-demo.mjs`. Nothing else refers to it. As a safety net the gate
+disables itself whenever `window.WL_CONTEXT` is present, so a hosted
+integration is unaffected even if it is left in place.
+
 ## Documentation
 
 - **[FINALSITE.md](FINALSITE.md)** — how the site integrates with Finalsite: the
