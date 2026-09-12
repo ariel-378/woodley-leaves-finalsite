@@ -272,6 +272,50 @@ shippable.
   content should also be sanitized at the source.
 - No secrets belong in this codebase; it is entirely client-side.
 
+### Content-Security-Policy
+
+The site is friendly to a strict CSP. It makes **no external requests except**
+video embeds/thumbnails (YouTube, Vimeo) and — if you enable the newsletter
+signup — the Google Apps Script endpoint. Fonts are **self-hosted** (no font
+CDN). There are
+**no inline event handlers** (`onclick=` etc.) and **no `eval`/`new Function`**
+in the shipped code, so the only inline surface is per-page `<script>`/`<style>`
+blocks.
+
+A working policy:
+
+```text
+Content-Security-Policy:
+  default-src 'self';
+  script-src  'self' 'unsafe-inline';   /* or nonce the inline blocks — see below */
+  style-src   'self' 'unsafe-inline';
+  img-src     'self' data: https://img.youtube.com https://i.ytimg.com https://i.vimeocdn.com;
+  frame-src   https://www.youtube.com https://player.vimeo.com;
+  connect-src 'self' https://script.google.com;   /* only if reader forms are enabled */
+  font-src    'self';
+  object-src  'none';
+  base-uri    'self';
+```
+
+Trim what you don't use — drop `frame-src`/`img-src` video hosts if the paper has
+no video, and `connect-src` if forms post to a host endpoint instead of Apps
+Script.
+
+**About the inline blocks.** ~21 pages carry a small inline `<script>` (page glue
+like the breaking-news banner or a form handler) and inline `<style>`. Under a
+strict `script-src`/`style-src` without `'unsafe-inline'`, choose one:
+
+1. **Allow `'unsafe-inline'`** for script/style (shown above) — simplest, and
+   still safe here since there are no inline handlers and no `eval`.
+2. **Nonce them** — if the host injects a per-request nonce, add `nonce-…` to the
+   inline tags (a mechanical pass we can do).
+3. **Externalize them** — move each page's inline block into a `.js`/`.css` file
+   so `script-src 'self'` alone suffices (a larger but one-time change).
+
+Custom section code that editors paste runs in an `<iframe sandbox="allow-scripts">`
+with no same-origin access; it cannot reach the parent page, cookies, or storage,
+and needs no CSP allowance.
+
 ---
 
 ## 7. What Finalsite must provide — checklist

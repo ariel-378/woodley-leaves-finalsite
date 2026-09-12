@@ -179,8 +179,9 @@ page-audience setting, and tells the page who is looking by setting
 ## Documentation
 
 - **[FINALSITE.md](FINALSITE.md)** — how the site integrates with Finalsite: the
-  identity contract (`WL_CONTEXT`), the **editors-group logic**, and a phased plan
-  for hosting, authentication, and content persistence.
+  identity contract (`WL_CONTEXT`), the **editors-group logic**, the
+  **Content-Security-Policy** the site needs, and a phased plan for hosting,
+  authentication, and content persistence.
 - **[CUSTOMIZE.md](CUSTOMIZE.md)** — rebrand the paper for your school (the Brand
   design tab, or editing `config.js`).
 - **[PROPOSAL.md](PROPOSAL.md)** — the ask itself, in two parts: one for Maret,
