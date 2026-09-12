@@ -140,6 +140,61 @@ export async function run() {
     check.clean("and the article still renders cleanly", off);
   }
 
+  // ===== Searching a tag finds the articles filed under it =====
+  //  A reader who hears about "the music issue" types music into the search
+  //  box. Before this, a story tagged Music whose text never says the word
+  //  simply did not come up, and nothing about the search page suggested tags
+  //  existed at all.
+  {
+    const ctx = await editor();
+    const W = ctx.window;
+    W.WLTags.setEnabled(true);
+    W.WLTags.add("Music");
+    // Its text never mentions music. Only the tag connects it.
+    W.WLArticles.save("concert", {
+      title: "Winter recital fills the hall", section: "Arts", byline: "By R Lee",
+      date: "September 2, 2026", body: ["The strings came in late."], tags: ["Music"],
+    });
+    // Same section, no tag — it must not ride along.
+    W.WLArticles.save("bakesale", {
+      title: "Bake sale raises $400", section: "Arts", byline: "By T Kim",
+      date: "September 2, 2026", body: ["Cookies sold out."],
+    });
+    const stored = {};
+    for (let i = 0; i < W.localStorage.length; i++) {
+      const k = W.localStorage.key(i);
+      if (k && k.startsWith("wl_")) stored[k] = W.localStorage.getItem(k);
+    }
+
+    const on = await loadPage("search.html", { editor: false, query: "?q=music", storage: stored });
+    opened.push(on);
+    const titles = [...on.document.querySelectorAll(".search-result h3")].map(h => h.textContent.trim());
+    check.ok("searching a tag finds the article filed under it",
+      titles.some(t => /Winter recital/.test(t)), titles.join(" | ") || "(no results)");
+    check.ok("and does not drag in an untagged story from the same section",
+      !titles.some(t => /Bake sale/.test(t)), titles.join(" | "));
+
+    check.ok("the card shows which tag matched, so the result is not a mystery",
+      /Music/i.test(on.document.querySelector(".search-tags")?.textContent || ""),
+      "no tag was shown on the result card");
+
+    const link = on.document.querySelector(".search-tags .tag-chip");
+    check.ok("and that tag links somewhere real",
+      !!link && /tag\.html\?tag=music/.test(link.getAttribute("href")),
+      link ? link.getAttribute("href") : "(no link)");
+    check.clean("searching by tag renders cleanly", on);
+
+    // With the system switched off, a tag must not be a back door into
+    // articles a reader is not being shown tags for.
+    stored.wl_tags = JSON.stringify({ ...JSON.parse(stored.wl_tags), enabled: false });
+    const off = await loadPage("search.html", { editor: false, query: "?q=music", storage: stored });
+    opened.push(off);
+    const offTitles = [...off.document.querySelectorAll(".search-result h3")].map(h => h.textContent.trim());
+    check.ok("with tags switched off, a tag search finds nothing through tags",
+      !offTitles.some(t => /Winter recital/.test(t)), offTitles.join(" | "));
+    check.clean("and the search page still renders cleanly", off);
+  }
+
   // ===== The editor UI =====
   {
     const ctx = await editor();

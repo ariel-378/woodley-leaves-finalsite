@@ -1764,6 +1764,10 @@ body.wl-layout-edit [data-zone]:empty::after {
   flex-wrap: wrap;
   gap: 6px;
 }
+/* Why a search result matched, when it matched on a tag rather than on text. */
+.search-tags { margin-top: 6px; font-size: 12px; color: var(--muted);
+  display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+
 .tag-chip {
   display: inline-block;
   font-family: var(--font-sans);

@@ -13,9 +13,33 @@
     return escapeHtml(text).replace(re, "<mark>$1</mark>");
   }
 
+  // Tags an article carries, but only when the paper is using tags at all.
+  // WLTags.visibleFor returns nothing when the system is switched off, so a
+  // search can never surface an article through a tag a reader cannot see.
+  function tagsOf(a) {
+    return (window.WLTags && WLTags.visibleFor) ? WLTags.visibleFor(a) : [];
+  }
+
+  // Which of an article's tags the query matched. Returned as well as scored,
+  // so the result card can show *why* the article came up — a story whose text
+  // never mentions "music" appearing in a search for music looks like a bug
+  // until you can see the tag that put it there.
+  function matchedTags(a, q) {
+    return tagsOf(a).filter(function (t) { return String(t).toLowerCase().includes(q); });
+  }
+
   function scoreMatch(a, q) {
     let score = 0;
     if ((a.title || "").toLowerCase().includes(q)) score += 10;
+
+    // An exact tag match is the strongest signal after the headline: an editor
+    // deliberately filed this article under that word. Ranked above the byline
+    // so that searching "Music" leads with the Music-tagged pieces rather than
+    // with a story by someone named Music.
+    const tags = tagsOf(a).map(function (t) { return String(t).toLowerCase(); });
+    if (tags.some(function (t) { return t === q; })) score += 9;
+    else if (tags.some(function (t) { return t.includes(q); })) score += 4;
+
     if ((a.byline || "").toLowerCase().includes(q)) score += 8;
     if ((a.deck || "").toLowerCase().includes(q)) score += 5;
     if ((a.section || "").toLowerCase().includes(q)) score += 3;
@@ -32,7 +56,7 @@
       if (!WLArticles.isVisible(a)) return;
       if (sectionFilter && a.section !== sectionFilter) return;
       const s = scoreMatch(a, q);
-      if (s > 0) results.push({ id, relevance: s, ...a });
+      if (s > 0) results.push({ id, relevance: s, matchedTags: matchedTags(a, q), ...a });
     });
     return results.sort((a, b) => {
       if (b.relevance !== a.relevance) return b.relevance - a.relevance;
@@ -81,6 +105,9 @@
         <div class="kicker">${escapeHtml(a.section)}</div>
         <h3><a href="${WL_storyHref(a.id)}">${highlight(a.title, q)}</a></h3>
         <div class="byline">By ${window.WL_bylineTagsHtml ? WL_bylineTagsHtml(a) : highlight(a.byline, q)} · ${escapeHtml(a.date)}</div>
+        ${(a.matchedTags || []).length ? `<div class="search-tags">Tagged ${
+          a.matchedTags.map(t => `<a class="tag-chip" href="tag.html?tag=${encodeURIComponent(String(t).toLowerCase())}">${escapeHtml(t)}</a>`).join(" ")
+        }</div>` : ""}
       </article>
     `).join("");
   }
