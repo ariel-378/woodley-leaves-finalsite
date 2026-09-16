@@ -100,8 +100,18 @@ export async function run() {
   //  asset paths rewritten at build time; runtime-built links are not in the
   //  markup to rewrite, so nothing caught this.
   {
-    const id = ids[0];
-    const ctx = await loadPage(`${OUT_DIR}/${id}.html`, { editor: true });
+    // Tags ON, and on an article that actually has some. The first version of
+    // this ran with tags off, so no tag chip existed to check — the tag links
+    // were broken behind a test reporting everything fine. A link test has to
+    // render the links that actually ship.
+    //
+    // The tag list is taken from the article rather than hardcoded, so this
+    // works in any paper whatever its tags are called.
+    const id = ids.find(i => (all[i].tags || []).length) || ids[0];
+    const ctx = await loadPage(`${OUT_DIR}/${id}.html`, {
+      editor: true,
+      storage: { wl_tags: JSON.stringify({ enabled: true, list: all[id].tags || [] }) },
+    });
     opened.push(ctx);
     // Editor chrome only renders for an editor, and it has links of its own.
     if (ctx.window.WLAuth && ctx.window.WLAuth.renderAccountBar) ctx.window.WLAuth.renderAccountBar();
@@ -117,6 +127,11 @@ export async function run() {
     });
     check.equal("every link on a story page resolves to a real file",
       broken.length, 0, broken.join(" | "));
+    // Prove the tag links were actually among what was checked, so this cannot
+    // quietly go back to testing nothing.
+    check.ok("and tag links were among them",
+      [...ctx.document.querySelectorAll("a[href]")].some(a => /tag\.html/.test(a.getAttribute("href") || "")),
+      "no tag link rendered — the check would pass while tags were broken");
   }
 
   // ===== Old links keep working =====

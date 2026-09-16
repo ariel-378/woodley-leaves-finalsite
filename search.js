@@ -106,7 +106,7 @@
         <h3><a href="${WL_storyHref(a.id)}">${highlight(a.title, q)}</a></h3>
         <div class="byline">By ${window.WL_bylineTagsHtml ? WL_bylineTagsHtml(a) : highlight(a.byline, q)} · ${escapeHtml(a.date)}</div>
         ${(a.matchedTags || []).length ? `<div class="search-tags">Tagged ${
-          a.matchedTags.map(t => `<a class="tag-chip" href="tag.html?tag=${encodeURIComponent(String(t).toLowerCase())}">${escapeHtml(t)}</a>`).join(" ")
+          a.matchedTags.map(t => `<a class="tag-chip" href="${WL_rootHref(`tag.html?tag=${encodeURIComponent(String(t).toLowerCase())}`)}">${escapeHtml(t)}</a>`).join(" ")
         }</div>` : ""}
       </article>
     `).join("");

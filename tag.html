@@ -104,7 +104,7 @@
   const cloud = document.getElementById("tag-cloud");
   const tags = Object.keys(tagCounts).sort();
   cloud.innerHTML = tags.length
-    ? tags.map(t => `<a class="tag-chip" href="tag.html?tag=${encodeURIComponent(t)}">${escapeHtml(t)} <span class="tag-count">${tagCounts[t]}</span></a>`).join("")
+    ? tags.map(t => `<a class="tag-chip" href="${WL_rootHref(`tag.html?tag=${encodeURIComponent(t)}`)}">${escapeHtml(t)} <span class="tag-count">${tagCounts[t]}</span></a>`).join("")
     : `<p style="font-size:14px; color: var(--muted); font-style: italic;">No tags have been added yet. Editors can add tags to any article from the dashboard.</p>`;
 
   if (!tag) {
