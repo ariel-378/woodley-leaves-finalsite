@@ -499,11 +499,10 @@ body.wl-home-edit .wl-home-edit-bar {
   font-family: inherit; font-weight: 600; font-size: 13px; cursor: pointer;
   border: none; border-radius: 999px; padding: 8px 16px;
 }
-/* accent-deep, not accent: this is a button with white text on it, and the
-   light accent does not carry white. Its own shadow, because at rest it floats
-   on the page with no bar behind it. */
+/* Its own shadow, because at rest it floats on the page with no bar behind it.
+   --accent is the paper's green; white on it is 5.1:1, which clears AA. */
 #wl-home-edit-toggle {
-  background: var(--accent-deep); color: #fff;
+  background: var(--accent); color: #fff;
   box-shadow: 0 4px 14px rgba(0, 0, 0, 0.22);
 }
 body.wl-home-edit #wl-home-edit-toggle { box-shadow: none; }
