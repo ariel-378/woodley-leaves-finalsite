@@ -478,19 +478,35 @@ textarea:focus-visible,
 .ha-empty { color: var(--muted); font-style: italic; }
 
 /* ===== Homepage drag-and-drop layout editor (editors only) ===== */
+/* The bar holds a hint and a Reset button, but both are hidden until edit mode
+   is on — so at rest it was a dark pill wrapped around one button, with 14px of
+   padding on one side and 8px on the other. That read as a stray black outline
+   around the button rather than as a toolbar. It only wears its chrome when it
+   has something to hold. */
 .wl-home-edit-bar {
   position: fixed; bottom: 20px; right: 20px; z-index: 300;
   display: flex; align-items: center; gap: 10px;
-  background: var(--ink); color: #fff; padding: 8px 8px 8px 14px;
-  border-radius: 999px; box-shadow: 0 6px 20px rgba(0,0,0,0.25);
+  background: transparent; color: #fff; padding: 0;
+  border-radius: 999px; box-shadow: none;
   font-family: var(--font-sans);
+}
+body.wl-home-edit .wl-home-edit-bar {
+  background: var(--ink); padding: 8px 8px 8px 14px;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.25);
 }
 .wl-home-edit-hint { font-size: 12px; color: rgba(255,255,255,0.8); }
 .wl-home-edit-bar button {
   font-family: inherit; font-weight: 600; font-size: 13px; cursor: pointer;
   border: none; border-radius: 999px; padding: 8px 16px;
 }
-#wl-home-edit-toggle { background: var(--accent); color: #fff; }
+/* accent-deep, not accent: this is a button with white text on it, and the
+   light accent does not carry white. Its own shadow, because at rest it floats
+   on the page with no bar behind it. */
+#wl-home-edit-toggle {
+  background: var(--accent-deep); color: #fff;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.22);
+}
+body.wl-home-edit #wl-home-edit-toggle { box-shadow: none; }
 #wl-home-edit-toggle:hover { filter: brightness(0.92); }
 #wl-home-edit-reset { background: transparent; color: rgba(255,255,255,0.85); border: 1px solid rgba(255,255,255,0.4); }
 #wl-home-edit-reset:hover { background: rgba(255,255,255,0.12); }
