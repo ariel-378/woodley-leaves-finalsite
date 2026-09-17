@@ -48,7 +48,7 @@ window.WLNav = (function () {
       `>${esc(it.label)}</a>`
     ).join("\n");
 
-    html += `\n<a href="${WL_rootHref("search.html")}" class="search-link${file === "search.html" ? " active" : ""}" aria-label="Search">🔍</a>`;
+    html += `\n<a href="${WL_rootHref("search.html")}" class="search-link${file === "search.html" ? " active" : ""}" aria-label="Search"><span class="search-ico" aria-hidden="true"></span></a>`;
 
     inner.innerHTML = html;
   }

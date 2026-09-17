@@ -212,6 +212,17 @@ textarea:focus-visible,
 .sectionnav a.search-link {
   color: var(--muted);
   letter-spacing: 0;
+  display: inline-flex; align-items: center;
+}
+/* The glyph is a mask rather than an <img>, so it takes currentColor and keeps
+   following the link from --muted to --ink on hover. An image could not.
+   The url is resolved against this stylesheet, not the page, so it works
+   unchanged from stories/ one directory down. */
+.search-ico {
+  display: inline-block; width: 15px; height: 15px;
+  background-color: currentColor;
+  -webkit-mask: url("media/search.png") no-repeat center / contain;
+  mask: url("media/search.png") no-repeat center / contain;
 }
 .sectionnav a.search-link:hover {
   color: var(--ink);
