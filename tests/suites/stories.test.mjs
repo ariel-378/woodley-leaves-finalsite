@@ -107,7 +107,11 @@ export async function run() {
     //
     // The tag list is taken from the article rather than hardcoded, so this
     // works in any paper whatever its tags are called.
-    const id = ids.find(i => (all[i].tags || []).length) || ids[0];
+    // Prefer a story that has both, so one page exercises links, tags and
+    // images together.
+    const id = ids.find(i => (all[i].tags || []).length && (all[i].photo || "").trim())
+            || ids.find(i => (all[i].tags || []).length)
+            || ids[0];
     const ctx = await loadPage(`${OUT_DIR}/${id}.html`, {
       editor: true,
       storage: { wl_tags: JSON.stringify({ enabled: true, list: all[id].tags || [] }) },
@@ -129,6 +133,34 @@ export async function run() {
       broken.length, 0, broken.join(" | "));
     // Prove the tag links were actually among what was checked, so this cannot
     // quietly go back to testing nothing.
+    // Images, for the same reason and missed the same way: the article photo,
+    // the gallery and the masthead flourish are all set after the page loads,
+    // so the build never sees them. On a story page they pointed at
+    // stories/media/… and every article was missing its picture while the
+    // homepage looked fine.
+    {
+      const badImgs = [];
+      ctx.document.querySelectorAll("img[src]").forEach(img => {
+        const src = img.getAttribute("src");
+        if (!src || /^(https?:|data:)/.test(src)) return;
+        const target = path.normalize(path.join(SITE, OUT_DIR, src));
+        if (!fs.existsSync(target)) badImgs.push(src);
+      });
+      check.equal("every image on a story page resolves to a real file",
+        badImgs.length, 0, [...new Set(badImgs)].join(" | "));
+      // Derived from the article, not from a filename convention: this paper
+      // calls them photo-*.jpg, another calls them art-*.svg.
+      const wanted = (all[id].photo || "").split("/").pop();
+      if (wanted) {
+        check.ok("and the story's own photo was among them",
+          [...ctx.document.querySelectorAll("img[src]")]
+            .some(i => (i.getAttribute("src") || "").endsWith(wanted)),
+          `no <img> for ${wanted} — the check would pass while photos were broken`);
+      } else {
+        check.ok("no article in this paper has a photo, so there is none to check", true);
+      }
+    }
+
     check.ok("and tag links were among them",
       [...ctx.document.querySelectorAll("a[href]")].some(a => /tag\.html/.test(a.getAttribute("href") || "")),
       "no tag link rendered — the check would pass while tags were broken");

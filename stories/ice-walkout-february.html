@@ -159,7 +159,7 @@
   // no generated page yet — it is the only thing setting them, which the
   // browser's own share sheet does read.
   const absoluteUrl = location.href.split("#")[0];
-  const photoUrl = a.photo ? (a.photo.startsWith("http") ? a.photo : new URL(a.photo, location.href).href) : "";
+  const photoUrl = a.photo ? (a.photo.startsWith("http") ? a.photo : new URL(WL_rootHref(a.photo), location.href).href) : "";
   const setMeta = (selector, value) => {
     const el = document.querySelector(selector);
     if (el) el.setAttribute("content", value);
@@ -211,7 +211,7 @@
   } else if (a.photo) {
     const img = document.createElement("img");
     img.className = "article-photo";
-    img.src = a.photo;
+    img.src = WL_rootHref(a.photo);
     img.alt = a.title;
     mediaEl.appendChild(img);
     captionEl.textContent = a.photoCaption || "";
@@ -235,7 +235,7 @@
     wrap.hidden = false;
     grid.innerHTML = a.gallery.map((g, i) => `
       <button class="gallery-thumb" data-i="${i}" aria-label="Open photo ${i + 1}">
-        <img src="${g.url}" alt="${(g.caption || "Photo " + (i + 1)).replace(/"/g, "&quot;")}" loading="lazy">
+        <img src="${WL_rootHref(g.url)}" alt="${(g.caption || "Photo " + (i + 1)).replace(/"/g, "&quot;")}" loading="lazy">
       </button>
     `).join("");
 
@@ -261,7 +261,7 @@
     const cntEl = overlay.querySelector(".lb-count");
     function show(idx) {
       current = (idx + a.gallery.length) % a.gallery.length;
-      imgEl.src = a.gallery[current].url;
+      imgEl.src = WL_rootHref(a.gallery[current].url);
       imgEl.alt = a.gallery[current].caption || `Photo ${current + 1}`;
       capEl.textContent = a.gallery[current].caption || "";
       cntEl.textContent = `${current + 1} / ${a.gallery.length}`;

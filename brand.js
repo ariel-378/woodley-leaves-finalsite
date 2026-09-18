@@ -136,7 +136,10 @@
       if (isImage) {
         var img = o.querySelector("img") || o.appendChild(document.createElement("img"));
         img.setAttribute("alt", "");
-        if (img.getAttribute("src") !== s.file) img.setAttribute("src", s.file);
+        // Through WL_rootHref: on a story page the markup already says
+        // ../media/… and setting the bare config value would undo that.
+        var want = WL_rootHref(s.file);
+        if (img.getAttribute("src") !== want) img.setAttribute("src", want);
         // The school's art has its own proportions — let width drive height
         // rather than the markup's baked-in 60×30 attributes.
         img.removeAttribute("width");

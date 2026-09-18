@@ -59,7 +59,7 @@ window.WL_STORY_PAGES = [
 window.WL_rootHref = function (path) {
   var p = String(path == null ? "" : path);
   // Leave anything already absolute, anchored, or a scheme alone.
-  if (/^(https?:|mailto:|tel:|javascript:|#|\/)/.test(p)) return p;
+  if (/^(https?:|data:|mailto:|tel:|javascript:|#|\/)/.test(p)) return p;
   return (/\/stories\//.test(location.pathname) ? "../" : "") + p;
 };
 
