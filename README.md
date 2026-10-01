@@ -18,9 +18,16 @@ That is the real paper, running. Log in and click around; the editor dashboard
 is reachable from the footer.
 
 > **If you are reading this repository, you are almost certainly integrating
-> this into Finalsite.** Start with **[FINALSITE.md](FINALSITE.md)** — it is the
-> whole contract in one file. [INTEGRATION.md](INTEGRATION.md) goes deeper on
-> internals. Everything else here is background.
+> this into Finalsite.** Three files, in this order:
+>
+> 1. **[FINALSITE.md](FINALSITE.md)** — the integration contract. How identity
+>    arrives, what the role means, where content would live, the CSP. Start here.
+> 2. **[CODE-GUIDE.md](CODE-GUIDE.md)** — a tour of the codebase: how a page
+>    boots, the store pattern, where to change what, and the traps.
+> 3. **[INTEGRATION.md](INTEGRATION.md)** — deeper on internals and the phased
+>    plan.
+>
+> Everything else here is background.
 
 ### Two things about that deployment that are not in this repository
 
@@ -182,13 +189,12 @@ page-audience setting, and tells the page who is looking by setting
   identity contract (`WL_CONTEXT`), the **editors-group logic**, the
   **Content-Security-Policy** the site needs, and a phased plan for hosting,
   authentication, and content persistence.
+- **[CODE-GUIDE.md](CODE-GUIDE.md)** — a developer's tour of the code: how a
+  page boots, where content comes from, the store pattern, and the things that
+  will surprise you.
 - **[CUSTOMIZE.md](CUSTOMIZE.md)** — rebrand the paper for your school (the Brand
   design tab, or editing `config.js`).
-- **[PROPOSAL.md](PROPOSAL.md)** — the ask itself, in two parts: one for Maret,
-  one written to Finalsite for when it is forwarded on.
-- **[FINALSITE-EMAIL.md](FINALSITE-EMAIL.md)** — one email: sent to whoever at
-  the school deals with Finalsite, and written so that forwarding it to Finalsite
-  is all they have to do.
+
 
 ## Project layout
 
