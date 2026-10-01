@@ -166,6 +166,17 @@ export async function run() {
       "no tag link rendered — the check would pass while tags were broken");
   }
 
+  // ===== A story page is still article.html underneath =====
+  //  Layouts are stored per page, keyed by filename. Left alone, every story
+  //  page would keep a private layout and an editor arranging an article would
+  //  never see it on the page readers actually get.
+  {
+    const ctx = await loadPage(`${OUT_DIR}/${ids[0]}.html`, { editor: true });
+    opened.push(ctx);
+    check.equal("a story page declares itself as the article layout",
+      ctx.document.body.dataset.layoutPage, "article");
+  }
+
   // ===== Old links keep working =====
   {
     const ctx = await loadPage("article.html", { editor: false, query: `?id=${ids[0]}` });

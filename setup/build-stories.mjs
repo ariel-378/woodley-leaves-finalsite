@@ -133,6 +133,13 @@ export function storyPage(template, id, a, cfg) {
 
   let page = template.slice(0, template.indexOf("<head>")) + head + template.slice(template.indexOf("</head>"));
 
+  // Layouts are stored per page, keyed by filename — so every story page would
+  // have kept its own, and an editor arranging an article on article.html?id=
+  // would never see that arrangement on the real story page. They are all
+  // article.html underneath, so they say so. layout-editor.js reads this in
+  // preference to the filename.
+  page = page.replace(/<body(\s|>)/, (m, after) => `<body data-layout-page="article"${after}`);
+
   // The page now lives one directory down. Rewrite relative references rather
   // than using <base href="../">, which would also send in-page anchors like
   // the skip link off to the site root.
