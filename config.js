@@ -56,7 +56,7 @@ window.WL_CONFIG = {
   //  Set this up once: setup/worker/README.md (about 20 minutes).
   sync: {
     endpoint: "https://paper-content.ariel-1fa.workers.dev",   // ← your Worker's URL, e.g. https://paper-content.you.workers.dev
-    key: "SGPKLpWkncKJYUE2LB3KTizug4yv8Auy",        // ← the editor key you set on the Worker
+    key: "eM8n4LO38lg4o44wVFGqxQmGy0Qrfn45Ftn0H1pR",        // ← the editor key you set on the Worker
   },
 
   // ── Where the site lives ─────────────────────────────────────────────────
