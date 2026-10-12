@@ -216,4 +216,4 @@ and photographs remain their student authors' work, and republishing one needs
 that author's permission. See [LICENSE](LICENSE) for the split.
 
 Want the platform without the journalism? That's the
-[template](https://github.com/ariel-378/student-newspaper-template).
+[template](https://github.com/ariel-378/First-Edition).
